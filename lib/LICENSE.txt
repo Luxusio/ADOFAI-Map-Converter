@@ -1,0 +1,2 @@
+Guava : https://github.com/google/guava/blob/master/COPYING
+json-simple : https://github.com/fangyidong/json-simple/blob/master/LICENSE.txt
