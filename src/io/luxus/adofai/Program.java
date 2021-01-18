@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import io.luxus.adofai.converter.LinearMapConverter;
+import io.luxus.adofai.converter.MapShapedMapConverter;
 import io.luxus.adofai.converter.OuterMapConverter;
 import io.luxus.adofai.converter.ShapedMapConverter;
 import io.luxus.api.adofai.MapData;
@@ -29,7 +30,7 @@ public class Program {
 
 	private static void program(Scanner scanner) {
 		System.out.println("A Dance of Fire and Ice 맵 변환기");
-		System.out.println("ver 1.0.0");
+		System.out.println("ver 1.1.0");
 		System.out.println("개발자 : Luxus io");
 		System.out.println("YouTube : https://www.youtube.com/channel/UCkznd9aLn0GXIP5VjDKo_nQ");
 		System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
@@ -43,19 +44,40 @@ public class Program {
 		System.out.print("입력 : ");
 
 		int mode = scanner.nextInt();
+		scanner.nextLine();
 		String pattern = null;
+		MapData patternMap = null;
+		if (mode == 3) {
+			System.out.println("*.adofai 파일 내의 pathData형식으로 입력하여야 합니다*");
+			System.out.print("패턴(혹은 .adofai파일) : ");
+			pattern = scanner.nextLine().trim();
 
-		if (mode == 4) {
-			System.out.print("패턴 : ");
-			pattern = scanner.next().trim();
+			if (pattern.endsWith(".adofai")) {
+				File file = new File(pattern);
+				if (!file.exists()) {
+					System.out.println("E> 파일이 존재하지 않습니다!");
+					return;
+				}
 
-			if (pattern.isBlank()) {
+				try {
+					patternMap = new MapData();
+					patternMap.load(pattern);
+					pattern = patternMap.getPathData();
+				} catch (Throwable t) {
+					System.out.println("E> 오류 발생(" + pattern + ")");
+					t.printStackTrace();
+					return;
+				}
+			}
+
+			if (pattern.isEmpty()) {
 				System.out.println("패턴은 비어있을 수 없습니다. 프로그램을 종료합니다.");
 				return;
 			}
+
 			for (char c : pattern.toCharArray()) {
 				TileAngle tileAngle = MapModule.getCharTileAngleBiMap().get(c);
-				if (tileAngle == null || tileAngle == TileAngle.NONE) {
+				if (tileAngle == null) {
 					System.out.println("잘못된 문자입니다(" + c + "). 프로그램을 종료합니다.");
 					return;
 				}
@@ -72,7 +94,7 @@ public class Program {
 		System.out.println();
 		System.out.println("*all시 backup.adofai를 제외한 모든 하위 폴더의 파일을 변환합니다*");
 		System.out.print("경로(.adofai포함) : ");
-		String input = scanner.next();
+		String input = scanner.nextLine();
 
 		List<String> pathList = new ArrayList<>();
 		if (input.equalsIgnoreCase("all")) {
@@ -102,7 +124,11 @@ public class Program {
 				} else if (mode == 2) {
 					LinearMapConverter.convert(map).save(path + " Linear.adofai");
 				} else if (mode == 3) {
-					ShapedMapConverter.convert(map, pattern).save(path + " Shape.adofai");
+					if (patternMap == null) {
+						ShapedMapConverter.convert(map, pattern).save(path + " Shape.adofai");
+					} else {
+						MapShapedMapConverter.convert(map, patternMap).save(path + " Shape.adofai");
+					}
 				} else if (mode == 4) {
 					OuterMapConverter.convert(map).save(path + " Outer.adofai");
 					LinearMapConverter.convert(map).save(path + " Linear.adofai");

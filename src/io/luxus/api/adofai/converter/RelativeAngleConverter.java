@@ -8,7 +8,12 @@ public class RelativeAngleConverter {
 		double relativeAngle;
 		if(next == TileAngle.NONE) {
 			if(moreNext == null) {
-				relativeAngle = -360;
+				if(reverse) {
+					relativeAngle = now.getAngle() - 180;
+				}
+				else {
+					relativeAngle = 180 - now.getAngle();
+				}
 			}
 			else {
 				if(reverse) {
@@ -34,6 +39,8 @@ public class RelativeAngleConverter {
 		else if(relativeAngle > 360) {
 			relativeAngle -= 360;
 		}
+		
+		
 		
 		return relativeAngle;
 	}

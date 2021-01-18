@@ -54,9 +54,11 @@ public class OuterMapConverter {
 						double angleMultiplier = tile.getReversedRelativeAngle()
 								/ (tile.getRelativeAngle() == 0.0 ? tileList.get(floor - 1).getRelativeAngle()
 										: tile.getRelativeAngle());
-
+						
+						TileData tileData = new TileData(floor, tile.getTileAngle(), tile.getActionListMap());
+						applyEach.getNewTileDataList().add(tileData);
 						return new ApplyEachReturnValue(
-								new TileData(floor, tile.getTileAngle(), tile.getActionListMap()), nowTempBPM,
+								tileData, nowTempBPM,
 								bpmMultiplier, angleMultiplier);
 					}
 				});

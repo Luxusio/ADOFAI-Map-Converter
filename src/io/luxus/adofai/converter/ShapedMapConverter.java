@@ -38,7 +38,7 @@ public class ShapedMapConverter {
 			if(now.getTileAngle() == TileAngle.NONE) {
 				tileIt.remove();
 				tileDataIt.remove();
-				prev.addActionListMap(now.getActionListMap());
+				prev.addNextTileActionListMap(now.getActionListMap());
 			}
 			prev = now;
 		}
@@ -47,25 +47,35 @@ public class ShapedMapConverter {
 				new Function<MapSpeedConverterBase.ApplyEach, MapSpeedConverterBase.ApplyEachReturnValue>() {
 					private int count = 0;
 					private int len = shape.length();
+					private int floor = 1;
 					@Override
 					public ApplyEachReturnValue apply(ApplyEach applyEach) {
 						TileAngle nowTileAngle = MapModule.getCharTileAngleBiMap().get(shape.charAt(count));
 						count = (count + 1) % len;
 						TileAngle nextTileAngle = MapModule.getCharTileAngleBiMap().get(shape.charAt(count));
+						boolean skipNone = false;
+						if(nextTileAngle == TileAngle.NONE) {
+							skipNone = true;
+							count = (count + 1) % len;
+							nextTileAngle = MapModule.getCharTileAngleBiMap().get(shape.charAt(count));
+						}
 						
-						int floor = applyEach.getFloor();
 						Tile tile = applyEach.getTile();
 						
-						double newRelativeAngle = RelativeAngleConverter.convert(nowTileAngle, nextTileAngle, null, tile.isReversed());
+						double newRelativeAngle = RelativeAngleConverter.convert(nowTileAngle, nextTileAngle, null, skipNone ? !tile.isReversed() : tile.isReversed());
 						
 						double result = newRelativeAngle / tile.getRelativeAngle();
 						double nowTempBPM = result * tile.getBpm();
 
 						double bpmMultiplier = result;
 						double angleMultiplier = result;
-
+						
+						TileData tileData = new TileData(floor++, nowTileAngle, tile.getActionListMap());
+						
+						applyEach.getNewTileDataList().add(tileData);
+						if(skipNone) applyEach.getNewTileDataList().add(new TileData(floor++, TileAngle.NONE));
 						return new ApplyEachReturnValue(
-								new TileData(floor, nowTileAngle, tile.getActionListMap()), nowTempBPM,
+								tileData, nowTempBPM,
 								bpmMultiplier, angleMultiplier);
 					}
 				});

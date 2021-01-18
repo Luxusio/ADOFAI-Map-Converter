@@ -34,12 +34,14 @@ public class MapSpeedConverterBase {
 		private double prevTempBPM;
 		private Tile tile;
 		private List<Tile> tileList;
+		private List<TileData> newTileDataList;
 		
-		public ApplyEach(int floor, double prevTempBPM, Tile tile, List<Tile> tileList) {
+		public ApplyEach(int floor, double prevTempBPM, Tile tile, List<Tile> tileList, List<TileData> newTileDataList) {
 			this.floor = floor;
 			this.prevTempBPM = prevTempBPM;
 			this.tile = tile;
 			this.tileList = tileList;
+			this.newTileDataList = newTileDataList;
 		}
 
 		public int getFloor() {
@@ -56,6 +58,10 @@ public class MapSpeedConverterBase {
 
 		public List<Tile> getTileList() {
 			return tileList;
+		}
+		
+		public List<TileData> getNewTileDataList() {
+			return newTileDataList;
 		}
 	}
 	
@@ -106,7 +112,7 @@ public class MapSpeedConverterBase {
 		for (int i = 1; i < tileList.size(); i++) {
 			tile = tileList.get(i);
 			
-			ApplyEachReturnValue applyEachReturnValue = applyEachFunction.apply(new ApplyEach(i, prevTempBPM, tile, tileList));
+			ApplyEachReturnValue applyEachReturnValue = applyEachFunction.apply(new ApplyEach(i, prevTempBPM, tile, tileList, newTileDataList));
 			
 			TileData newTileData = applyEachReturnValue.getTileData();
 			double nowTempBPM = applyEachReturnValue.getNowTempBPM();
@@ -212,7 +218,6 @@ public class MapSpeedConverterBase {
 						a.getAngleOffset() * angleMultiplier, a.getEventTag());
 			});
 			
-			newTileDataList.add(newTileData);
 			prevTempBPM = nowTempBPM;
 		}
 

@@ -48,12 +48,15 @@ public class ADOFAIMap extends MapData {
 			}
 			
 			if(now.getTileAngle() == TileAngle.NONE) {
+				//System.out.println(i + " : !0");
 				Tile tile = new Tile(now.getFloor(), now.getTileAngle(), now.getActionListMap(), bpm, 0, reverse);
 				this.tileList.add(tile);
 			}
 			else {
 				double relativeAngle = RelativeAngleConverter.convert(now.getTileAngle(), next.getTileAngle(), 
 						i + 1 == size ? null : getTileDataList().get(i+1).getTileAngle(), reverse);
+				
+				//System.out.println(i + " : " + relativeAngle);
 
 				Tile tile = new Tile(now.getFloor(), now.getTileAngle(), now.getActionListMap(), bpm, relativeAngle, reverse);
 				this.tileList.add(tile);

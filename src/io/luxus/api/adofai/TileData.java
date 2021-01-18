@@ -175,7 +175,8 @@ public class TileData {
 		}
 	}
 
-	public void addActionListMap(Map<EventType, List<Action>> actionListMap) {
+	public void addNextTileActionListMap(Map<EventType, List<Action>> actionListMap) {
+		// TODO : Check event(setSpeed, twirl) and change logic
 		Iterator<Entry<EventType, List<Action>>> it = actionListMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<EventType, List<Action>> entry = it.next();

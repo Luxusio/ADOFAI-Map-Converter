@@ -161,15 +161,11 @@ public class MapData {
 		sb.append("\t]\n}\n");
 
 		BufferedWriter bufferedWriter = null;
-		//FileOutputStream fos = null;
 		try {
 			bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF8"));
 			bufferedWriter.write(65279); // BOM write
 			bufferedWriter.write(sb.toString());
-			//fos = new FileOutputStream(path);
-			//fos.write(sb.toString().getBytes());
 		} finally {
-			//if (fos != null) fos.close();
 			if(bufferedWriter != null) bufferedWriter.close();
 		}
 	}
@@ -183,7 +179,15 @@ public class MapData {
 	public String getPath() {
 		return this.path;
 	}
-
+	
+	public String getPathData() {
+		StringBuilder sb = new StringBuilder();
+		for(TileData tileData : tileDataList) {
+			sb.append(tileData.getTileAngle().getName());
+		}
+		return sb.substring(1);
+	}
+	
 	public MapSetting getSetting() {
 		return this.mapSetting;
 	}
