@@ -9,22 +9,22 @@ import io.luxus.api.adofai.converter.SafeDatatypeConverter;
 import io.luxus.api.adofai.type.EventType;
 
 public class MoveCamera extends Action {
-	
+
 	private Double duration;
 	private String relativeTo;
-	private List<Long> position;
+	private List<Double> position;
 	private Double rotation;
 	private Long zoom;
 	private Double angleOffset;
 	private String ease;
 	private String eventTag;
-		
+
 	public MoveCamera() {
 		super(EventType.MOVE_CAMERA);
 	}
-	
-	public MoveCamera(Double duration, String relativeTo, List<Long> position, Double rotation,
-			Long zoom, Double angleOffset, String ease, String eventTag) {
+
+	public MoveCamera(Double duration, String relativeTo, List<Double> position, Double rotation, Long zoom,
+			Double angleOffset, String ease, String eventTag) {
 		this();
 		this.duration = duration;
 		this.relativeTo = relativeTo;
@@ -36,19 +36,18 @@ public class MoveCamera extends Action {
 		this.eventTag = eventTag;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void load(JSONObject json) throws ParseException {
 		this.duration = SafeDatatypeConverter.toDouble(json.get("duration"));
 		this.relativeTo = (String) json.get("relativeTo");
-		this.position = (List<Long>) json.get("position");
+		this.position = SafeDatatypeConverter.toDoubleList(json.get("position"));
 		this.rotation = SafeDatatypeConverter.toDouble(json.get("rotation"));
 		this.zoom = (Long) json.get("zoom");
 		this.angleOffset = SafeDatatypeConverter.toDouble(json.get("angleOffset"));
 		this.ease = (String) json.get("ease");
 		this.eventTag = (String) json.get("eventTag");
 	}
-	
+
 	@Override
 	public void save(StringBuilder sb, int floor) {
 		saveBefore(sb, floor);
@@ -71,7 +70,7 @@ public class MoveCamera extends Action {
 		return relativeTo;
 	}
 
-	public List<Long> getPosition() {
+	public List<Double> getPosition() {
 		return position;
 	}
 
@@ -94,5 +93,5 @@ public class MoveCamera extends Action {
 	public String getEventTag() {
 		return eventTag;
 	}
-	
+
 }

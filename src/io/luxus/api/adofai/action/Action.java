@@ -41,15 +41,9 @@ public abstract class Action {
 	protected void save(StringBuilder sb, String name, Double value) {
 		if(value == null) return;
 		sb.append(", \"").append(name).append("\": ");
-		double doubleValue = (double) value;
-		long longValue = (long) doubleValue;
-		if(doubleValue == longValue) {
-			sb.append(longValue);
-		} else {
-			sb.append(value);
-		}
-		
+		appendDoubleString(sb, value);	
 	}
+	
 
 	@SuppressWarnings("rawtypes")
 	protected void save(StringBuilder sb, String name, List listValue) {
@@ -62,8 +56,10 @@ public abstract class Action {
 			if(value instanceof String) {
 				sb.append('"').append(value).append('"');
 			}
-			else {
+			else if (value instanceof Long || value instanceof Integer) {
 				sb.append(value);
+			} else {
+				appendDoubleString(sb, (double) value);
 			}
 			
 			if (it.hasNext()) {
@@ -74,6 +70,16 @@ public abstract class Action {
 		}
 
 		sb.append("]");
+	}
+	
+	private void appendDoubleString(StringBuilder sb, double value) {
+		double doubleValue = (double) value;
+		long longValue = (long) doubleValue;
+		if(doubleValue == longValue) {
+			sb.append(longValue);
+		} else {
+			sb.append(String.format("%.6f", value));
+		}
 	}
 
 	protected void saveAfter(StringBuilder sb) {

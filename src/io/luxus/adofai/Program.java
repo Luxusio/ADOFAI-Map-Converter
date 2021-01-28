@@ -7,8 +7,11 @@ import java.util.Scanner;
 
 import io.luxus.adofai.converter.LinearMapConverter;
 import io.luxus.adofai.converter.MapShapedMapConverter;
+import io.luxus.adofai.converter.NonEffectConverter;
 import io.luxus.adofai.converter.OuterMapConverter;
 import io.luxus.adofai.converter.ShapedMapConverter;
+import io.luxus.adofai.converter.TransposeMapConverter;
+import io.luxus.adofai.converter.TwirlConverter;
 import io.luxus.api.adofai.MapData;
 import io.luxus.api.adofai.module.MapModule;
 import io.luxus.api.adofai.type.TileAngle;
@@ -30,7 +33,7 @@ public class Program {
 
 	private static void program(Scanner scanner) {
 		System.out.println("A Dance of Fire and Ice 맵 변환기");
-		System.out.println("ver 1.1.0");
+		System.out.println("ver 1.2.0");
 		System.out.println("개발자 : Luxus io");
 		System.out.println("YouTube : https://www.youtube.com/channel/UCkznd9aLn0GXIP5VjDKo_nQ");
 		System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
@@ -39,14 +42,21 @@ public class Program {
 		System.out.println("1. 외각 변환");
 		System.out.println("2. 선형 변환");
 		System.out.println("3. 패턴 변환");
-		System.out.println("4. 외각&선형 변환");
-		System.out.println("5. 종료");
+		System.out.println("4. 모든타일에 회전 넣기");
+		System.out.println("5. 모든타일에 회전 빼기");
+		System.out.println("6. 이펙트 제거");
+		System.out.println("7. 투명도 변환");
+		System.out.println("8. 종료");
 		System.out.print("입력 : ");
 
 		int mode = scanner.nextInt();
 		scanner.nextLine();
 		String pattern = null;
 		MapData patternMap = null;
+		boolean useCameraOptimization = false;
+		boolean removeDecoration = false;
+		int opacity = 0;
+		
 		if (mode == 3) {
 			System.out.println("*.adofai 파일 내의 pathData형식으로 입력하여야 합니다*");
 			System.out.print("패턴(혹은 .adofai파일) : ");
@@ -82,15 +92,32 @@ public class Program {
 					return;
 				}
 			}
-
-		} else if (mode == 5) {
+		}
+//		if(mode == 2 || mode == 3 || mode == 4 || mode == 5) {
+//			System.out.print("카메라 최적화 사용(y, n):");
+//			useCameraOptimization = scanner.nextLine().trim().equalsIgnoreCase("y");
+//		}
+		if(mode == 6) {
+			System.out.print("장식 제거(y, n):");
+			removeDecoration = scanner.nextLine().trim().equalsIgnoreCase("y");
+		}
+		if(mode == 7) {
+			System.out.print("투명도(0~100):");
+			opacity = scanner.nextInt();
+			scanner.nextLine();
+		}
+		if (mode == 8) {
 			System.out.println("프로그램을 종료합니다.");
 			return;
-		} else if (mode < 0 || mode > 5) {
+		}
+		if (mode < 0 || mode > 8) {
 			System.out.println("잘못된 모드입니다. 프로그램을 종료합니다.");
 			return;
 		}
+		
 
+		
+		
 		System.out.println();
 		System.out.println("*all시 backup.adofai를 제외한 모든 하위 폴더의 파일을 변환합니다*");
 		System.out.print("경로(.adofai포함) : ");
@@ -118,20 +145,25 @@ public class Program {
 			MapData map = new MapData();
 			try {
 				map.load(path);
-				path = path.replace(".adofai", "");
+				String outPath = path.replace(".adofai", "");
 				if (mode == 1) {
-					OuterMapConverter.convert(map).save(path + " Outer.adofai");
+					OuterMapConverter.convert(path).save(outPath + " Outer.adofai");
 				} else if (mode == 2) {
-					LinearMapConverter.convert(map).save(path + " Linear.adofai");
+					LinearMapConverter.convert(path, useCameraOptimization).save(outPath + " Linear.adofai");
 				} else if (mode == 3) {
 					if (patternMap == null) {
-						ShapedMapConverter.convert(map, pattern).save(path + " Shape.adofai");
+						ShapedMapConverter.convert(path, pattern, useCameraOptimization).save(outPath + " Shape.adofai");
 					} else {
-						MapShapedMapConverter.convert(map, patternMap).save(path + " Shape.adofai");
+						MapShapedMapConverter.convert(path, patternMap, useCameraOptimization).save(outPath + " Shape.adofai");
 					}
 				} else if (mode == 4) {
-					OuterMapConverter.convert(map).save(path + " Outer.adofai");
-					LinearMapConverter.convert(map).save(path + " Linear.adofai");
+					TwirlConverter.convert(path, true, useCameraOptimization).save(outPath + " All Twirl.adofai");
+				} else if (mode == 5) {
+					TwirlConverter.convert(path, false, useCameraOptimization).save(outPath + " No Twirl.adofai");
+				} else if (mode == 6) {
+					NonEffectConverter.convert(path, removeDecoration).save(outPath + " Non-Effect.adofai");
+				} else if (mode == 7) {
+					TransposeMapConverter.convert(path, opacity).save(outPath + " Transpose.adofai");
 				}
 			} catch (Throwable t) {
 				System.out.println("E> 오류 발생(" + path + ")");

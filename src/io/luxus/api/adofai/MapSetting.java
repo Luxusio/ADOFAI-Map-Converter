@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import io.luxus.api.adofai.converter.SafeDatatypeConverter;
 
 public class MapSetting {
-	
+
 	private Long version;
 	private String artist;
 	private String specialArtistType;
@@ -24,7 +24,7 @@ public class MapSetting {
 	private String seizureWarning;
 	private String levelDesc;
 	private String levelTags;
-	//private String artistPermission;
+	// private String artistPermission;
 	private String artistLinks;
 	private Long difficulty;
 	private String songFilename;
@@ -65,11 +65,81 @@ public class MapSetting {
 	private String stickToFloors;
 	private String planetEase;
 	private Long planetEaseParts;
-	
+
 	public MapSetting() {
-		
+
 	}
-	
+
+	public MapSetting(Long version, String artist, String specialArtistType, String artistPermission, String song,
+			String author, String separateCountdownTime, String previewImage, String previewIcon,
+			String previewIconColor, Long previewSongStart, Long previewSongDuration, String seizureWarning,
+			String levelDesc, String levelTags, String artistLinks, Long difficulty, String songFilename, Double bpm,
+			Long volume, Long offset, Long pitch, String hitsound, Long hitsoundVolume, Long countdownTicks,
+			String trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration,
+			String trackColorPulse, Long trackPulseLength, String trackStyle, String trackAnimation, Double beatsAhead,
+			String trackDisappearAnimation, Double beatsBehind, String backgroundColor, String bgImage,
+			String bgImageColor, List<Long> parallax, String bgDisplayMode, String lockRot, String loopBG,
+			Long unscaledSize, String relativeTo, List<Long> position, Double rotation, Long zoom, String bgVideo,
+			String loopVideo, Long vidOffset, String floorIconOutlines, String stickToFloors, String planetEase,
+			Long planetEaseParts) {
+		super();
+		this.version = version;
+		this.artist = artist;
+		this.specialArtistType = specialArtistType;
+		this.artistPermission = artistPermission;
+		this.song = song;
+		this.author = author;
+		this.separateCountdownTime = separateCountdownTime;
+		this.previewImage = previewImage;
+		this.previewIcon = previewIcon;
+		this.previewIconColor = previewIconColor;
+		this.previewSongStart = previewSongStart;
+		this.previewSongDuration = previewSongDuration;
+		this.seizureWarning = seizureWarning;
+		this.levelDesc = levelDesc;
+		this.levelTags = levelTags;
+		this.artistLinks = artistLinks;
+		this.difficulty = difficulty;
+		this.songFilename = songFilename;
+		this.bpm = bpm;
+		this.volume = volume;
+		this.offset = offset;
+		this.pitch = pitch;
+		this.hitsound = hitsound;
+		this.hitsoundVolume = hitsoundVolume;
+		this.countdownTicks = countdownTicks;
+		this.trackColorType = trackColorType;
+		this.trackColor = trackColor;
+		this.secondaryTrackColor = secondaryTrackColor;
+		this.trackColorAnimDuration = trackColorAnimDuration;
+		this.trackColorPulse = trackColorPulse;
+		this.trackPulseLength = trackPulseLength;
+		this.trackStyle = trackStyle;
+		this.trackAnimation = trackAnimation;
+		this.beatsAhead = beatsAhead;
+		this.trackDisappearAnimation = trackDisappearAnimation;
+		this.beatsBehind = beatsBehind;
+		this.backgroundColor = backgroundColor;
+		this.bgImage = bgImage;
+		this.bgImageColor = bgImageColor;
+		this.parallax = parallax;
+		this.bgDisplayMode = bgDisplayMode;
+		this.lockRot = lockRot;
+		this.loopBG = loopBG;
+		this.unscaledSize = unscaledSize;
+		this.relativeTo = relativeTo;
+		this.position = position;
+		this.rotation = rotation;
+		this.zoom = zoom;
+		this.bgVideo = bgVideo;
+		this.loopVideo = loopVideo;
+		this.vidOffset = vidOffset;
+		this.floorIconOutlines = floorIconOutlines;
+		this.stickToFloors = stickToFloors;
+		this.planetEase = planetEase;
+		this.planetEaseParts = planetEaseParts;
+	}
+
 	@SuppressWarnings("unchecked")
 	public void load(JSONObject json) {
 		this.version = (Long) json.get("version");
@@ -88,11 +158,11 @@ public class MapSetting {
 		this.hitsoundVolume = (Long) json.get("hitsoundVolume");
 		this.trackColorType = (String) json.get("trackColorType");
 		this.trackColor = (String) json.get("trackColor");
-		this.secondaryTrackColor = (String) json.get("secondaryTrackColor"); 
+		this.secondaryTrackColor = (String) json.get("secondaryTrackColor");
 		this.trackColorAnimDuration = SafeDatatypeConverter.toDouble(json.get("trackColorAnimDuration"));
-		this.trackColorPulse = (String) json.get("trackColorPulse"); 
+		this.trackColorPulse = (String) json.get("trackColorPulse");
 		this.trackPulseLength = (Long) json.get("trackPulseLength");
-		this.trackStyle = (String) json.get("trackStyle"); 
+		this.trackStyle = (String) json.get("trackStyle");
 		this.trackAnimation = (String) json.get("trackAnimation");
 		this.beatsAhead = SafeDatatypeConverter.toDouble(json.get("beatsAhead"));
 		this.trackDisappearAnimation = (String) json.get("trackDisappearAnimation");
@@ -100,14 +170,16 @@ public class MapSetting {
 		this.backgroundColor = (String) json.get("backgroundColor");
 		this.bgImage = (String) json.get("bgImage");
 		this.bgImageColor = (String) json.get("bgImageColor");
-		//this.parallax = JSONObjectConverter.toIntArray((JSONArray) json.get("parallax"));
+		// this.parallax = JSONObjectConverter.toIntArray((JSONArray)
+		// json.get("parallax"));
 		this.parallax = (List<Long>) json.get("parallax");
 		this.bgDisplayMode = (String) json.get("bgDisplayMode");
 		this.lockRot = (String) json.get("lockRot");
 		this.loopBG = (String) json.get("loopBG");
 		this.unscaledSize = (Long) json.get("unscaledSize");
 		this.relativeTo = (String) json.get("relativeTo");
-		//this.position = JSONObjectConverter.toIntArray((JSONArray) json.get("position"));
+		// this.position = JSONObjectConverter.toIntArray((JSONArray)
+		// json.get("position"));
 		this.position = (List<Long>) json.get("position");
 		this.rotation = SafeDatatypeConverter.toDouble(json.get("rotation"));
 		this.zoom = (Long) json.get("zoom");
@@ -119,7 +191,7 @@ public class MapSetting {
 		this.planetEase = (String) json.get("planetEase");
 		this.planetEaseParts = (Long) json.get("planetEaseParts");
 	}
-	
+
 	public void save(StringBuilder sb) {
 		saveVariable(sb, "version", version);
 		saveVariable(sb, "artist", artist);
@@ -177,267 +249,284 @@ public class MapSetting {
 		saveVariable(sb, "planetEase", planetEase);
 		saveVariable(sb, "planetEaseParts", planetEaseParts);
 	}
-	
+
 	private void saveVariable(StringBuilder sb, String name, String value) {
-		if(value == null) return;
+		if (value == null)
+			return;
 		sb.append("\t\t\"").append(name).append("\": \"").append(value).append("\", \n");
 	}
-	
+
 	private void saveVariable(StringBuilder sb, String name, Long value) {
-		if(value == null) return;
+		if (value == null)
+			return;
 		sb.append("\t\t\"").append(name).append("\": ").append(value).append(", \n");
 	}
-	
+
 	private void saveVariable(StringBuilder sb, String name, Double value) {
-		if(value == null) return;
+		if (value == null)
+			return;
 		sb.append("\t\t\"").append(name).append("\": ");
 		double doubleValue = (double) value;
 		long longValue = (long) doubleValue;
-		if(doubleValue == longValue) {
+		if (doubleValue == longValue) {
 			sb.append(longValue);
 		} else {
-			sb.append(value);
+			sb.append(String.format("%.6f", value));
 		}
 		sb.append(", \n");
 	}
-	
+
 	private void saveVariableSpecial(StringBuilder sb, String name, Long value) {
-		if(value == null) return;
+		if (value == null)
+			return;
 		sb.append("\t\t\"").append(name).append("\": ").append(value).append(", ,\n");
 	}
-	
+
 	private void saveVariable(StringBuilder sb, String name, List<Long> valueList) {
-		if(valueList == null) return;
+		if (valueList == null)
+			return;
 		sb.append("\t\t\"").append(name).append("\": [");
 		Iterator<Long> it = valueList.iterator();
-		while(true) {
+		while (true) {
 			sb.append(it.next());
-			if(it.hasNext()) {
+			if (it.hasNext()) {
 				sb.append(", ");
-			}
-			else {
+			} else {
 				break;
 			}
 		}
 		sb.append("], \n");
 	}
-	
-	
-	
+
 	public Long getVersion() {
 		return version;
 	}
-	
+
 	public String getArtist() {
 		return artist;
 	}
-	
+
 	public String getSong() {
 		return song;
 	}
-	
+
 	public String getAuthor() {
 		return author;
 	}
-	
+
 	public String getSeparateCountdownTime() {
 		return separateCountdownTime;
 	}
-	
+
 	public String getPreviewImage() {
 		return previewImage;
 	}
-	
+
 	public String getPreviewIcon() {
 		return previewIcon;
 	}
-	
+
 	public String getPreviewIconColor() {
 		return previewIconColor;
 	}
-	
+
 	public Long getPreviewSongStart() {
 		return previewSongStart;
 	}
-	
+
 	public Long getPreviewSongDuration() {
 		return previewSongDuration;
 	}
-	
+
 	public String getSeizureWarning() {
 		return seizureWarning;
 	}
-	
+
 	public String getLevelDesc() {
 		return levelDesc;
 	}
-	
+
 	public String getLevelTags() {
 		return levelTags;
 	}
-	
+
 	public String getArtistPermission() {
 		return artistPermission;
 	}
-	
+
 	public String getArtistLinks() {
 		return artistLinks;
 	}
-	
+
 	public Long getDifficulty() {
 		return difficulty;
 	}
-	
+
 	public String getSongFilename() {
 		return songFilename;
 	}
-	
+
 	public Double getBpm() {
 		return bpm;
 	}
-	
+
 	public Long getVolume() {
 		return volume;
 	}
-	
+
 	public Long getOffset() {
 		return offset;
 	}
-	
+
 	public Long getPitch() {
 		return pitch;
 	}
-	
+
 	public String getHitsound() {
 		return hitsound;
 	}
-	
+
 	public Long getHitsoundVolume() {
 		return hitsoundVolume;
 	}
-	
+
 	public Long getCountdownTicks() {
 		return countdownTicks;
 	}
-	
+
 	public String getTrackColorType() {
 		return trackColorType;
 	}
-	
+
 	public String getTrackColor() {
 		return trackColor;
 	}
-	
+
 	public String getSecondaryTrackColor() {
 		return secondaryTrackColor;
 	}
-	
+
 	public Double getTrackColorAnimDuration() {
 		return trackColorAnimDuration;
 	}
-	
+
 	public String getTrackColorPulse() {
 		return trackColorPulse;
 	}
-	
+
 	public Long getTrackPulseLength() {
 		return trackPulseLength;
 	}
-	
+
 	public String getTrackStyle() {
 		return trackStyle;
 	}
-	
+
 	public String getTrackAnimation() {
 		return trackAnimation;
 	}
-	
+
 	public Double getBeatsAhead() {
 		return beatsAhead;
 	}
-	
+
 	public String getTrackDisappearAnimation() {
 		return trackDisappearAnimation;
 	}
-	
+
 	public Double getBeatsBehind() {
 		return beatsBehind;
 	}
-	
+
 	public String getBackgroundColor() {
 		return backgroundColor;
 	}
-	
+
 	public String getBgImage() {
 		return bgImage;
 	}
-	
+
 	public String getBgImageColor() {
 		return bgImageColor;
 	}
-	
+
 	public List<Long> getParallax() {
 		return parallax;
 	}
-	
+
 	public String getBgDisplayMode() {
 		return bgDisplayMode;
 	}
-	
+
 	public String getLockRot() {
 		return lockRot;
 	}
-	
+
 	public String getLoopBG() {
 		return loopBG;
 	}
-	
+
 	public Long getUnscaledSize() {
 		return unscaledSize;
 	}
-	
+
 	public String getRelativeTo() {
 		return relativeTo;
 	}
-	
+
 	public List<Long> getPosition() {
 		return position;
 	}
-	
+
 	public Double getRotation() {
 		return rotation;
 	}
-	
+
 	public Long getZoom() {
 		return zoom;
 	}
-	
+
 	public String getBgVideo() {
 		return bgVideo;
 	}
-	
+
 	public String getLoopVideo() {
 		return loopVideo;
 	}
-	
+
 	public Long getVidOffset() {
 		return vidOffset;
 	}
-	
+
 	public String getFloorIconOutlines() {
 		return floorIconOutlines;
 	}
-	
+
 	public String getStickToFloors() {
 		return stickToFloors;
 	}
-	
+
 	public String getPlanetEase() {
 		return planetEase;
 	}
-	
+
 	public Long getPlanetEaseParts() {
 		return planetEaseParts;
 	}
-	
+
+//	public MapSetting clone() {
+//		return new MapSetting(version, artist, specialArtistType, artistPermission, song,
+//				author, separateCountdownTime, previewImage, previewIcon,
+//				previewIconColor, previewSongStart, previewSongDuration, seizureWarning,
+//				levelDesc, levelTags, artistLinks, difficulty, songFilename, bpm,
+//				volume, offset, pitch, hitsound, hitsoundVolume, countdownTicks,
+//				trackColorType, trackColor, secondaryTrackColor, trackColorAnimDuration,
+//				trackColorPulse, trackPulseLength, trackStyle, trackAnimation, beatsAhead,
+//				trackDisappearAnimation, beatsBehind, backgroundColor, bgImage,
+//				bgImageColor, parallax, bgDisplayMode, lockRot, loopBG,
+//				unscaledSize, relativeTo, position, rotation, zoom, bgVideo,
+//				loopVideo, vidOffset, floorIconOutlines, stickToFloors, planetEase,
+//				planetEaseParts);
+//	}
+
 }

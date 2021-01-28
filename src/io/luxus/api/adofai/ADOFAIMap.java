@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.luxus.api.adofai.action.Action;
+import io.luxus.api.adofai.action.PositionTrack;
 import io.luxus.api.adofai.action.SetSpeed;
-import io.luxus.api.adofai.converter.RelativeAngleConverter;
+import io.luxus.api.adofai.converter.AngleConverter;
 import io.luxus.api.adofai.type.EventType;
 import io.luxus.api.adofai.type.SpeedType;
 import io.luxus.api.adofai.type.TileAngle;
@@ -26,7 +27,12 @@ public class ADOFAIMap extends MapData {
 		TileData now = getTileDataList().get(0);
 		TileData next = null;
 		int size = getTileDataList().size();
-	
+		
+		double staticAngle = 0;
+		
+		double x = 0.0;
+		double y = 0.0;
+		
 		for(int i=1;i<size;i++) {
 			next = getTileDataList().get(i);
 			List<Action> actionList = now.getActionListIfNotEmpty(EventType.SET_SPEED);
@@ -47,19 +53,25 @@ public class ADOFAIMap extends MapData {
 				reverse = !reverse;
 			}
 			
-			if(now.getTileAngle() == TileAngle.NONE) {
-				//System.out.println(i + " : !0");
-				Tile tile = new Tile(now.getFloor(), now.getTileAngle(), now.getActionListMap(), bpm, 0, reverse);
-				this.tileList.add(tile);
-			}
-			else {
-				double relativeAngle = RelativeAngleConverter.convert(now.getTileAngle(), next.getTileAngle(), 
-						i + 1 == size ? null : getTileDataList().get(i+1).getTileAngle(), reverse);
-				
-				//System.out.println(i + " : " + relativeAngle);
+			AngleConverter.Result result = AngleConverter.convert(staticAngle, now.getTileAngle(), next.getTileAngle(), reverse, now.getTileAngle() != TileAngle.NONE);
+			double relativeAngle = result.getRelativeAngle();
+			
+			Tile tile = new Tile(now.getFloor(), now.getTileAngle(), now.getActionListMap(), bpm, relativeAngle, staticAngle, reverse, x, y);
+			this.tileList.add(tile);
 
-				Tile tile = new Tile(now.getFloor(), now.getTileAngle(), now.getActionListMap(), bpm, relativeAngle, reverse);
-				this.tileList.add(tile);
+			staticAngle = result.getStaticAngle();
+			
+			double rad = Math.toRadians(staticAngle);
+			x += Math.cos(rad);
+			y += Math.sin(rad);
+			
+			actionList = next.getActionListIfNotEmpty(EventType.POSITION_TRACK);
+			if(actionList != null) {
+				PositionTrack positionTrack = (PositionTrack) actionList.get(0);
+				if("Disabled".equals(positionTrack.getEditorOnly())) {
+					x += positionTrack.getPositionOffset().get(0);
+					y += positionTrack.getPositionOffset().get(1);
+				}
 			}
 			
 			now = next;
@@ -69,10 +81,11 @@ public class ADOFAIMap extends MapData {
 			if(next.containsAction(EventType.TWIRL)) {
 				reverse = !reverse;
 			}
-			Tile tile = new Tile(next.getFloor(), next.getTileAngle(), next.getActionListMap(), bpm, 180, reverse);
+			Tile tile = new Tile(next.getFloor(), next.getTileAngle(), next.getActionListMap(), bpm, 180, staticAngle, reverse, x, y);
 			this.tileList.add(tile);
 		}
 	}
+	
 
 	public List<Tile> getTileList() {
 		return tileList;

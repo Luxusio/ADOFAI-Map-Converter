@@ -20,7 +20,7 @@ import org.json.simple.parser.ParseException;
 import io.luxus.api.adofai.module.MapModule;
 import io.luxus.api.adofai.type.TileAngle;
 
-public class MapData {
+public class MapData implements Cloneable {
 
 	private MapSetting mapSetting;
 	private List<TileData> tileDataList;
@@ -195,5 +195,11 @@ public class MapData {
 	public List<TileData> getTileDataList() {
 		return this.tileDataList;
 	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
 
 }
