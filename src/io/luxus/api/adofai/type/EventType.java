@@ -23,6 +23,10 @@ public enum EventType {
 	BLOOM("Bloom", false), // angleOffset
 	SET_CONDITIONAL_EVENTS("SetConditionalEvents", true),
 	CHANGE_TRACK("ChangeTrack", false), // maybe false
+	SCREEN_TILE("ScreenTile", false), 
+	SCREEN_SCROLL("ScreenScroll", false),
+	ADD_TEXT("AddText", false), 
+	SET_TEXT("SetText", false), 
 	;
 	
 	private String type;

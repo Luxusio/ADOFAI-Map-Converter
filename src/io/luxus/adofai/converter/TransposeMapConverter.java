@@ -64,6 +64,7 @@ public class TransposeMapConverter {
 	private static void removeActions(Tile tile, long opacity) {
 		List<Action> actionList;
 		
+		@SuppressWarnings("unused")
 		boolean added = false;
 		actionList = tile.getActionListIfNotEmpty(EventType.MOVE_TRACK);
 		if(actionList != null) {

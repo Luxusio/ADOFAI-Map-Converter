@@ -43,10 +43,10 @@ public class AngleConverter {
 			
 			
 			if(reverse) {
-				relativeAngle = - nowStaticAngle + next.getAngle();
+				relativeAngle = -nowStaticAngle + next.getAngle();
 			}
 			else {
-				relativeAngle = - next.getAngle() + nowStaticAngle;
+				relativeAngle = -next.getAngle() + nowStaticAngle;
 			}
 			
 			if(notNone) {

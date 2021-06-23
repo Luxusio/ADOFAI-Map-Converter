@@ -17,9 +17,9 @@ import io.luxus.api.adofai.action.Action;
 import io.luxus.api.adofai.type.EventType;
 
 public class NonEffectConverter {
-	public static MapData convert(String path, boolean removeDecoration) throws ParseException, IOException {
+	public static MapData convert(String path, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents) throws ParseException, IOException {
 		ADOFAIMap adofaiMap = MapSpeedConverterBase.getMap(path);
-		removeActions(adofaiMap.getTileList().get(0), removeDecoration);
+		removeActions(adofaiMap.getTileList().get(0), removeDecoration, removeTileMove, removeCameraEvents);
 		return MapSpeedConverterBase.convert(path, new ArrayList<>(), adofaiMap, false, 
 				new Function<MapSpeedConverterBase.ApplyEach, MapSpeedConverterBase.ApplyEachReturnValue>() {
 					@Override
@@ -27,7 +27,7 @@ public class NonEffectConverter {
 						int floor = applyEach.getFloor();
 						Tile tile = applyEach.getTile();
 						
-						removeActions(tile, removeDecoration);
+						removeActions(tile, removeDecoration, removeTileMove, removeCameraEvents);
 						
 						TileData tileData = new TileData(floor, tile.getTileAngle(), tile.getActionListMap());
 						applyEach.getNewTileDataList().add(tileData);
@@ -38,7 +38,7 @@ public class NonEffectConverter {
 				});
 	}
 	
-	private static void removeActions(Tile tile, boolean removeDecoration) {
+	private static void removeActions(Tile tile, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents) {
 		List<Action> actionList;
 		
 		actionList = tile.getActionListIfNotEmpty(EventType.BLOOM);
@@ -61,6 +61,16 @@ public class NonEffectConverter {
 			if(actionList != null) actionList.clear();
 			
 			actionList = tile.getActionListIfNotEmpty(EventType.MOVE_DECORATIONS);
+			if(actionList != null) actionList.clear();
+		}
+		
+		if(removeTileMove) {
+			actionList = tile.getActionListIfNotEmpty(EventType.MOVE_TRACK);
+			if(actionList != null) actionList.clear();
+		}
+		
+		if(removeCameraEvents) {
+			actionList = tile.getActionListIfNotEmpty(EventType.MOVE_CAMERA);
 			if(actionList != null) actionList.clear();
 		}
 		
