@@ -38,6 +38,10 @@ public class MapModule {
 			stringEventTypeBiMap.put(EventType.BLOOM.toString(), EventType.BLOOM);
 			stringEventTypeBiMap.put(EventType.SET_CONDITIONAL_EVENTS.toString(), EventType.SET_CONDITIONAL_EVENTS);
 			stringEventTypeBiMap.put(EventType.CHANGE_TRACK.toString(), EventType.CHANGE_TRACK);
+			stringEventTypeBiMap.put(EventType.SCREEN_TILE.toString(), EventType.SCREEN_TILE);
+			stringEventTypeBiMap.put(EventType.SCREEN_SCROLL.toString(), EventType.SCREEN_SCROLL);
+			stringEventTypeBiMap.put(EventType.ADD_TEXT.toString(), EventType.ADD_TEXT);
+			stringEventTypeBiMap.put(EventType.SET_TEXT.toString(), EventType.SET_TEXT);
 		}
 		
 		return stringEventTypeBiMap;

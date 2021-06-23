@@ -1,5 +1,6 @@
 package io.luxus.api.adofai;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -67,7 +68,61 @@ public class MapSetting {
 	private Long planetEaseParts;
 
 	public MapSetting() {
-
+		this.version = 2L;
+		this.artist = "Artist";
+		this.specialArtistType = "None";
+		this.artistPermission = "";
+		this.song = "Song";
+		this.author = "Author";
+		this.separateCountdownTime = "Enabled";
+		this.previewImage = "";
+		this.previewIcon = "";
+		this.previewIconColor = "003f52";
+		this.previewSongStart = 0L;
+		this.previewSongDuration = 10L;
+		this.seizureWarning = "Disabled";
+		this.levelDesc = "레벨에 대해 말해보세요!";
+		this.levelTags = "";
+		this.artistLinks = "";
+		this.difficulty = 1L;
+		this.songFilename = "";
+		this.bpm = 100.0;
+		this.volume = 100L;
+		this.offset = 0L;
+		this.pitch = 100L;
+		this.hitsound = "Kick";
+		this.hitsoundVolume = 100L;
+		this.countdownTicks = 4L;
+		this.trackColorType = "Single";
+		this.trackColor = "debb7b";
+		this.secondaryTrackColor = "ffffff";
+		this.trackColorAnimDuration = 2.0;
+		this.trackColorPulse = "None";
+		this.trackPulseLength = 10L;
+		this.trackStyle = "Standard";
+		this.trackAnimation = "None";
+		this.beatsAhead = 3.0;
+		this.trackDisappearAnimation = "None";
+		this.beatsBehind = 4.0;
+		this.backgroundColor = "000000";
+		this.bgImage = "";
+		this.bgImageColor = "ffffff";
+		this.parallax = Arrays.asList(100L, 100L);
+		this.bgDisplayMode = "FitToScreen";
+		this.lockRot = "Disabled";
+		this.loopBG = "Disabled";
+		this.unscaledSize = 100L;
+		this.relativeTo = "Player";
+		this.position = Arrays.asList(0L, 0L);
+		this.rotation = 0.0;
+		this.zoom = 100L;
+		this.bgVideo = "";
+		this.loopVideo = "Disabled";
+		this.vidOffset = 0L;
+		this.floorIconOutlines = "Disabled";
+		this.stickToFloors = "Disabled";
+		this.planetEase = "Linear";
+		this.planetEaseParts = 1L;
 	}
 
 	public MapSetting(Long version, String artist, String specialArtistType, String artistPermission, String song,
@@ -296,6 +351,226 @@ public class MapSetting {
 			}
 		}
 		sb.append("], \n");
+	}
+	
+	public void setVersion(Long version) {
+		this.version = version;
+	}
+
+	public void setArtist(String artist) {
+		this.artist = artist;
+	}
+
+	public void setSpecialArtistType(String specialArtistType) {
+		this.specialArtistType = specialArtistType;
+	}
+
+	public void setArtistPermission(String artistPermission) {
+		this.artistPermission = artistPermission;
+	}
+
+	public void setSong(String song) {
+		this.song = song;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public void setSeparateCountdownTime(String separateCountdownTime) {
+		this.separateCountdownTime = separateCountdownTime;
+	}
+
+	public void setPreviewImage(String previewImage) {
+		this.previewImage = previewImage;
+	}
+
+	public void setPreviewIcon(String previewIcon) {
+		this.previewIcon = previewIcon;
+	}
+
+	public void setPreviewIconColor(String previewIconColor) {
+		this.previewIconColor = previewIconColor;
+	}
+
+	public void setPreviewSongStart(Long previewSongStart) {
+		this.previewSongStart = previewSongStart;
+	}
+
+	public void setPreviewSongDuration(Long previewSongDuration) {
+		this.previewSongDuration = previewSongDuration;
+	}
+
+	public void setSeizureWarning(String seizureWarning) {
+		this.seizureWarning = seizureWarning;
+	}
+
+	public void setLevelDesc(String levelDesc) {
+		this.levelDesc = levelDesc;
+	}
+
+	public void setLevelTags(String levelTags) {
+		this.levelTags = levelTags;
+	}
+
+	public void setArtistLinks(String artistLinks) {
+		this.artistLinks = artistLinks;
+	}
+
+	public void setDifficulty(Long difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	public void setSongFilename(String songFilename) {
+		this.songFilename = songFilename;
+	}
+
+	public void setBpm(Double bpm) {
+		this.bpm = bpm;
+	}
+
+	public void setVolume(Long volume) {
+		this.volume = volume;
+	}
+
+	public void setOffset(Long offset) {
+		this.offset = offset;
+	}
+
+	public void setPitch(Long pitch) {
+		this.pitch = pitch;
+	}
+
+	public void setHitsound(String hitsound) {
+		this.hitsound = hitsound;
+	}
+
+	public void setHitsoundVolume(Long hitsoundVolume) {
+		this.hitsoundVolume = hitsoundVolume;
+	}
+
+	public void setCountdownTicks(Long countdownTicks) {
+		this.countdownTicks = countdownTicks;
+	}
+
+	public void setTrackColorType(String trackColorType) {
+		this.trackColorType = trackColorType;
+	}
+
+	public void setTrackColor(String trackColor) {
+		this.trackColor = trackColor;
+	}
+
+	public void setSecondaryTrackColor(String secondaryTrackColor) {
+		this.secondaryTrackColor = secondaryTrackColor;
+	}
+
+	public void setTrackColorAnimDuration(Double trackColorAnimDuration) {
+		this.trackColorAnimDuration = trackColorAnimDuration;
+	}
+
+	public void setTrackColorPulse(String trackColorPulse) {
+		this.trackColorPulse = trackColorPulse;
+	}
+
+	public void setTrackPulseLength(Long trackPulseLength) {
+		this.trackPulseLength = trackPulseLength;
+	}
+
+	public void setTrackStyle(String trackStyle) {
+		this.trackStyle = trackStyle;
+	}
+
+	public void setTrackAnimation(String trackAnimation) {
+		this.trackAnimation = trackAnimation;
+	}
+
+	public void setBeatsAhead(Double beatsAhead) {
+		this.beatsAhead = beatsAhead;
+	}
+
+	public void setTrackDisappearAnimation(String trackDisappearAnimation) {
+		this.trackDisappearAnimation = trackDisappearAnimation;
+	}
+
+	public void setBeatsBehind(Double beatsBehind) {
+		this.beatsBehind = beatsBehind;
+	}
+
+	public void setBackgroundColor(String backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
+
+	public void setBgImage(String bgImage) {
+		this.bgImage = bgImage;
+	}
+
+	public void setBgImageColor(String bgImageColor) {
+		this.bgImageColor = bgImageColor;
+	}
+
+	public void setParallax(List<Long> parallax) {
+		this.parallax = parallax;
+	}
+
+	public void setBgDisplayMode(String bgDisplayMode) {
+		this.bgDisplayMode = bgDisplayMode;
+	}
+
+	public void setLockRot(String lockRot) {
+		this.lockRot = lockRot;
+	}
+
+	public void setLoopBG(String loopBG) {
+		this.loopBG = loopBG;
+	}
+
+	public void setUnscaledSize(Long unscaledSize) {
+		this.unscaledSize = unscaledSize;
+	}
+
+	public void setRelativeTo(String relativeTo) {
+		this.relativeTo = relativeTo;
+	}
+
+	public void setPosition(List<Long> position) {
+		this.position = position;
+	}
+
+	public void setRotation(Double rotation) {
+		this.rotation = rotation;
+	}
+
+	public void setZoom(Long zoom) {
+		this.zoom = zoom;
+	}
+
+	public void setBgVideo(String bgVideo) {
+		this.bgVideo = bgVideo;
+	}
+
+	public void setLoopVideo(String loopVideo) {
+		this.loopVideo = loopVideo;
+	}
+
+	public void setVidOffset(Long vidOffset) {
+		this.vidOffset = vidOffset;
+	}
+
+	public void setFloorIconOutlines(String floorIconOutlines) {
+		this.floorIconOutlines = floorIconOutlines;
+	}
+
+	public void setStickToFloors(String stickToFloors) {
+		this.stickToFloors = stickToFloors;
+	}
+
+	public void setPlanetEase(String planetEase) {
+		this.planetEase = planetEase;
+	}
+
+	public void setPlanetEaseParts(Long planetEaseParts) {
+		this.planetEaseParts = planetEaseParts;
 	}
 
 	public Long getVersion() {

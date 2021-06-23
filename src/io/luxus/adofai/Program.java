@@ -33,7 +33,7 @@ public class Program {
 
 	private static void program(Scanner scanner) {
 		System.out.println("A Dance of Fire and Ice 맵 변환기");
-		System.out.println("ver 1.2.0");
+		System.out.println("ver 1.2.1");
 		System.out.println("개발자 : Luxus io");
 		System.out.println("YouTube : https://www.youtube.com/channel/UCkznd9aLn0GXIP5VjDKo_nQ");
 		System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
@@ -51,10 +51,16 @@ public class Program {
 
 		int mode = scanner.nextInt();
 		scanner.nextLine();
+		// 3
 		String pattern = null;
 		MapData patternMap = null;
+		// 2 3 4 5
 		boolean useCameraOptimization = false;
+		// 6
 		boolean removeDecoration = false;
+		boolean removeTileMove = false;
+		boolean removeCameraEvents = false;
+		// 7
 		int opacity = 0;
 		
 		if (mode == 3) {
@@ -100,6 +106,10 @@ public class Program {
 		if(mode == 6) {
 			System.out.print("장식 제거(y, n):");
 			removeDecoration = scanner.nextLine().trim().equalsIgnoreCase("y");
+			System.out.print("타일이동 제거(y, n):");
+			removeTileMove = scanner.nextLine().trim().equalsIgnoreCase("y");
+			System.out.print("카메라이벤트 제거(y, n):");
+			removeCameraEvents = scanner.nextLine().trim().equalsIgnoreCase("y");
 		}
 		if(mode == 7) {
 			System.out.print("투명도(0~100):");
@@ -161,7 +171,7 @@ public class Program {
 				} else if (mode == 5) {
 					TwirlConverter.convert(path, false, useCameraOptimization).save(outPath + " No Twirl.adofai");
 				} else if (mode == 6) {
-					NonEffectConverter.convert(path, removeDecoration).save(outPath + " Non-Effect.adofai");
+					NonEffectConverter.convert(path, removeDecoration, removeTileMove, removeCameraEvents).save(outPath + " Non-Effect.adofai");
 				} else if (mode == 7) {
 					TransposeMapConverter.convert(path, opacity).save(outPath + " Transpose.adofai");
 				}

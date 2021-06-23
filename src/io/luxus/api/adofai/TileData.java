@@ -61,6 +61,7 @@ public class TileData {
 		EventType eventType = MapModule.getStringEventTypeBiMap().get(eventTypeString);
 		if (eventType == null) {
 			System.out.println("E: eventType Null : " + eventTypeString);
+			return;
 		}
 		Action action = null;
 		switch (eventType) {
