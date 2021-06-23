@@ -22,7 +22,7 @@ public class Program {
 		Scanner scanner = new Scanner(System.in);
 		try {
 			Program.program(scanner);
-			System.out.println("°è¼ÓÇÏ½Ã·Á¸é ¿£ÅÍÅ°¸¦ ´­·¯ÁÖ¼¼¿ä.");
+			System.out.println("ê³„ì†í•˜ì‹œë ¤ë©´ ì—”í„°í‚¤ë¥¼ ëˆŒëŸ¬ì£¼ì„¸ìš”.");
 			System.in.read();
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -32,22 +32,22 @@ public class Program {
 	}
 
 	private static void program(Scanner scanner) {
-		System.out.println("A Dance of Fire and Ice ¸Ê º¯È¯±â");
+		System.out.println("A Dance of Fire and Ice ë§µ ë³€í™˜ê¸°");
 		System.out.println("ver 1.2.1");
-		System.out.println("°³¹ßÀÚ : Luxus io");
+		System.out.println("ê°œë°œì : Luxus io");
 		System.out.println("YouTube : https://www.youtube.com/channel/UCkznd9aLn0GXIP5VjDKo_nQ");
 		System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
 		System.out.println();
 
-		System.out.println("1. ¿Ü°¢ º¯È¯");
-		System.out.println("2. ¼±Çü º¯È¯");
-		System.out.println("3. ÆĞÅÏ º¯È¯");
-		System.out.println("4. ¸ğµçÅ¸ÀÏ¿¡ È¸Àü ³Ö±â");
-		System.out.println("5. ¸ğµçÅ¸ÀÏ¿¡ È¸Àü »©±â");
-		System.out.println("6. ÀÌÆåÆ® Á¦°Å");
-		System.out.println("7. Åõ¸íµµ º¯È¯");
-		System.out.println("8. Á¾·á");
-		System.out.print("ÀÔ·Â : ");
+		System.out.println("1. ì™¸ê° ë³€í™˜");
+		System.out.println("2. ì„ í˜• ë³€í™˜");
+		System.out.println("3. íŒ¨í„´ ë³€í™˜");
+		System.out.println("4. ëª¨ë“ íƒ€ì¼ì— íšŒì „ ë„£ê¸°");
+		System.out.println("5. ëª¨ë“ íƒ€ì¼ì— íšŒì „ ë¹¼ê¸°");
+		System.out.println("6. ì´í™íŠ¸ ì œê±°");
+		System.out.println("7. íˆ¬ëª…ë„ ë³€í™˜");
+		System.out.println("8. ì¢…ë£Œ");
+		System.out.print("ì…ë ¥ : ");
 
 		int mode = scanner.nextInt();
 		scanner.nextLine();
@@ -64,14 +64,14 @@ public class Program {
 		int opacity = 0;
 		
 		if (mode == 3) {
-			System.out.println("*.adofai ÆÄÀÏ ³»ÀÇ pathDataÇü½ÄÀ¸·Î ÀÔ·ÂÇÏ¿©¾ß ÇÕ´Ï´Ù*");
-			System.out.print("ÆĞÅÏ(È¤Àº .adofaiÆÄÀÏ) : ");
+			System.out.println("*.adofai íŒŒì¼ ë‚´ì˜ pathDataí˜•ì‹ìœ¼ë¡œ ì…ë ¥í•˜ì—¬ì•¼ í•©ë‹ˆë‹¤*");
+			System.out.print("íŒ¨í„´(í˜¹ì€ .adofaiíŒŒì¼) : ");
 			pattern = scanner.nextLine().trim();
 
 			if (pattern.endsWith(".adofai")) {
 				File file = new File(pattern);
 				if (!file.exists()) {
-					System.out.println("E> ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù!");
+					System.out.println("E> íŒŒì¼ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!");
 					return;
 				}
 
@@ -80,48 +80,48 @@ public class Program {
 					patternMap.load(pattern);
 					pattern = patternMap.getPathData();
 				} catch (Throwable t) {
-					System.out.println("E> ¿À·ù ¹ß»ı(" + pattern + ")");
+					System.out.println("E> ì˜¤ë¥˜ ë°œìƒ(" + pattern + ")");
 					t.printStackTrace();
 					return;
 				}
 			}
 
 			if (pattern.isEmpty()) {
-				System.out.println("ÆĞÅÏÀº ºñ¾îÀÖÀ» ¼ö ¾ø½À´Ï´Ù. ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.");
+				System.out.println("íŒ¨í„´ì€ ë¹„ì–´ìˆì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. í”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 				return;
 			}
 
 			for (char c : pattern.toCharArray()) {
 				TileAngle tileAngle = MapModule.getCharTileAngleBiMap().get(c);
 				if (tileAngle == null) {
-					System.out.println("Àß¸øµÈ ¹®ÀÚÀÔ´Ï´Ù(" + c + "). ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.");
+					System.out.println("ì˜ëª»ëœ ë¬¸ìì…ë‹ˆë‹¤(" + c + "). í”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 					return;
 				}
 			}
 		}
 //		if(mode == 2 || mode == 3 || mode == 4 || mode == 5) {
-//			System.out.print("Ä«¸Ş¶ó ÃÖÀûÈ­ »ç¿ë(y, n):");
+//			System.out.print("ì¹´ë©”ë¼ ìµœì í™” ì‚¬ìš©(y, n):");
 //			useCameraOptimization = scanner.nextLine().trim().equalsIgnoreCase("y");
 //		}
 		if(mode == 6) {
-			System.out.print("Àå½Ä Á¦°Å(y, n):");
+			System.out.print("ì¥ì‹ ì œê±°(y, n):");
 			removeDecoration = scanner.nextLine().trim().equalsIgnoreCase("y");
-			System.out.print("Å¸ÀÏÀÌµ¿ Á¦°Å(y, n):");
+			System.out.print("íƒ€ì¼ì´ë™ ì œê±°(y, n):");
 			removeTileMove = scanner.nextLine().trim().equalsIgnoreCase("y");
-			System.out.print("Ä«¸Ş¶óÀÌº¥Æ® Á¦°Å(y, n):");
+			System.out.print("ì¹´ë©”ë¼ì´ë²¤íŠ¸ ì œê±°(y, n):");
 			removeCameraEvents = scanner.nextLine().trim().equalsIgnoreCase("y");
 		}
 		if(mode == 7) {
-			System.out.print("Åõ¸íµµ(0~100):");
+			System.out.print("íˆ¬ëª…ë„(0~100):");
 			opacity = scanner.nextInt();
 			scanner.nextLine();
 		}
 		if (mode == 8) {
-			System.out.println("ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.");
+			System.out.println("í”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 			return;
 		}
 		if (mode < 0 || mode > 8) {
-			System.out.println("Àß¸øµÈ ¸ğµåÀÔ´Ï´Ù. ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.");
+			System.out.println("ì˜ëª»ëœ ëª¨ë“œì…ë‹ˆë‹¤. í”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 			return;
 		}
 		
@@ -129,8 +129,8 @@ public class Program {
 		
 		
 		System.out.println();
-		System.out.println("*all½Ã backup.adofai¸¦ Á¦¿ÜÇÑ ¸ğµç ÇÏÀ§ Æú´õÀÇ ÆÄÀÏÀ» º¯È¯ÇÕ´Ï´Ù*");
-		System.out.print("°æ·Î(.adofaiÆ÷ÇÔ) : ");
+		System.out.println("*allì‹œ backup.adofaië¥¼ ì œì™¸í•œ ëª¨ë“  í•˜ìœ„ í´ë”ì˜ íŒŒì¼ì„ ë³€í™˜í•©ë‹ˆë‹¤*");
+		System.out.print("ê²½ë¡œ(.adofaií¬í•¨) : ");
 		String input = scanner.nextLine();
 
 		List<String> pathList = new ArrayList<>();
@@ -144,8 +144,8 @@ public class Program {
 		for (String path : pathList) {
 			File file = new File(path);
 			if (!file.exists()) {
-				System.out.println("E> ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù!");
-				System.out.println("°æ·Î : " + path);
+				System.out.println("E> íŒŒì¼ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!");
+				System.out.println("ê²½ë¡œ : " + path);
 				continue;
 			}
 			if (file.getName().equals("backup.adofai")) {
@@ -176,7 +176,7 @@ public class Program {
 					TransposeMapConverter.convert(path, opacity).save(outPath + " Transpose.adofai");
 				}
 			} catch (Throwable t) {
-				System.out.println("E> ¿À·ù ¹ß»ı(" + path + ")");
+				System.out.println("E> ì˜¤ë¥˜ ë°œìƒ(" + path + ")");
 				t.printStackTrace();
 			}
 		}
