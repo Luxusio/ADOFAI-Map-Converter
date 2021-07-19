@@ -1,18 +1,24 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'idea'
 }
 
 group 'io.luxus'
 version '1.2.2'
-
-repositories {
-    mavenCentral()
-}
+mainClassName = 'io.luxus.adofai.Program'
 
 jar {
     manifest {
-        attributes 'Main-Class': 'io.luxus.adofai.Program'
+        attributes 'Main-Class': 'io.luxus.adofai.Program',
+                    'Implementation-Title': rootProject.name,
+                    'Implementation-Version': rootProject.version
     }
+    from { configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) } }
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
