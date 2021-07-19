@@ -33,9 +33,9 @@ public class Program {
 
     private static void program(Scanner scanner) {
         System.out.println("A Dance of Fire and Ice 맵 변환기");
-        System.out.println("ver 1.2.1");
+        System.out.println("ver 1.2.2");
         System.out.println("개발자 : Luxus io");
-        System.out.println("YouTube : https://www.youtube.com/channel/UCkznd9aLn0GXIP5VjDKo_nQ");
+        System.out.println("YouTube : https://www.youtube.com/c/Luxusio");
         System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
         System.out.println();
 

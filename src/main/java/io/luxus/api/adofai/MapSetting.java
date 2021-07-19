@@ -81,7 +81,7 @@ public class MapSetting {
 		this.previewSongStart = 0L;
 		this.previewSongDuration = 10L;
 		this.seizureWarning = "Disabled";
-		this.levelDesc = "∑π∫ßø° ¥Î«ÿ ∏ª«ÿ∫∏ººø‰!";
+		this.levelDesc = "Î†àÎ≤®Ïóê ÎåÄÌï¥ ÎßêÌï¥Î≥¥ÏÑ∏Ïöî!";
 		this.levelTags = "";
 		this.artistLinks = "";
 		this.difficulty = 1L;
@@ -126,17 +126,17 @@ public class MapSetting {
 	}
 
 	public MapSetting(Long version, String artist, String specialArtistType, String artistPermission, String song,
-			String author, String separateCountdownTime, String previewImage, String previewIcon,
-			String previewIconColor, Long previewSongStart, Long previewSongDuration, String seizureWarning,
-			String levelDesc, String levelTags, String artistLinks, Long difficulty, String songFilename, Double bpm,
-			Long volume, Long offset, Long pitch, String hitsound, Long hitsoundVolume, Long countdownTicks,
-			String trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration,
-			String trackColorPulse, Long trackPulseLength, String trackStyle, String trackAnimation, Double beatsAhead,
-			String trackDisappearAnimation, Double beatsBehind, String backgroundColor, String bgImage,
-			String bgImageColor, List<Long> parallax, String bgDisplayMode, String lockRot, String loopBG,
-			Long unscaledSize, String relativeTo, List<Long> position, Double rotation, Long zoom, String bgVideo,
-			String loopVideo, Long vidOffset, String floorIconOutlines, String stickToFloors, String planetEase,
-			Long planetEaseParts) {
+					  String author, String separateCountdownTime, String previewImage, String previewIcon,
+					  String previewIconColor, Long previewSongStart, Long previewSongDuration, String seizureWarning,
+					  String levelDesc, String levelTags, String artistLinks, Long difficulty, String songFilename, Double bpm,
+					  Long volume, Long offset, Long pitch, String hitsound, Long hitsoundVolume, Long countdownTicks,
+					  String trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration,
+					  String trackColorPulse, Long trackPulseLength, String trackStyle, String trackAnimation, Double beatsAhead,
+					  String trackDisappearAnimation, Double beatsBehind, String backgroundColor, String bgImage,
+					  String bgImageColor, List<Long> parallax, String bgDisplayMode, String lockRot, String loopBG,
+					  Long unscaledSize, String relativeTo, List<Long> position, Double rotation, Long zoom, String bgVideo,
+					  String loopVideo, Long vidOffset, String floorIconOutlines, String stickToFloors, String planetEase,
+					  Long planetEaseParts) {
 		super();
 		this.version = version;
 		this.artist = artist;
@@ -352,7 +352,7 @@ public class MapSetting {
 		}
 		sb.append("], \n");
 	}
-	
+
 	public void setVersion(Long version) {
 		this.version = version;
 	}

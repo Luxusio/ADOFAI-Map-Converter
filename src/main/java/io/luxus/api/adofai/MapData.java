@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -51,18 +52,13 @@ public class MapData implements Cloneable {
 		}
 
 		// String buf = this.readString(f, "UTF8").substring(1);
-		String buf = this.readString(f, "UTF8");
+		String buf = this.readString(f);
 		if (buf.charAt(0) != '{') {
 			buf = buf.substring(1);
 		}
 
-		try {
-			JSONObject json = (JSONObject) new JSONParser().parse(buf);
-			this.load(json);
-		} catch (ParseException parseException) {
-			//System.out.println(buf);
-			throw parseException;
-		}
+		JSONObject json = (JSONObject) new JSONParser().parse(buf);
+		this.load(json);
 	}
 
 	public void load(JSONObject json) throws ParseException {
@@ -120,8 +116,8 @@ public class MapData implements Cloneable {
 
 	}
 
-	private String readString(File f, String format) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), format));
+	private String readString(File f) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
 
 		StringBuilder sb = new StringBuilder();
 		String buf;
@@ -160,13 +156,10 @@ public class MapData implements Cloneable {
 		}
 		sb.append("\t]\n}\n");
 
-		BufferedWriter bufferedWriter = null;
-		try {
-			bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF8"));
+		try (BufferedWriter bufferedWriter = new BufferedWriter(
+				new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8))) {
 			bufferedWriter.write(65279); // BOM write
 			bufferedWriter.write(sb.toString());
-		} finally {
-			if(bufferedWriter != null) bufferedWriter.close();
 		}
 	}
 
