@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+}
+
+group 'io.luxus'
+version '1.2.2'
+mainClassName = 'io.luxus.adofai.Program'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.luxus.adofai.Program',
+                    'Implementation-Title': rootProject.name,
+                    'Implementation-Version': rootProject.version
+    }
+    from { configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) } }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation "com.google.guava:guava:30.1.1-jre"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
