@@ -13,7 +13,7 @@ import io.luxus.api.adofai.type.TileAngle;
 
 public class ADOFAIMap extends MapData {
 	
-	private List<Tile> tileList;
+	private final List<Tile> tileList;
 	
 	public ADOFAIMap(MapData mapData) {
 		super(mapData.getSetting(), mapData.getTileDataList());
@@ -39,10 +39,10 @@ public class ADOFAIMap extends MapData {
 			if(actionList != null) {
 				SetSpeed setSpeed = (SetSpeed) actionList.get(0);
 				if(setSpeed.getSpeedType() == null || SpeedType.BPM.getName().equals(setSpeed.getSpeedType())) {
-					bpm = setSpeed.getBeatsPerMinute().doubleValue();
+					bpm = setSpeed.getBeatsPerMinute();
 				}
 				else if(SpeedType.MULTIPLIER.getName().equals(setSpeed.getSpeedType())) {
-					bpm *= setSpeed.getBpmMultiplier().doubleValue();
+					bpm *= setSpeed.getBpmMultiplier();
 				}
 				else {
 					System.out.println("E> Wrong speed type: " + setSpeed.getSpeedType());
