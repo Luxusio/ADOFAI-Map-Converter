@@ -7,32 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.luxus.api.adofai.action.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import io.luxus.api.adofai.action.Action;
-import io.luxus.api.adofai.action.AddDecoration;
-import io.luxus.api.adofai.action.AnimateTrack;
-import io.luxus.api.adofai.action.Bloom;
-import io.luxus.api.adofai.action.ChangeTrack;
-import io.luxus.api.adofai.action.Checkpoint;
-import io.luxus.api.adofai.action.ColorTrack;
-import io.luxus.api.adofai.action.CustomBackground;
-import io.luxus.api.adofai.action.Flash;
-import io.luxus.api.adofai.action.HallOfMirrors;
-import io.luxus.api.adofai.action.MoveCamera;
-import io.luxus.api.adofai.action.MoveDecorations;
-import io.luxus.api.adofai.action.MoveTrack;
-import io.luxus.api.adofai.action.PositionTrack;
-import io.luxus.api.adofai.action.RecolorTrack;
-import io.luxus.api.adofai.action.RepeatEvents;
-import io.luxus.api.adofai.action.SetConditionalEvents;
-import io.luxus.api.adofai.action.SetFilter;
-import io.luxus.api.adofai.action.SetHitsound;
-import io.luxus.api.adofai.action.SetPlanetRotation;
-import io.luxus.api.adofai.action.SetSpeed;
-import io.luxus.api.adofai.action.ShakeScreen;
-import io.luxus.api.adofai.action.Twirl;
 import io.luxus.api.adofai.module.MapModule;
 import io.luxus.api.adofai.type.EventType;
 import io.luxus.api.adofai.type.TileAngle;
@@ -131,14 +109,26 @@ public class TileData {
 		case CHANGE_TRACK:
 			action = new ChangeTrack();
 			break;
+		case SET_TEXT:
+			action = new SetText();
+			break;
+		case ADD_TEXT:
+			action = new AddText();
+			break;
+		case SCREEN_SCROLL:
+			action = new ScreenScroll();
+			break;
+		case SCREEN_TILE:
+			action = new ScreenTile();
+			break;
 		}
 
-		List<Action> actionList = actionListMap.get(eventType);
-		if (actionList == null) {
-			actionList = new ArrayList<>();
-			actionListMap.put(eventType, actionList);
+		if (action == null) {
+			System.out.println("E: action is Null eventType" + eventType);
+			return;
 		}
 
+		List<Action> actionList = actionListMap.computeIfAbsent(eventType, k -> new ArrayList<>());
 		action.load(json);
 		actionList.add(action);
 	}
