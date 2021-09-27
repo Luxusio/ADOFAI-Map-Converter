@@ -58,8 +58,8 @@ public class Tile {
         this.tileMeta.update(actionMap, levelSetting);
     }
 
-    public void update(TileMeta prevTileMeta) {
-        this.tileMeta.update(actionMap, angle, prevTileMeta);
+    public void update(TileMeta prevTileMeta, Double nextStaticAngle) {
+        this.tileMeta.update(actionMap, angle, prevTileMeta, nextStaticAngle);
     }
 
 }

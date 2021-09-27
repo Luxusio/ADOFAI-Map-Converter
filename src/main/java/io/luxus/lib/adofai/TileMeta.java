@@ -13,13 +13,15 @@ import lombok.ToString;
 import java.util.List;
 import java.util.Map;
 
+import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
+
 @Getter
 @ToString
 public class TileMeta {
 
-    private double bpm = 100.0;
-    private double relativeAngle = 0.0;
-    private double staticAngle = 0.0;
+    private double bpm = 100.0;         // bpm of current angle
+    private double travelAngle = 0.0;   // angle planet would travel in this tile
+    private double staticAngle = 0.0;   // static angle of this tile
     private boolean reversed = false;
 
     private double realX = 0.0;
@@ -33,7 +35,7 @@ public class TileMeta {
 
     public void update(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting) {
         this.bpm = levelSetting.getBpm();
-        this.relativeAngle = 360.0;
+        this.travelAngle = 360.0;
         this.staticAngle = 0.0;
         this.reversed = false;
 
@@ -45,9 +47,8 @@ public class TileMeta {
         update(actionMap);
     }
 
-    public void update(Map<EventType, List<Action>> actionMap, Double staticAngle, TileMeta prevTileMeta) {
+    public void update(Map<EventType, List<Action>> actionMap, Double currAngle, TileMeta prevTileMeta, Double nextAngle) {
         this.bpm = prevTileMeta.bpm;
-        this.relativeAngle = prevTileMeta.relativeAngle;
         this.staticAngle = prevTileMeta.staticAngle;
         this.reversed = prevTileMeta.reversed;
 
@@ -58,11 +59,11 @@ public class TileMeta {
 
         update(actionMap);
 
-        AngleConverter.Result convert = AngleConverter.convert(prevTileMeta.staticAngle, staticAngle, reversed, prevTileMeta.relativeAngle != 0.0);
-        this.staticAngle = convert.getStaticAngle();
-        this.relativeAngle = convert.getRelativeAngle();
+        AngleConverter.Result2 convert = AngleConverter.convert2(prevTileMeta.staticAngle, currAngle, nextAngle, reversed);
+        this.staticAngle = convert.getCurrStaticAngle();
+        this.travelAngle = convert.getCurrTravelAngle();
 
-        double rad = Math.toRadians(this.staticAngle);
+        double rad = Math.toRadians(prevTileMeta.staticAngle);
         double x = Math.cos(rad);
         double y = Math.sin(rad);
 
@@ -108,19 +109,19 @@ public class TileMeta {
 
 
     public double getTempBPM() {
-        return 180.0 * bpm / relativeAngle;
+        return 180.0 * bpm / travelAngle;
     }
 
     public double getReversedTempBPM() {
-        return getReversedRelativeAngle() * bpm / relativeAngle;
+        return getReversedRelativeAngle() * bpm / travelAngle;
     }
 
     public double getReversedRelativeAngle() {
-        return getRelativeAngle() == 360.0 ? 360.0 : 360.0 - getRelativeAngle();
+        return getTravelAngle() == 360.0 ? 360.0 : 360.0 - getTravelAngle();
     }
 
     public double getTileDurationMS() {
-        return 60000.0 / (180.0 * bpm) * relativeAngle;
+        return 60000.0 / (180.0 * bpm) * travelAngle;
     }
 
 }

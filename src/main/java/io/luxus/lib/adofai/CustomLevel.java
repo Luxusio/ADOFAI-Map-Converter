@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
+
 @Getter
 @ToString
 public class CustomLevel {
@@ -38,10 +40,17 @@ public class CustomLevel {
 
         Iterator<Tile> it = tiles.subList(floor - 1, tiles.size()).iterator();
         TileMeta prevTileMeta = it.next().getTileMeta();
+        Tile currTile = it.next();
         while (it.hasNext()) {
-            Tile currTile = it.next();
-            currTile.update(prevTileMeta);
+            Tile nextTile = it.next();
+            currTile.update(prevTileMeta, nextTile.getAngle());
             prevTileMeta = currTile.getTileMeta();
+            currTile = nextTile;
+        }
+
+        if (currTile != null) {
+            currTile.update(prevTileMeta, currTile.getAngle() == ANGLE_MID_TILE ?
+                    prevTileMeta.getStaticAngle() : currTile.getAngle());
         }
 
     }
