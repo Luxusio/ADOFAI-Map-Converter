@@ -43,7 +43,7 @@ public class LevelSetting {
     private TrackColorType trackColorType = TrackColorType.SINGLE;
     private String trackColor = "debb7b";
     private String secondaryTrackColor = "ffffff";
-    private Long trackColorAnimDuration = 2L;
+    private Double trackColorAnimDuration = 2.0;
     private TrackColorPulse trackColorPulse = TrackColorPulse.NONE;
     private Long trackPulseLength = 10L;
     private TrackStyle trackStyle = TrackStyle.STANDARD;

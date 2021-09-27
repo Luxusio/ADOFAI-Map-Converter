@@ -13,8 +13,6 @@ import lombok.ToString;
 import java.util.List;
 import java.util.Map;
 
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-
 @Getter
 @ToString
 public class TileMeta {
@@ -31,6 +29,18 @@ public class TileMeta {
     private double editorY = 0.0;
 
     public TileMeta() {
+    }
+
+    public void forceInit(TileMeta tileMeta) {
+        this.bpm = tileMeta.bpm;
+        this.travelAngle = tileMeta.travelAngle;
+        this.staticAngle = tileMeta.staticAngle;
+        this.reversed = tileMeta.reversed;
+
+        this.realX = tileMeta.realX;
+        this.realY = tileMeta.realY;
+        this.editorX = tileMeta.editorX;
+        this.editorY = tileMeta.editorY;
     }
 
     public void update(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting) {

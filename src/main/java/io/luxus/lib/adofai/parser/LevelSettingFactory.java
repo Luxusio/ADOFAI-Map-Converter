@@ -53,7 +53,7 @@ public class LevelSettingFactory {
                 readProperty(map, "trackColorType", jsonNode -> trackColorTypeMap.get(jsonNode.asText())),
                 readProperty(map, "trackColor", JsonNode::asText),
                 readProperty(map, "secondaryTrackColor", JsonNode::asText),
-                readProperty(map, "trackColorAnimDuration", JsonNode::asLong),
+                readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
                 readProperty(map, "trackColorPulse", jsonNode -> trackColorPulseMap.get(jsonNode.asText())),
                 readProperty(map, "trackPulseLength", JsonNode::asLong),
                 readProperty(map, "trackStyle", jsonNode -> trackStyleMap.get(jsonNode.asText())),
@@ -187,7 +187,7 @@ public class LevelSettingFactory {
             StringJsonUtil.writeVar(sb, value);
             return false;
         }
-        return true;
+        return isFirst;
     }
 
 

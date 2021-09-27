@@ -18,11 +18,11 @@ public class ConverterTest {
         CustomLevelParser.write(OuterMapConverter.convert(path), outPath + " Outer.adofai");
         CustomLevelParser.write(LinearMapConverter.convert(path, false), outPath + " Linear.adofai");
         CustomLevelParser.write(ShapedMapConverter.convert(path, Arrays.asList(1.0, 179.0), false), outPath + " Shape.adofai");
-        CustomLevelParser.write(MapShapedMapConverter.convert(path, CustomLevelParser.readPath("./src/test/resources/test/bmb.adofai"), false), outPath + " Shape.adofai");
+        CustomLevelParser.write(MapShapedMapConverter.convert(path, CustomLevelParser.readPath("./src/test/resources/test/bmb.adofai"), false), outPath + " bmb Shape.adofai");
         CustomLevelParser.write(TwirlConverter.convert(path, true, false), outPath + " All Twirl.adofai");
         CustomLevelParser.write(TwirlConverter.convert(path, false, false), outPath + " No Twirl.adofai");
         CustomLevelParser.write(NonEffectConverter.convert(path, true, true, true, true), outPath + " Non-Effect.adofai");
-        CustomLevelParser.write(TransposeMapConverter.convert(path, 0), outPath + " Transpose.adofai");
+        CustomLevelParser.write(TransposeMapConverter.convert(path, 30), outPath + " Transpose.adofai");
 
         // then
 
