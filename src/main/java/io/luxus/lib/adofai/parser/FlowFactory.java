@@ -72,47 +72,50 @@ public class FlowFactory {
         sb.append("\t\"pathData\": \"");
 
         Iterator<Double> it = angleData.stream()
-                .map(angle -> angle == ANGLE_MID_TILE ? 0.0 : angle)
+                .map(angle -> angle == ANGLE_MID_TILE ? 999.0 : angle)
                 .iterator();
-        double prevAngle;
-        if (it.hasNext()) prevAngle = it.next();
+
+        Double currAngle;
+        if (it.hasNext()) it.next();
+        else return false;
+        if (it.hasNext()) currAngle = it.next();
         else return false;
 
         while (it.hasNext()) {
-            double currAngle = it.next();
-            TileAngle tile = getTileAngle(prevAngle, currAngle);
-            if (tile == null) return false;
+            Double nextAngle = it.next();
+            TileAngle tileAngle = getCurrTileAngle(currAngle, nextAngle);
+            if (tileAngle == null) return false;
 
-            sb.append(tile.getCode());
+            sb.append(tileAngle.getCode());
 
-            prevAngle = currAngle;
+            currAngle = nextAngle;
         }
-
+        TileAngle tileAngle = getCurrTileAngle(currAngle, 999.0);
+        if (tileAngle == null) return false;
+        sb.append(tileAngle.getCode());
 
         sb.append("\"");
         return true;
     }
 
-    public static boolean writeAngleData(StringBuilder sb, List<Double> angleData) {
+    public static void writeAngleData(StringBuilder sb, List<Double> angleData) {
         sb.append("\t\"angleData\": ");
         Iterator<Double> it = angleData.stream()
                 .map(angle -> angle == ANGLE_MID_TILE ? 999.0 : angle)
                 .iterator();
 
         if (it.hasNext()) it.next();
-        else return false;
-
-        if (it.hasNext()) StringJsonUtil.writeIt(sb, it);
-
-        return true;
+        StringJsonUtil.writeIt(sb, it);
     }
 
 
-    private static TileAngle getTileAngle(double prevAngle, double currAngle) {
-        double relativeAngle = currAngle - prevAngle;
-        if (relativeAngle < 0) {
-            relativeAngle += 360.0;
+    private static TileAngle getCurrTileAngle(Double currAngle, Double nextAngle) {
+
+        if (DoubleMath.fuzzyEquals(currAngle, 999.0, EPSILON)) {
+            return TileAngle.NONE;
         }
+
+        double relativeAngle = nextAngle - currAngle;
 
         for (TileAngle angle : TileAngle.values()) {
             if (DoubleMath.fuzzyEquals(
