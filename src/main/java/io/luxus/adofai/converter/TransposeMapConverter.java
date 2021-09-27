@@ -1,11 +1,6 @@
 package io.luxus.adofai.converter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
+import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.Action;
@@ -16,7 +11,11 @@ import io.luxus.lib.adofai.action.type.TilePosition;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.json.simple.parser.ParseException;
 
-import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class TransposeMapConverter {
 	
@@ -28,7 +27,7 @@ public class TransposeMapConverter {
 		
 		zeroTile.getActions(EventType.MOVE_TRACK).add(getTransposeMoveTrack(opacity));
 		
-		return MapSpeedConverterBase.convert(path, new ArrayList<>(), customLevel, false,
+		return MapSpeedConverterBase.convert(customLevel, false,
 				applyEach -> {
 					Tile tile = applyEach.getTile();
 

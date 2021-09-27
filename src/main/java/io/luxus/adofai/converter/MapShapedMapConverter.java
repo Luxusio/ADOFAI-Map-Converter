@@ -1,11 +1,7 @@
 package io.luxus.adofai.converter;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Function;
-
-import io.luxus.lib.adofai.Constants;
+import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEach;
+import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.Twirl;
@@ -14,8 +10,10 @@ import io.luxus.lib.adofai.converter.AngleConverter;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.json.simple.parser.ParseException;
 
-import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEach;
-import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
@@ -23,10 +21,10 @@ public class MapShapedMapConverter {
 	public static CustomLevel convert(String path, CustomLevel shapeLevel, boolean useCameraOptimization) throws ParseException, IOException {
 
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
-		List<Integer> removedTileList = MapSpeedConverterBase.removeNoneTile(customLevel);
+		MapSpeedConverterBase.removeNoneTile(customLevel);
 
 		shapeLevel.getTiles().remove(0);
-		return MapSpeedConverterBase.convert(path, removedTileList, customLevel, useCameraOptimization,
+		return MapSpeedConverterBase.convert(customLevel, useCameraOptimization,
 				new Function<MapSpeedConverterBase.ApplyEach, MapSpeedConverterBase.ApplyEachReturnValue>() {
 
 					private final List<Tile> tileList = shapeLevel.getTiles();

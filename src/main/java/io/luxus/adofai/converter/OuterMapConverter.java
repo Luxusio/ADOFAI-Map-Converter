@@ -1,11 +1,6 @@
 package io.luxus.adofai.converter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Function;
-
+import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
@@ -15,7 +10,9 @@ import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.json.simple.parser.ParseException;
 
-import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 public class OuterMapConverter {
 
@@ -37,7 +34,7 @@ public class OuterMapConverter {
 			actionList.clear();
 		}
 
-		return MapSpeedConverterBase.convert(path, new ArrayList<>(), customLevel, false,
+		return MapSpeedConverterBase.convert(customLevel, false,
 				applyEach -> {
 					Tile tile = applyEach.getTile();
 					TileMeta tileMeta = tile.getTileMeta();

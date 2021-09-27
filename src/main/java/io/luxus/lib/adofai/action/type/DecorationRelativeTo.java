@@ -1,7 +1,6 @@
 package io.luxus.lib.adofai.action.type;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public enum DecorationRelativeTo {

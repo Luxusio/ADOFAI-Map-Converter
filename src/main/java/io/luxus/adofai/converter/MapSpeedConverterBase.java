@@ -1,9 +1,5 @@
 package io.luxus.adofai.converter;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
-
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
@@ -14,19 +10,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 
 public class MapSpeedConverterBase {
-	
-	public static final double mInfinity = Double.NEGATIVE_INFINITY;
-	public static final double pInfinity = Double.POSITIVE_INFINITY;
 
 	@Getter
 	@RequiredArgsConstructor
 	public static class ApplyEach {
-		private final int floor;
-		private final double prevTempBPM;
 		private final Tile tile;
 		private final List<Tile> tileList;
 		private final List<Tile> newTileList;
@@ -41,7 +39,7 @@ public class MapSpeedConverterBase {
 		private final double angleMultiplier;
 	}
 
-	public static CustomLevel convert(String path, List<Integer> removedTileList, CustomLevel customLevel, boolean useCameraOptimization,
+	public static CustomLevel convert(CustomLevel customLevel, boolean useCameraOptimization,
 			Function<ApplyEach, ApplyEachReturnValue> applyEachFunction) throws ParseException, IOException {
 
 		LevelSetting newLevelSetting = customLevel.getLevelSetting()
@@ -59,7 +57,7 @@ public class MapSpeedConverterBase {
 			tile = tiles.get(i);
 
 			ApplyEachReturnValue applyEachReturnValue = applyEachFunction
-					.apply(new ApplyEach(i, prevTempBPM, tile, tiles, newTiles));
+					.apply(new ApplyEach(tile, tiles, newTiles));
 
 			Tile newTile = applyEachReturnValue.getNewTile();
 			double nowTempBPM = applyEachReturnValue.getNowTempBPM();
@@ -235,10 +233,6 @@ public class MapSpeedConverterBase {
 		}
 
 		return removedTileList;
-	}
-	
-	public static boolean checkWrongNumber(double value) {
-		return value <= mInfinity || value >= pInfinity;
 	}
 
 }

@@ -1,23 +1,17 @@
 package io.luxus.adofai;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.luxus.adofai.converter.*;
+import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.parser.CustomLevelParser;
+import io.luxus.lib.adofai.parser.FlowFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.luxus.adofai.converter.LinearMapConverter;
-import io.luxus.adofai.converter.MapShapedMapConverter;
-import io.luxus.adofai.converter.NonEffectConverter;
-import io.luxus.adofai.converter.OuterMapConverter;
-import io.luxus.adofai.converter.ShapedMapConverter;
-import io.luxus.adofai.converter.TransposeMapConverter;
-import io.luxus.adofai.converter.TwirlConverter;
-import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.parser.CustomLevelParser;
-import io.luxus.lib.adofai.parser.FlowFactory;
 
 public class Program {
 

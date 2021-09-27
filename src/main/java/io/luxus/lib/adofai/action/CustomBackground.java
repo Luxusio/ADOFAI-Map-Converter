@@ -1,8 +1,8 @@
 package io.luxus.lib.adofai.action;
 
 import io.luxus.lib.adofai.action.type.BGDisplayModeType;
-import io.luxus.lib.adofai.action.type.Toggle;
 import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.action.type.Toggle;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

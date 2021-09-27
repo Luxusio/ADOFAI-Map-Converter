@@ -1,22 +1,20 @@
 package io.luxus.adofai.converter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.json.simple.parser.ParseException;
 
-import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
+import java.io.IOException;
+import java.util.HashMap;
 
 public class NonEffectConverter {
 	public static CustomLevel convert(String path, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents, boolean removeFlash) throws ParseException, IOException {
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
 		removeActions(customLevel.getTiles().get(0), removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
-		return MapSpeedConverterBase.convert(path, new ArrayList<>(), customLevel, false,
+		return MapSpeedConverterBase.convert(customLevel, false,
 				applyEach -> {
 					Tile tile = applyEach.getTile();
 

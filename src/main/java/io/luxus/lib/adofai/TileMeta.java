@@ -13,8 +13,6 @@ import lombok.ToString;
 import java.util.List;
 import java.util.Map;
 
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-
 @Getter
 @ToString
 public class TileMeta {

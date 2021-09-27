@@ -1,6 +1,5 @@
 package io.luxus.lib.adofai.action.type;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
