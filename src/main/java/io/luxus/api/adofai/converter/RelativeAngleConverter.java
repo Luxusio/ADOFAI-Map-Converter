@@ -39,9 +39,7 @@ public class RelativeAngleConverter {
 		else if(relativeAngle > 360) {
 			relativeAngle -= 360;
 		}
-		
-		
-		
+
 		return relativeAngle;
 	}
 	

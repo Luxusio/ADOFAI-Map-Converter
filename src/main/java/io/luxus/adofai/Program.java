@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.luxus.adofai.converter.LinearMapConverter;
 import io.luxus.adofai.converter.MapShapedMapConverter;
 import io.luxus.adofai.converter.NonEffectConverter;
@@ -12,22 +14,20 @@ import io.luxus.adofai.converter.OuterMapConverter;
 import io.luxus.adofai.converter.ShapedMapConverter;
 import io.luxus.adofai.converter.TransposeMapConverter;
 import io.luxus.adofai.converter.TwirlConverter;
-import io.luxus.api.adofai.MapData;
-import io.luxus.api.adofai.module.MapModule;
-import io.luxus.api.adofai.type.TileAngle;
+import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.parser.CustomLevelParser;
+import io.luxus.lib.adofai.parser.FlowFactory;
 
 public class Program {
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        try {
+        try (Scanner scanner = new Scanner(System.in)) {
             Program.program(scanner);
             System.out.println("계속하시려면 엔터키를 눌러주세요.");
-            System.in.read();
+            int read = System.in.read();
         } catch (Throwable t) {
             t.printStackTrace();
-        } finally {
-            scanner.close();
         }
     }
 
@@ -52,52 +52,67 @@ public class Program {
         int mode = scanner.nextInt();
         scanner.nextLine();
         // 3
-        String pattern = null;
-        MapData patternMap = null;
+        List<Double> angleData = null;
+        CustomLevel patternLevel = null;
         // 2 3 4 5
         boolean useCameraOptimization = false;
         // 6
         boolean removeDecoration = false;
         boolean removeTileMove = false;
         boolean removeCameraEvents = false;
+        boolean removeFlash = false;
         // 7
         int opacity = 0;
 
         if (mode == 3) {
-            System.out.println("*.adofai 파일 내의 pathData형식으로 입력하여야 합니다*");
-            System.out.print("패턴(혹은 .adofai파일) : ");
-            pattern = scanner.nextLine().trim();
+            System.out.println("*.adofai 파일 내의 pathData 혹은 angleData 형식으로 입력하여야 합니다*");
+            System.out.print("패턴(혹은 .adofai 파일) : ");
+            String patternStr = scanner.nextLine().trim();
 
-            if (pattern.endsWith(".adofai")) {
-                File file = new File(pattern);
+            if (patternStr.endsWith(".adofai")) {
+                File file = new File(patternStr);
                 if (!file.exists()) {
-                    System.out.println("E> 파일이 존재하지 않습니다!");
+                    System.err.println("파일이 존재하지 않습니다");
                     return;
                 }
 
                 try {
-                    patternMap = new MapData();
-                    patternMap.load(pattern);
-                    pattern = patternMap.getPathData();
+                    patternLevel = CustomLevelParser.read(file);
+                    angleData = patternLevel.getTiles().stream()
+                            .map(Tile::getAngle)
+                            .collect(Collectors.toList());
                 } catch (Throwable t) {
-                    System.out.println("E> 오류 발생(" + pattern + ")");
+                    System.err.println("파일 불러오기에 실패했습니다");
                     t.printStackTrace();
                     return;
                 }
             }
+            else {
 
-            if (pattern.isEmpty()) {
-                System.out.println("패턴은 비어있을 수 없습니다. 프로그램을 종료합니다.");
+                angleData = FlowFactory.readPathData(patternStr);
+                if (angleData == null) {
+                    if (patternStr.charAt(0) != '[') {
+                        patternStr = "[" + patternStr;
+                    }
+                    if (patternStr.charAt(patternStr.length() - 1) != ']') {
+                        patternStr = patternStr + "]";
+                    }
+                    try {
+                        angleData = FlowFactory.readAngleData(new ObjectMapper().readTree(patternStr));
+                    } catch (Throwable throwable) {
+                        System.err.println("패턴 읽어오기에 실패했습니다.");
+                        throwable.printStackTrace();
+                        return;
+                    }
+                }
+
+            }
+
+            if (angleData.isEmpty()) {
+                System.err.println("패턴은 비어있을 수 없습니다. 프로그램을 종료합니다.");
                 return;
             }
 
-            for (char c : pattern.toCharArray()) {
-                TileAngle tileAngle = MapModule.getCharTileAngleBiMap().get(c);
-                if (tileAngle == null) {
-                    System.out.println("잘못된 문자입니다(" + c + "). 프로그램을 종료합니다.");
-                    return;
-                }
-            }
         }
 //		if(mode == 2 || mode == 3 || mode == 4 || mode == 5) {
 //			System.out.print("카메라 최적화 사용(y, n):");
@@ -110,6 +125,8 @@ public class Program {
             removeTileMove = scanner.nextLine().trim().equalsIgnoreCase("y");
             System.out.print("카메라이벤트 제거(y, n):");
             removeCameraEvents = scanner.nextLine().trim().equalsIgnoreCase("y");
+            System.out.print("플래시 제거(y, n):");
+            removeFlash = scanner.nextLine().trim().equalsIgnoreCase("y");
         }
         if(mode == 7) {
             System.out.print("투명도(0~100):");
@@ -124,9 +141,6 @@ public class Program {
             System.out.println("잘못된 모드입니다. 프로그램을 종료합니다.");
             return;
         }
-
-
-
 
         System.out.println();
         System.out.println("*all 시 backup.adofai 를 제외한 모든 하위 폴더의 파일을 변환합니다*");
@@ -144,37 +158,49 @@ public class Program {
         for (String path : pathList) {
             File file = new File(path);
             if (!file.exists()) {
-                System.out.println("E> 파일이 존재하지 않습니다!");
-                System.out.println("경로 : " + path);
+                System.out.println("E> 파일이 존재하지 않습니다(" + path + ")");
                 continue;
             }
             if (file.getName().equals("backup.adofai")) {
                 continue;
             }
 
-            MapData map = new MapData();
             try {
-                map.load(path);
+                CustomLevel result;
                 String outPath = path.replace(".adofai", "");
+
                 if (mode == 1) {
-                    OuterMapConverter.convert(path).save(outPath + " Outer.adofai");
+                    result = OuterMapConverter.convert(path);
+                    outPath += " Outer.adofai";
                 } else if (mode == 2) {
-                    LinearMapConverter.convert(path, useCameraOptimization).save(outPath + " Linear.adofai");
+                    result = LinearMapConverter.convert(path, useCameraOptimization);
+                    outPath += " Linear.adofai";
                 } else if (mode == 3) {
-                    if (patternMap == null) {
-                        ShapedMapConverter.convert(path, pattern, useCameraOptimization).save(outPath + " Shape.adofai");
+                    if (patternLevel == null) {
+                        result = ShapedMapConverter.convert(path, angleData, useCameraOptimization);
                     } else {
-                        MapShapedMapConverter.convert(path, patternMap, useCameraOptimization).save(outPath + " Shape.adofai");
+                        result = MapShapedMapConverter.convert(path, patternLevel, useCameraOptimization);
                     }
+                    outPath += " Shape.adofai";
                 } else if (mode == 4) {
-                    TwirlConverter.convert(path, true, useCameraOptimization).save(outPath + " All Twirl.adofai");
+                    result = TwirlConverter.convert(path, true, useCameraOptimization);
+                    outPath += " All Twirl.adofai";
                 } else if (mode == 5) {
-                    TwirlConverter.convert(path, false, useCameraOptimization).save(outPath + " No Twirl.adofai");
+                    result = TwirlConverter.convert(path, false, useCameraOptimization);
+                    outPath += " No Twirl.adofai";
                 } else if (mode == 6) {
-                    NonEffectConverter.convert(path, removeDecoration, removeTileMove, removeCameraEvents).save(outPath + " Non-Effect.adofai");
+                    result = NonEffectConverter.convert(path, removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
+                    outPath +=  "Non-Effect.adofai";
                 } else if (mode == 7) {
-                    TransposeMapConverter.convert(path, opacity).save(outPath + " Transpose.adofai");
+                    result = TransposeMapConverter.convert(path, opacity);
+                    outPath += " Transpose.adofai";
+                } else {
+                    System.err.println("잘못된 변환 모드.(" + mode + ")");
+                    return;
                 }
+
+                CustomLevelParser.write(result, outPath);
+
             } catch (Throwable t) {
                 System.out.println("E> 오류 발생(" + path + ")");
                 t.printStackTrace();

@@ -12,6 +12,7 @@ import java.util.Map;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true, builderMethodName = "")
 public class LevelSetting {
 
     private Long version = 5L;

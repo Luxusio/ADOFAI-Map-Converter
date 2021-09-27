@@ -20,6 +20,7 @@ public class CustomLevel {
     public CustomLevel(LevelSetting levelSetting, List<Tile> tiles) {
         this.levelSetting = levelSetting;
         this.tiles = tiles;
+        updateTile(0);
     }
 
     public void updateTile(int floor) {

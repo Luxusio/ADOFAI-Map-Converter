@@ -6,10 +6,7 @@ import io.luxus.lib.adofai.action.type.EventType;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 import static io.luxus.lib.adofai.Constants.EPSILON;
@@ -37,7 +34,7 @@ public class Tile {
     }
 
     public boolean addAction(Action action) {
-        List<Action> actions = actionMap.computeIfAbsent(action.getEventType(), k -> new LinkedList<>());
+        List<Action> actions = getActions(action.getEventType());
         if (action.getEventType().isSingleOnly() && !actions.isEmpty()) {
             return false;
         }
@@ -46,7 +43,7 @@ public class Tile {
     }
 
     public List<Action> getActions(EventType eventType) {
-        return actionMap.computeIfAbsent(eventType, k -> new LinkedList<>());
+        return actionMap.computeIfAbsent(eventType, k -> new ArrayList<>());
     }
 
     public void setAngle(Double angle) {

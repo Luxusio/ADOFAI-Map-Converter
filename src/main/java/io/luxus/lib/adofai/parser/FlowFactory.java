@@ -20,10 +20,20 @@ public class FlowFactory {
     }
 
     public static List<Double> readPathData(JsonNode node) {
-        List<TileAngle> pathData = node.asText().chars()
+        return readPathData(node.asText());
+    }
+
+    public static List<Double> readPathData(String nodeText) {
+        List<TileAngle> pathData = nodeText.chars()
                 .mapToObj(c -> (char) c)
                 .map(angleCharMap::get)
                 .collect(Collectors.toList());
+
+        for (TileAngle angle : pathData) {
+            if (angle == null) {
+                return null;
+            }
+        }
 
         double staticAngle = 0;
         int size = pathData.size();

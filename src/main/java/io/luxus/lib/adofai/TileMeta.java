@@ -6,6 +6,7 @@ import io.luxus.lib.adofai.action.SetSpeed;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.SpeedType;
 import io.luxus.lib.adofai.action.type.Toggle;
+import io.luxus.lib.adofai.converter.AngleConverter;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -59,29 +60,9 @@ public class TileMeta {
 
         update(actionMap);
 
-        if (staticAngle == ANGLE_MID_TILE) {
-            this.staticAngle = prevTileMeta.getStaticAngle();
-            this.relativeAngle = 0.0;
-        }
-        else {
-            this.staticAngle = staticAngle;
-            this.relativeAngle = staticAngle - prevTileMeta.staticAngle;
-
-            if (reversed) {
-                this.relativeAngle = - this.relativeAngle;
-            }
-
-            if (prevTileMeta.relativeAngle != 0.0) {
-                this.relativeAngle += 180;
-            }
-
-            if (this.relativeAngle <= 0) {
-                this.relativeAngle += 360;
-            }
-            else if (this.relativeAngle > 360) {
-                this.relativeAngle -= 360;
-            }
-        }
+        AngleConverter.Result convert = AngleConverter.convert(prevTileMeta.staticAngle, staticAngle, reversed, prevTileMeta.relativeAngle != 0.0);
+        this.staticAngle = convert.getStaticAngle();
+        this.relativeAngle = convert.getRelativeAngle();
 
         double rad = Math.toRadians(this.staticAngle);
         double x = Math.cos(rad);
@@ -125,6 +106,23 @@ public class TileMeta {
             this.editorX += positionTrack.getPositionOffset().get(0);
             this.editorY += positionTrack.getPositionOffset().get(1);
         }
+    }
+
+
+    public double getTempBPM() {
+        return 180.0 * bpm / relativeAngle;
+    }
+
+    public double getReversedTempBPM() {
+        return getReversedRelativeAngle() * bpm / relativeAngle;
+    }
+
+    public double getReversedRelativeAngle() {
+        return getRelativeAngle() == 360.0 ? 360.0 : 360.0 - getRelativeAngle();
+    }
+
+    public double getTileDurationMS() {
+        return 60000.0 / (180.0 * bpm) * relativeAngle;
     }
 
 }
