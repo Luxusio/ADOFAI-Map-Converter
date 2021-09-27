@@ -1,4 +1,4 @@
-package io.luxus.api.adofai;
+package io.luxus.lib.adofai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +29,7 @@ class MapDataTest {
 
         // when
         CustomLevel customLevel = CustomLevelParser.read(node);
+        CustomLevel customLevel2 = CustomLevelParser.readPath("./src/test/resources/test/sb.adofai");
 
         // then
         assertNotNull(customLevel);
@@ -40,7 +41,6 @@ class MapDataTest {
                 .flatMap(Collection::stream)
                 .flatMap(Collection::stream)
                 .forEach(action -> assertNotEquals(EventType.UNKNOWN, action.getEventType(), "it was Unknown : " + action.getClass().getSimpleName()));
-
 
     }
 

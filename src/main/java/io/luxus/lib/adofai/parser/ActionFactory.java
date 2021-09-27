@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.action.*;
 import io.luxus.lib.adofai.action.type.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static io.luxus.lib.adofai.util.StringJsonUtil.*;
@@ -51,7 +48,7 @@ public class ActionFactory {
         try {
             action = read(map);
         } catch (Throwable t) {
-            t.printStackTrace();
+            //t.printStackTrace();
         }
 
         if (action == null) {
@@ -70,12 +67,10 @@ public class ActionFactory {
         Action action = null;
         switch (eventType) {
             case SET_SPEED: {
-                SpeedType speedType = speedTypeMap.get(map.remove("speedType").asText());
-                if (speedType == null) break;
                 action = new SetSpeed(
-                        speedType,
-                        map.remove("beatsPerMinute").asDouble(),
-                        map.remove("bpmMultiplier").asDouble());
+                        readVar(map, "speedType", JsonNode::asText, speedTypeMap::get),
+                        readVar(map, "beatsPerMinute", JsonNode::asDouble),
+                        readVar(map, "bpmMultiplier", JsonNode::asDouble));
                 break;
             }
             case TWIRL: {
@@ -88,348 +83,291 @@ public class ActionFactory {
             }
             case EDITOR_COMMENT: {
                 action = new EditorComment(
-                        map.remove("comment").asText());
+                        readVar(map, "comment", JsonNode::asText));
                 break;
             }
             case CUSTOM_BACKGROUND: {
-                JsonNode parallax = map.remove("parallax");
-                BGDisplayModeType bgDisplayModeType = bgDisplayModeTypeMap.get(map.remove("bgDisplayMode").asText());
-                Toggle lockRot = toggleMap.get(map.remove("lockRot").asText());
-                Toggle loopBG = toggleMap.get(map.remove("loopBG").asText());
-                if (parallax == null || bgDisplayModeType == null || lockRot == null || loopBG == null) break;
                 action = new CustomBackground(
-                        map.remove("color").asText(),
-                        map.remove("bgImage").asText(),
-                        map.remove("imageColor").asText(),
-                        Arrays.asList(
-                                parallax.get(0).asDouble(),
-                                parallax.get(1).asDouble()),
-                        bgDisplayModeType,
-                        lockRot,
-                        loopBG,
-                        map.remove("unscaledSize").asLong(),
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText()
+                        readVar(map, "color", JsonNode::asText),
+                        readVar(map, "bgImage", JsonNode::asText),
+                        readVar(map, "imageColor", JsonNode::asText),
+                        readVar(map, "parallax", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "bgDisplayMode", JsonNode::asText, bgDisplayModeTypeMap::get),
+                        readVar(map, "lockRot", JsonNode::asText, toggleMap::get),
+                        readVar(map, "loopBG", JsonNode::asText, toggleMap::get),
+                        readVar(map, "unscaledSize", JsonNode::asLong),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText)
                 );
                 break;
             }
             case COLOR_TRACK: {
-                TrackColorType trackColorType = trackColorTypeMap.get(map.remove("trackColorType").asText());
-                TrackColorPulse trackColorPulse = trackColorPulseMap.get(map.remove("trackColorPulse").asText());
-                TrackStyle trackStyle = trackStyleMap.get(map.remove("trackStyle").asText());
-                if (trackColorType == null || trackColorPulse == null || trackStyle == null) break;
                 action = new ColorTrack(
-                        trackColorType,
-                        map.remove("trackColor").asText(),
-                        map.remove("secondaryTrackColor").asText(),
-                        map.remove("trackColorAnimDuration").asDouble(),
-                        trackColorPulse,
-                        map.remove("trackPulseLength").asLong(),
-                        trackStyle);
+                        readVar(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
+                        readVar(map, "trackColor", JsonNode::asText),
+                        readVar(map, "secondaryTrackColor", JsonNode::asText),
+                        readVar(map, "trackColorAnimDuration", JsonNode::asDouble),
+                        readVar(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
+                        readVar(map, "trackPulseLength", JsonNode::asLong),
+                        readVar(map, "trackStyle", JsonNode::asText, trackStyleMap::get));
                 break;
             }
             case ANIMATE_TRACK: {
-                TrackAnimation trackAnimation = trackAnimationMap.get(map.remove("trackAnimation").asText());
-                TrackDisappearAnimation trackDisappearAnimation = trackDisappearAnimationMap.get(map.remove("trackDisappearAnimation").asText());
-                if (trackAnimation == null || trackDisappearAnimation == null) break;
                 action = new AnimateTrack(
-                        trackAnimation,
-                        map.remove("beatsAhead").asDouble(),
-                        trackDisappearAnimation,
-                        map.remove("beatsBehind").asDouble());
+                        readVar(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
+                        readVar(map, "beatsAhead", JsonNode::asDouble),
+                        readVar(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
+                        readVar(map, "beatsBehind", JsonNode::asDouble));
                 break;
             }
             case ADD_DECORATION: {
-                JsonNode position = map.remove("position");
-                DecorationRelativeTo relativeTo = decorationRelativeToMap.get(map.remove("relativeTo").asText());
-                JsonNode pivotOffset = map.remove("pivotOffset");
-                if (position == null || relativeTo == null || pivotOffset == null) break;
                 action = new AddDecoration(
-                        map.remove("decorationImage").asText(),
-                        Arrays.asList(
-                                position.get(0).asDouble(),
-                                position.get(1).asDouble()),
-                        relativeTo,
-                        Arrays.asList(
-                                pivotOffset.get(0).asDouble(),
-                                pivotOffset.get(1).asDouble()),
-                        map.remove("rotation").asDouble(),
-                        map.remove("scale").asLong(),
-                        map.remove("color").asText(),
-                        map.remove("opacity").asLong(),
-                        map.remove("depth").asLong(),
-                        map.remove("parallax").asLong(),
-                        map.remove("tag").asText());
+                        readVar(map, "decorationImage", JsonNode::asText),
+                        readVar(map, "position", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
+                        readVar(map, "pivotOffset", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "rotation", JsonNode::asDouble),
+                        readVar(map, "scale", JsonNode::asLong),
+                        readVar(map, "color", JsonNode::asText),
+                        readVar(map, "opacity", JsonNode::asLong),
+                        readVar(map, "depth", JsonNode::asLong),
+                        readVar(map, "parallax", JsonNode::asLong),
+                        readVar(map, "tag", JsonNode::asText));
                 break;
             }
             case FLASH: {
-                Plane plane = planeMap.get(map.remove("plane").asText());
-                if (plane == null) break;
                 action = new Flash(
-                        map.remove("duration").asDouble(),
-                        plane,
-                        map.remove("startColor").asText(),
-                        map.remove("startOpacity").asLong(),
-                        map.remove("endColor").asText(),
-                        map.remove("endOpacity").asLong(),
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "duration", JsonNode::asDouble),
+                        readVar(map, "plane", JsonNode::asText, planeMap::get),
+                        readVar(map, "startColor", JsonNode::asText),
+                        readVar(map, "startOpacity", JsonNode::asLong),
+                        readVar(map, "endColor", JsonNode::asText),
+                        readVar(map, "endOpacity", JsonNode::asLong),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case MOVE_CAMERA: {
-                CameraRelativeTo relativeTo = cameraRelativeToMap.get(map.remove("relativeTo").asText());
-                JsonNode position = map.remove("position");
-                Ease ease = easeMap.get(map.remove("ease").asText());
-                if (relativeTo == null || position == null || ease == null) break;
                 action = new MoveCamera(
-                        map.remove("duration").asDouble(),
-                        relativeTo,
-                        Arrays.asList(
-                                position.get(0).asDouble(),
-                                position.get(1).asDouble()),
-                        map.remove("rotation").asDouble(),
-                        map.remove("zoom").asLong(),
-                        map.remove("angleOffset").asDouble(),
-                        ease,
-                        map.remove("eventTag").asText());
+                        readVar(map, "duration", JsonNode::asDouble),
+                        readVar(map, "relativeTo", JsonNode::asText, cameraRelativeToMap::get),
+                        readVar(map, "position", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "rotation", JsonNode::asDouble),
+                        readVar(map, "zoom", JsonNode::asLong),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "ease", JsonNode::asText, easeMap::get),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_HITSOUND: {
-                HitSound hitSound = hitSoundMap.get(map.remove("hitsound").asText());
+                HitSound hitSound = hitSoundMap.get(readVar(map, "hitsound", JsonNode::asText));
                 if (hitSound == null) break;
                 action = new SetHitsound(
                         hitSound,
-                        map.remove("hitsoundVolume").asLong());
+                        readVar(map, "hitsoundVolume", JsonNode::asLong));
                 break;
             }
             case RECOLOR_TRACK: {
-                JsonNode startTile = map.remove("startTile");
-                TilePosition startTilePosition = tilePositionMap.get(startTile.get(1).asText());
-                JsonNode endTile = map.remove("endTile");
-                TilePosition endTilePosition = tilePositionMap.get(endTile.get(1).asText());
-                TrackColorType trackColorType = trackColorTypeMap.get(map.remove("trackColorType").asText());
-                TrackColorPulse trackColorPulse = trackColorPulseMap.get(map.remove("trackColorPulse").asText());
-                TrackStyle trackStyle = trackStyleMap.get(map.remove("trackStyle").asText());
-                if (startTilePosition == null || endTilePosition == null || trackColorType == null || trackColorPulse == null || trackStyle == null)
-                    break;
+                List<Object> startTile = readVar(map, "startTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())));
+                List<Object> endTile = readVar(map, "endTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())));
+
                 action = new RecolorTrack(
-                        startTile.get(0).asLong(),
-                        startTilePosition,
-                        endTile.get(0).asLong(),
-                        endTilePosition,
-                        trackColorType,
-                        map.remove("trackColor").asText(),
-                        map.remove("secondaryTrackColor").asText(),
-                        map.remove("trackColorAnimDuration").asDouble(),
-                        trackColorPulse,
-                        map.remove("trackPulseLength").asLong(),
-                        trackStyle,
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        startTile != null ? (Long) startTile.get(0) : null,
+                        startTile != null ? (TilePosition) startTile.get(1) : null,
+                        endTile != null ? (Long) endTile.get(0) : null,
+                        endTile != null ? (TilePosition) endTile.get(1) : null,
+                        readVar(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
+                        readVar(map, "trackColor", JsonNode::asText),
+                        readVar(map, "secondaryTrackColor", JsonNode::asText),
+                        readVar(map, "trackColorAnimDuration", JsonNode::asDouble),
+                        readVar(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
+                        readVar(map, "trackPulseLength", JsonNode::asLong),
+                        readVar(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case MOVE_TRACK: {
-                JsonNode startTile = map.remove("startTile");
-                TilePosition startTilePosition = tilePositionMap.get(startTile.get(1).asText());
-                JsonNode endTile = map.remove("endTile");
-                TilePosition endTilePosition = tilePositionMap.get(endTile.get(1).asText());
-                JsonNode positionOffset = map.remove("positionOffset");
-                Ease ease = easeMap.get(map.remove("ease").asText());
-                if (startTilePosition == null || endTilePosition == null || positionOffset == null || ease == null)
-                    break;
+                List<Object> startTile = readVar(map, "startTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())));
+                List<Object> endTile = readVar(map, "endTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())));
+
                 action = new MoveTrack(
-                        startTile.get(0).asLong(),
-                        startTilePosition,
-                        endTile.get(0).asLong(),
-                        endTilePosition,
-                        map.remove("duration").asDouble(),
-                        Arrays.asList(
-                                positionOffset.get(0).asDouble(),
-                                positionOffset.get(1).asDouble()),
-                        map.remove("rotationOffset").asDouble(),
-                        map.remove("scale").asLong(),
-                        map.remove("opacity").asLong(),
-                        map.remove("angleOffset").asDouble(),
-                        ease,
-                        map.remove("eventTag").asText());
+                        startTile != null ? (Long) startTile.get(0) : null,
+                        startTile != null ? (TilePosition) startTile.get(1) : null,
+                        endTile != null ? (Long) endTile.get(0) : null,
+                        endTile != null ? (TilePosition) endTile.get(1) : null,
+                        readVar(map, "duration", JsonNode::asDouble),
+                        readVar(map, "positionOffset", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "rotationOffset", JsonNode::asDouble),
+                        readVar(map, "scale", JsonNode::asLong),
+                        readVar(map, "opacity", JsonNode::asLong),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "ease", JsonNode::asText, easeMap::get),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_FILTER: {
-                Filter filter = filterMap.get(map.remove("filter").asText());
-                Toggle enabled = toggleMap.get(map.remove("enabled").asText());
-                Toggle disableOthers = toggleMap.get(map.remove("disableOthers").asText());
-                if (filter == null || enabled == null || disableOthers == null) break;
                 action = new SetFilter(
-                        filter,
-                        enabled,
-                        map.remove("intensity").asLong(),
-                        disableOthers,
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "filter", JsonNode::asText, filterMap::get),
+                        readVar(map, "enabled", JsonNode::asText, toggleMap::get),
+                        readVar(map, "intensity", JsonNode::asLong),
+                        readVar(map, "disableOthers", JsonNode::asText, toggleMap::get),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case HALL_OF_MIRRORS: {
-                Toggle enabled = toggleMap.get(map.remove("enabled").asText());
-                if (enabled == null) break;
                 action = new HallOfMirrors(
-                        enabled,
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "enabled", JsonNode::asText, toggleMap::get),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SHAKE_SCREEN: {
-                Toggle fadeOut = toggleMap.get(map.remove("fadeOut").asText());
-                if (fadeOut == null) break;
                 action = new ShakeScreen(
-                        map.remove("duration").asDouble(),
-                        map.remove("strength").asLong(),
-                        map.remove("intensity").asLong(),
-                        fadeOut,
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "duration", JsonNode::asDouble),
+                        readVar(map, "strength", JsonNode::asLong),
+                        readVar(map, "intensity", JsonNode::asLong),
+                        readVar(map, "fadeOut", JsonNode::asText, toggleMap::get),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_PLANET_ROTATION: {
-                Ease ease = easeMap.get(map.remove("ease").asText());
-                if (ease == null) break;
                 action = new SetPlanetRotation(
-                        ease,
-                        map.remove("easeParts").asLong());
+                        readVar(map, "ease", JsonNode::asText, easeMap::get),
+                        readVar(map, "easeParts", JsonNode::asLong));
                 break;
             }
             case MOVE_DECORATIONS: {
-                JsonNode positionOffset = map.remove("positionOffset");
-                Ease ease = easeMap.get(map.remove("ease").asText());
-                if (positionOffset == null || ease == null) break;
                 action = new MoveDecorations(
-                        map.remove("duration").asDouble(),
-                        map.remove("tag").asText(),
-                        Arrays.asList(
-                                positionOffset.get(0).asDouble(),
-                                positionOffset.get(1).asDouble()),
-                        map.remove("rotationOffset").asDouble(),
-                        map.remove("scale").asLong(),
-                        map.remove("color").asText(),
-                        map.remove("opacity").asLong(),
-                        map.remove("angleOffset").asDouble(),
-                        ease,
-                        map.remove("eventTag").asText());
+                        readVar(map, "duration", JsonNode::asDouble),
+                        readVar(map, "tag", JsonNode::asText),
+                        readVar(map, "positionOffset", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "rotationOffset", JsonNode::asDouble),
+                        readVar(map, "scale", JsonNode::asLong),
+                        readVar(map, "color", JsonNode::asText),
+                        readVar(map, "opacity", JsonNode::asLong),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "ease", JsonNode::asText, easeMap::get),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case POSITION_TRACK: {
-                JsonNode positionOffset = map.remove("positionOffset");
-                Toggle editorOnly = toggleMap.get(map.remove("editorOnly").asText());
-                if (positionOffset == null || editorOnly == null) break;
                 action = new PositionTrack(
-                        Arrays.asList(
-                                positionOffset.get(0).asDouble(),
-                                positionOffset.get(1).asDouble()),
-                        editorOnly);
+                        readVar(map, "positionOffset", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "editorOnly", JsonNode::asText, toggleMap::get));
                 break;
             }
             case REPEAT_EVENTS: {
                 action = new RepeatEvents(
-                        map.remove("repetitions").asLong(),
-                        map.remove("interval").asDouble(),
-                        map.remove("tag").asText());
+                        readVar(map, "repetitions", JsonNode::asLong),
+                        readVar(map, "interval", JsonNode::asDouble),
+                        readVar(map, "tag", JsonNode::asText));
                 break;
             }
             case BLOOM: {
-                Toggle enabled = toggleMap.get(map.remove("enabled").asText());
+                Toggle enabled = toggleMap.get(readVar(map, "enabled", JsonNode::asText));
                 if (enabled == null) break;
                 action = new Bloom(
                         enabled,
-                        map.remove("threshold").asLong(),
-                        map.remove("intensity").asLong(),
-                        map.remove("color").asText(),
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "threshold", JsonNode::asLong),
+                        readVar(map, "intensity", JsonNode::asLong),
+                        readVar(map, "color", JsonNode::asText),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_CONDITIONAL_EVENTS: {
                 action = new SetConditionalEvents(
-                        map.remove("perfectTag").asText(),
-                        map.remove("hitTag").asText(),
-                        map.remove("barelyTag").asText(),
-                        map.remove("missTag").asText(),
-                        map.remove("lossTag").asText());
+                        readVar(map, "perfectTag", JsonNode::asText),
+                        readVar(map, "hitTag", JsonNode::asText),
+                        readVar(map, "barelyTag", JsonNode::asText),
+                        readVar(map, "missTag", JsonNode::asText),
+                        readVar(map, "lossTag", JsonNode::asText));
                 break;
             }
             case SCREEN_TILE: {
-                JsonNode tile = map.remove("tile");
-                if (tile == null) break;
                 action = new ScreenTile(
-                        Arrays.asList(
-                                tile.get(0).asDouble(),
-                                tile.get(1).asDouble()),
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "tile", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SCREEN_SCROLL: {
-                JsonNode scroll = map.remove("scroll");
-                if (scroll == null) break;
                 action = new ScreenScroll(
-                        Arrays.asList(
-                                scroll.get(0).asDouble(),
-                                scroll.get(1).asDouble()),
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "scroll", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case ADD_TEXT: {
-                Font font = fontMap.get(map.remove("font").asText());
-                JsonNode position = map.remove("position");
-                DecorationRelativeTo relativeTo = decorationRelativeToMap.get(map.remove("relativeTo").asText());
-                JsonNode pivotOffset = map.remove("pivotOffset");
-                if (font == null || position == null || relativeTo == null || pivotOffset == null) break;
                 action = new AddText(
-                        map.remove("decText").asText(),
-                        font,
-                        Arrays.asList(
-                                position.get(0).asDouble(),
-                                position.get(1).asDouble()),
-                        relativeTo,
-                        Arrays.asList(
-                                pivotOffset.get(0).asDouble(),
-                                pivotOffset.get(1).asDouble()),
-                        map.remove("rotation").asDouble(),
-                        map.remove("scale").asLong(),
-                        map.remove("color").asText(),
-                        map.remove("opacity").asLong(),
-                        map.remove("depth").asLong(),
-                        map.remove("parallax").asLong(),
-                        map.remove("tag").asText());
+                        readVar(map, "decText", JsonNode::asText),
+                        readVar(map, "font", JsonNode::asText, fontMap::get),
+                        readVar(map, "position", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
+                        readVar(map, "pivotOffset", jsonNode -> Arrays.asList(
+                                jsonNode.get(0).asDouble(),
+                                jsonNode.get(1).asDouble())),
+                        readVar(map, "rotation", JsonNode::asDouble),
+                        readVar(map, "scale", JsonNode::asLong),
+                        readVar(map, "color", JsonNode::asText),
+                        readVar(map, "opacity", JsonNode::asLong),
+                        readVar(map, "depth", JsonNode::asLong),
+                        readVar(map, "parallax", JsonNode::asLong),
+                        readVar(map, "tag", JsonNode::asText));
                 break;
             }
             case SET_TEXT: {
                 action = new SetText(
-                        map.remove("decText").asText(),
-                        map.remove("tag").asText(),
-                        map.remove("angleOffset").asDouble(),
-                        map.remove("eventTag").asText());
+                        readVar(map, "decText", JsonNode::asText),
+                        readVar(map, "tag", JsonNode::asText),
+                        readVar(map, "angleOffset", JsonNode::asDouble),
+                        readVar(map, "eventTag", JsonNode::asText));
                 break;
             }
             case CHANGE_TRACK: {
-                TrackColorType trackColorType = trackColorTypeMap.get(map.remove("trackColorType").asText());
-                TrackColorPulse trackColorPulse = trackColorPulseMap.get(map.remove("trackColorPulse").asText());
-                TrackStyle trackStyle = trackStyleMap.get(map.remove("trackStyle").asText());
-                TrackAnimation trackAnimation = trackAnimationMap.get(map.remove("trackAnimation").asText());
-                TrackDisappearAnimation trackDisappearAnimation = trackDisappearAnimationMap.get(map.remove("trackDisappearAnimation").asText());
-                if (trackColorType == null || trackColorPulse == null || trackStyle == null || trackAnimation == null || trackDisappearAnimation == null)
-                    break;
                 action = new ChangeTrack(
-                        trackColorType,
-                        map.remove("trackColor").asText(),
-                        map.remove("secondaryTrackColor").asText(),
-                        map.remove("trackColorAnimDuration").asDouble(),
-                        trackColorPulse,
-                        map.remove("trackPulseLength").asLong(),
-                        trackStyle,
-                        trackAnimation,
-                        map.remove("beatsAhead").asDouble(),
-                        trackDisappearAnimation,
-                        map.remove("beatsBehind").asDouble());
+                        readVar(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
+                        readVar(map, "trackColor", JsonNode::asText),
+                        readVar(map, "secondaryTrackColor", JsonNode::asText),
+                        readVar(map, "trackColorAnimDuration", JsonNode::asDouble),
+                        readVar(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
+                        readVar(map, "trackPulseLength", JsonNode::asLong),
+                        readVar(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
+                        readVar(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
+                        readVar(map, "beatsAhead", JsonNode::asDouble),
+                        readVar(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
+                        readVar(map, "beatsBehind", JsonNode::asDouble));
                 break;
             }
             case UNKNOWN: {
@@ -442,6 +380,21 @@ public class ActionFactory {
         }
 
         return action;
+    }
+
+    private static <T> T readVar(Map<String, JsonNode> map, String name, Function<JsonNode, String> mapper, Function<String, T> mapper2) {
+        return readVar(map, name, node -> {
+            T result = mapper2.apply(mapper.apply(node));
+            if (result == null) throw new IllegalStateException("Cannot find value(" + mapper.apply(node) + ")");
+            return result;
+        });
+    }
+
+    private static <T> T readVar(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
+        JsonNode node = map.remove(name);
+
+        if (node == null) return null;
+        return mapper.apply(node);
     }
 
     public static void write(StringBuilder sb, long floor, Action action) {

@@ -11,12 +11,73 @@ import static io.luxus.lib.adofai.Constants.EPSILON;
 
 public class StringJsonUtil {
 
+    public static String fixJsonString(String jsonStr) {
+
+        StringBuilder sb = new StringBuilder(jsonStr.length());
+
+        boolean isString = false;
+        boolean escape = false;
+        boolean comma = false;
+
+        for (char c : jsonStr.toCharArray()) {
+            if (c == '\\') {
+                escape = true;
+                sb.append(c);
+            }
+            else {
+                if (isString) {
+                    if (c == '"') {
+                        if (escape) {
+                            sb.append(c);
+                        }
+                        else { // string end
+                            isString = false;
+                            sb.append(c);
+                        }
+                    }
+                    else {
+                        // string content. just add
+                        sb.append(c);
+                    }
+                }
+                else {
+                    if (c == '"') {
+                        isString = true;
+                        if (comma) {
+                            comma = false;
+                            sb.append(',');
+                        }
+                        sb.append(c);
+                    }
+                    else if (c == '}' || c == ']') {
+                        sb.append(c);
+                        comma = false;
+                    }
+                    else if (c == ',') {
+                        comma = true;
+                    }
+                    else if (c != ' ' && c != '\t' && c != '\n') {
+                        if (comma) {
+                            comma = false;
+                            sb.append(',');
+                        }
+                        sb.append(c);
+                    }
+                }
+                escape = false;
+            }
+        }
+
+        return sb.toString();
+    }
+
     public static void startWriteObj(StringBuilder sb, String name, Object value) {
         sb.append("\t\t{ \"").append(name).append("\": ");
         writeVar(sb, value);
     }
 
     public static void writeVar(StringBuilder sb, String name, Object value) {
+        if (value == null) return;
         sb.append(", \"").append(name).append("\": ");
         writeVar(sb, value);
     }
