@@ -1,5 +1,10 @@
-package io.luxus.api.adofai.type;
+package io.luxus.lib.adofai.action.type;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum TileAngle {
 	_0('R', 0, false),
 	_15('p', 15, false),
@@ -29,30 +34,15 @@ public enum TileAngle {
 	_6('6', 252, true),
 	_7('7', 900.0 / 7.0, true),
 	_8('8', 360 - 900.0 / 7.0, true),
-
+	R60('t', 60, true),
+	R120('h', 120, true),
+	R240('j', 240, true),
+	R300('y', 300, true),
 	NONE('!', 0, true),
 	;
-	
-	private char name;
-	private double angle;
-	private boolean dynamic;
-	
-	private TileAngle(char name, double angle, boolean dynamic) {
-		this.name = name;
-		this.angle = angle;
-		this.dynamic = dynamic;
-	}
-	
-	public char getName() {
-		return name;
-	}
-	
-	public double getAngle() {
-		return angle;
-	}
-	
-	public boolean isDynamic() {
-		return dynamic;
-	}
+
+	private final char code;
+	private final double size;
+	private final boolean relative;
 	
 }
