@@ -7,7 +7,6 @@ import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.converter.AngleConverter;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 public class ShapedMapConverter {
-	public static CustomLevel convert(String path, List<Double> angleData, boolean useCameraOptimization) throws ParseException, IOException {
+	public static CustomLevel convert(String path, List<Double> angleData, boolean useCameraOptimization) throws IOException {
 
 		final List<Double> angles = angleData.stream()
 				.map(angle -> angle == 999.0 ? ANGLE_MID_TILE : angle)

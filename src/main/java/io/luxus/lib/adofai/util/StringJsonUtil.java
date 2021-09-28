@@ -1,13 +1,10 @@
 package io.luxus.lib.adofai.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.math.DoubleMath;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static io.luxus.lib.adofai.Constants.EPSILON;
 
 public class StringJsonUtil {
 
@@ -160,7 +157,7 @@ public class StringJsonUtil {
             double doubleNumber = number instanceof Double ? (double) number :
                     (float) number;
             long longNumber = (long) doubleNumber;
-            if(DoubleMath.fuzzyEquals(doubleNumber, longNumber, EPSILON)) {
+            if(NumberUtil.fuzzyEquals(doubleNumber, longNumber)) {
                 sb.append(longNumber);
             } else {
                 sb.append(String.format("%.6f", doubleNumber));

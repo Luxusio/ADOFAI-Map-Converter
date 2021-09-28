@@ -1,11 +1,10 @@
 package io.luxus.lib.adofai.converter;
 
-import com.google.common.math.DoubleMath;
+import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.Constants.EPSILON;
 
 public class AngleConverter {
 
@@ -51,7 +50,7 @@ public class AngleConverter {
 
     public static Double getNextAngle(double currStaticAngle, double currTravelAngle, boolean reversed, boolean currNotNone) {
 
-        if (DoubleMath.fuzzyEquals(currTravelAngle, 0.0, EPSILON)) {
+        if (NumberUtil.fuzzyEquals(currTravelAngle, 0.0)) {
             System.out.println(currStaticAngle + ", " + currTravelAngle + ", " + reversed + " : " + null);
             return ANGLE_MID_TILE;
         }

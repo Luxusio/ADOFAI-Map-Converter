@@ -1,6 +1,5 @@
 package io.luxus.adofai.converter;
 
-import com.google.common.math.DoubleMath;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
@@ -9,9 +8,9 @@ import io.luxus.lib.adofai.action.*;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.SpeedType;
 import io.luxus.lib.adofai.action.type.Toggle;
+import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.*;
@@ -42,7 +41,7 @@ public class MapSpeedConverterBase {
 	}
 
 	public static CustomLevel convert(CustomLevel customLevel, boolean useCameraOptimization,
-			Function<ApplyEach, ApplyEachReturnValue> applyEachFunction) throws ParseException, IOException {
+			Function<ApplyEach, ApplyEachReturnValue> applyEachFunction) throws IOException {
 
 		LevelSetting newLevelSetting = customLevel.getLevelSetting()
 				.toBuilder().build();
@@ -71,7 +70,7 @@ public class MapSpeedConverterBase {
 
 			// SetSpeed
 			if (nowTempBPM != prevTempBPM) {
-				if (!Double.isFinite(nowTempBPM) || nowTempBPM <= EPSILON) {
+				if (!Double.isFinite(nowTempBPM) || NumberUtil.fuzzyEquals(nowTempBPM, 0.0)) {
 					System.err.println("Wrong TempBPM value (" + nowTempBPM + ")");
 				}
 				actionList.add(new SetSpeed(SpeedType.BPM, nowTempBPM, 1.0));
@@ -246,7 +245,7 @@ public class MapSpeedConverterBase {
 				double angleOffset = a.getAngleOffset();
 
 				if (a.getDisableOthers() == Toggle.ENABLED &&
-						DoubleMath.fuzzyEquals(tileMeta.getTravelAngle(), angleOffset, EPSILON)) {
+						NumberUtil.fuzzyEquals(tileMeta.getTravelAngle(), angleOffset)) {
 					angleOffset = Math.max(angleOffset - 0.001, 0.0);
 				}
 

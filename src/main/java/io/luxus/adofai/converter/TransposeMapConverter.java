@@ -9,7 +9,6 @@ import io.luxus.lib.adofai.action.type.Ease;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.TilePosition;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.List;
 
 public class TransposeMapConverter {
 	
-	public static CustomLevel convert(String path, int opacity) throws ParseException, IOException {
+	public static CustomLevel convert(String path, int opacity) throws IOException {
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
 		
 		Tile zeroTile = customLevel.getTiles().get(0);

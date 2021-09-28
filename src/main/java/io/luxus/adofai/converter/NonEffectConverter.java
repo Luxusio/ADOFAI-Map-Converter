@@ -5,13 +5,12 @@ import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 public class NonEffectConverter {
-	public static CustomLevel convert(String path, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents, boolean removeFlash) throws ParseException, IOException {
+	public static CustomLevel convert(String path, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents, boolean removeFlash) throws IOException {
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
 		removeActions(customLevel.getTiles().get(0), removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
 		return MapSpeedConverterBase.convert(customLevel, false,

@@ -8,7 +8,6 @@ import io.luxus.lib.adofai.action.Twirl;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.converter.AngleConverter;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ import java.util.function.Function;
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 public class MapShapedMapConverter {
-	public static CustomLevel convert(String path, CustomLevel shapeLevel, boolean useCameraOptimization) throws ParseException, IOException {
+	public static CustomLevel convert(String path, CustomLevel shapeLevel, boolean useCameraOptimization) throws IOException {
 
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
 		MapSpeedConverterBase.removeNoneTile(customLevel);

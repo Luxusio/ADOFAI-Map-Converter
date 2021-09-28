@@ -22,12 +22,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
-    implementation "com.google.guava:guava:30.1.1-jre"
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
-
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0'

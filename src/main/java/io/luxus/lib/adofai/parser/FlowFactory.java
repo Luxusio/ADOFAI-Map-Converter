@@ -1,15 +1,14 @@
 package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.math.DoubleMath;
 import io.luxus.lib.adofai.action.type.TileAngle;
+import io.luxus.lib.adofai.util.NumberUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.Constants.EPSILON;
 
 public class FlowFactory {
 
@@ -114,16 +113,16 @@ public class FlowFactory {
 
     private static TileAngle getCurrTileAngle(Double currAngle, Double nextAngle) {
 
-        if (DoubleMath.fuzzyEquals(currAngle, 999.0, EPSILON)) {
+        if (NumberUtil.fuzzyEquals(currAngle, 999.0)) {
             return TileAngle.NONE;
         }
 
         double relativeAngle = nextAngle - currAngle;
 
         for (TileAngle angle : TileAngle.values()) {
-            if (DoubleMath.fuzzyEquals(
+            if (NumberUtil.fuzzyEquals(
                     angle.isRelative() ? relativeAngle : currAngle,
-                    angle.getSize(), EPSILON))
+                    angle.getSize()))
                 return angle;
         }
 

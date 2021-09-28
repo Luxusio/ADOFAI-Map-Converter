@@ -8,7 +8,6 @@ import io.luxus.lib.adofai.action.Action;
 import io.luxus.lib.adofai.action.Twirl;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class OuterMapConverter {
 
-	public static CustomLevel convert(String path) throws ParseException, IOException {
+	public static CustomLevel convert(String path) throws IOException {
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
 		List<Tile> tileList = customLevel.getTiles();
 

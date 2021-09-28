@@ -1,8 +1,8 @@
 package io.luxus.lib.adofai;
 
-import com.google.common.math.DoubleMath;
 import io.luxus.lib.adofai.action.Action;
 import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.Constants.EPSILON;
 
 @ToString
 @Getter
@@ -50,7 +49,7 @@ public class Tile {
     }
 
     public void setAngle(Double angle) {
-        if (angle != null && DoubleMath.fuzzyEquals(angle, 999.0, EPSILON)) angle = ANGLE_MID_TILE;
+        if (angle != null && NumberUtil.fuzzyEquals(angle, 999.0)) angle = ANGLE_MID_TILE;
         this.angle = angle;
     }
 
