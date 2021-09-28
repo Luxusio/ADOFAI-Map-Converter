@@ -18,7 +18,7 @@ import static io.luxus.lib.adofai.Constants.EPSILON;
 @Getter
 public class Tile {
 
-    private Double angle = ANGLE_MID_TILE;
+    private Double angle = 0.0;
     private Map<EventType, List<Action>> actionMap;
     private final TileMeta tileMeta = new TileMeta();
 
@@ -50,12 +50,12 @@ public class Tile {
     }
 
     public void setAngle(Double angle) {
-        if (angle != null && DoubleMath.fuzzyEquals(angle, 999.0, EPSILON)) angle = null;
+        if (angle != null && DoubleMath.fuzzyEquals(angle, 999.0, EPSILON)) angle = ANGLE_MID_TILE;
         this.angle = angle;
     }
 
-    public void update(LevelSetting levelSetting) {
-        this.tileMeta.update(actionMap, levelSetting);
+    public void update(LevelSetting levelSetting, Double nextAngle) {
+        this.tileMeta.update(actionMap, levelSetting, nextAngle);
     }
 
     public void update(TileMeta prevTileMeta, Double nextStaticAngle) {

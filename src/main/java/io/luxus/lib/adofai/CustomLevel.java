@@ -14,7 +14,7 @@ import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 public class CustomLevel {
 
     private LevelSetting levelSetting = new LevelSetting();
-    private List<Tile> tiles = Arrays.asList(new Tile(), new Tile(0.0), new Tile(0.0), new Tile(0.0), new Tile(0.0), new Tile(0.0), new Tile(0.0), new Tile(0.0), new Tile(0.0), new Tile(0.0), new Tile(0.0));
+    private List<Tile> tiles = Arrays.asList(new Tile(), new Tile(), new Tile(), new Tile(), new Tile(), new Tile(), new Tile(), new Tile(), new Tile(), new Tile(), new Tile());
 
     public CustomLevel() {
     }
@@ -34,7 +34,12 @@ public class CustomLevel {
         }
 
         if (floor == 0) {
-            tiles.get(0).update(levelSetting);
+            if (tiles.size() <= 1) {
+                tiles.get(0).update(levelSetting, 0.0);
+            }
+            else {
+                tiles.get(0).update(levelSetting, tiles.get(1).getAngle());
+            }
             floor++;
         }
 

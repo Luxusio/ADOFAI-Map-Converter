@@ -43,7 +43,7 @@ public class TileMeta {
         this.editorY = tileMeta.editorY;
     }
 
-    public void update(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting) {
+    public void update(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, Double nextAngle) {
         this.bpm = levelSetting.getBpm();
         this.travelAngle = 360.0;
         this.staticAngle = 0.0;
@@ -55,6 +55,10 @@ public class TileMeta {
         this.editorY = 0.0;
 
         update(actionMap);
+
+        AngleConverter.Result2 convert = AngleConverter.convert2(0.0, 0.0, nextAngle, reversed);
+        this.staticAngle = convert.getCurrStaticAngle();
+        this.travelAngle = convert.getCurrTravelAngle();
     }
 
     public void update(Map<EventType, List<Action>> actionMap, Double currAngle, TileMeta prevTileMeta, Double nextAngle) {

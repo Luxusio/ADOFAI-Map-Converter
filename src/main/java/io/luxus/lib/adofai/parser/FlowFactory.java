@@ -69,7 +69,9 @@ public class FlowFactory {
     }
 
     public static boolean writePathData(StringBuilder sb, List<Double> angleData) {
-        sb.append("\t\"pathData\": \"");
+
+        StringBuilder tempSb = new StringBuilder();
+        tempSb.append("\t\"pathData\": \"");
 
         Iterator<Double> it = angleData.stream()
                 .map(angle -> angle == ANGLE_MID_TILE ? 999.0 : angle)
@@ -86,15 +88,16 @@ public class FlowFactory {
             TileAngle tileAngle = getCurrTileAngle(currAngle, nextAngle);
             if (tileAngle == null) return false;
 
-            sb.append(tileAngle.getCode());
+            tempSb.append(tileAngle.getCode());
 
             currAngle = nextAngle;
         }
         TileAngle tileAngle = getCurrTileAngle(currAngle, 999.0);
         if (tileAngle == null) return false;
-        sb.append(tileAngle.getCode());
+        tempSb.append(tileAngle.getCode());
 
-        sb.append("\"");
+        tempSb.append("\"");
+        sb.append(tempSb);
         return true;
     }
 
