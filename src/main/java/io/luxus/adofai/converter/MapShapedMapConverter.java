@@ -51,9 +51,9 @@ public class MapShapedMapConverter {
 
 						Tile tile = applyEach.getTile();
 
-						AngleConverter.Result2 convert2 = AngleConverter.convert2(prevStaticAngle, nowAngleTile.getAngle(), nextAngleTile.getAngle(), nowAngleTile.getTileMeta().isReversed(), !skipNone);
-						prevStaticAngle = convert2.getCurrStaticAngle();
-						double relativeAngle = convert2.getCurrTravelAngle();
+						AngleConverter.Result result = AngleConverter.convert(prevStaticAngle, nowAngleTile.getAngle(), nextAngleTile.getAngle(), nowAngleTile.getTileMeta().isReversed(), !skipNone);
+						prevStaticAngle = result.getCurrStaticAngle();
+						double relativeAngle = result.getCurrTravelAngle();
 
 						double mulValue = relativeAngle / tile.getTileMeta().getTravelAngle();
 						double nowTempBPM = mulValue * tile.getTileMeta().getBpm();

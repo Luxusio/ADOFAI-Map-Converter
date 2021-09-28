@@ -56,9 +56,9 @@ public class TileMeta {
 
         update(actionMap);
 
-        AngleConverter.Result2 convert = AngleConverter.convert2(0.0, 0.0, nextAngle, reversed);
-        this.staticAngle = convert.getCurrStaticAngle();
-        this.travelAngle = convert.getCurrTravelAngle();
+        AngleConverter.Result result = AngleConverter.convert(0.0, 0.0, nextAngle, reversed);
+        this.staticAngle = result.getCurrStaticAngle();
+        this.travelAngle = result.getCurrTravelAngle();
     }
 
     public void update(Map<EventType, List<Action>> actionMap, Double currAngle, TileMeta prevTileMeta, Double nextAngle) {
@@ -73,9 +73,9 @@ public class TileMeta {
 
         update(actionMap);
 
-        AngleConverter.Result2 convert = AngleConverter.convert2(prevTileMeta.staticAngle, currAngle, nextAngle, reversed);
-        this.staticAngle = convert.getCurrStaticAngle();
-        this.travelAngle = convert.getCurrTravelAngle();
+        AngleConverter.Result result = AngleConverter.convert(prevTileMeta.staticAngle, currAngle, nextAngle, reversed);
+        this.staticAngle = result.getCurrStaticAngle();
+        this.travelAngle = result.getCurrTravelAngle();
 
         double rad = Math.toRadians(prevTileMeta.staticAngle);
         double x = Math.cos(rad);
@@ -127,10 +127,10 @@ public class TileMeta {
     }
 
     public double getReversedTempBPM() {
-        return getReversedRelativeAngle() * bpm / travelAngle;
+        return getReversedTravelAngle() * bpm / travelAngle;
     }
 
-    public double getReversedRelativeAngle() {
+    public double getReversedTravelAngle() {
         return getTravelAngle() == 360.0 ? 360.0 : 360.0 - getTravelAngle();
     }
 

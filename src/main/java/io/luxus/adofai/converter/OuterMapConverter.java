@@ -39,7 +39,7 @@ public class OuterMapConverter {
 					Tile tile = applyEach.getTile();
 					TileMeta tileMeta = tile.getTileMeta();
 
-					double mulValue = tileMeta.getTravelAngle() != 0.0 ? tileMeta.getReversedRelativeAngle() / tileMeta.getTravelAngle() : 1.0;
+					double mulValue = tileMeta.getTravelAngle() != 0.0 ? tileMeta.getReversedTravelAngle() / tileMeta.getTravelAngle() : 1.0;
 					double nowTempBPM = tileMeta.getBpm() * mulValue;
 
 					Tile newTile = new Tile(tile.getAngle(), new HashMap<>(tile.getActionMap()));
