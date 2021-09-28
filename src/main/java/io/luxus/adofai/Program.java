@@ -40,6 +40,7 @@ public class Program {
         System.out.println("5. 모든타일에 회전 빼기");
         System.out.println("6. 이펙트 제거");
         System.out.println("7. 투명도 변환");
+        System.out.println("8. Bpm 승수->Bpm 변환");
         System.out.println("8. 종료");
         System.out.print("입력 : ");
 
@@ -127,11 +128,11 @@ public class Program {
             opacity = scanner.nextInt();
             scanner.nextLine();
         }
-        if (mode == 8) {
+        if (mode == 9) {
             System.out.println("프로그램을 종료합니다.");
             return;
         }
-        if (mode < 0 || mode > 8) {
+        if (mode < 0 || mode > 9) {
             System.out.println("잘못된 모드입니다. 프로그램을 종료합니다.");
             return;
         }
@@ -188,6 +189,9 @@ public class Program {
                 } else if (mode == 7) {
                     result = TransposeMapConverter.convert(path, opacity);
                     outPath += " Transpose.adofai";
+                } else if (mode == 8) {
+                    result = OnlyBpmSetSpeedConverter.convert(path);
+                    outPath += " OnlyBpm.adofai";
                 } else {
                     System.err.println("잘못된 변환 모드.(" + mode + ")");
                     return;

@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.Constants.EPSILON;
 
 
 public class MapSpeedConverterBase {
