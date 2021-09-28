@@ -1,23 +1,24 @@
 package io.luxus.adofai.converter;
 
+import com.google.common.math.DoubleMath;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.action.*;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.SpeedType;
+import io.luxus.lib.adofai.action.type.Toggle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
+import static io.luxus.lib.adofai.Constants.EPSILON;
 
 
 public class MapSpeedConverterBase {
@@ -25,6 +26,7 @@ public class MapSpeedConverterBase {
 	@Getter
 	@RequiredArgsConstructor
 	public static class ApplyEach {
+		private final int floor;
 		private final Tile tile;
 		private final List<Tile> tileList;
 		private final List<Tile> newTileList;
@@ -47,17 +49,17 @@ public class MapSpeedConverterBase {
 		List<Tile> tiles = customLevel.getTiles();
 
 		List<Tile> newTiles = new ArrayList<>();
-		newTiles.add(tiles.get(0));
+		newTiles.add(new Tile(0.0, new HashMap<>(tiles.get(0).getActionMap())));
 
 		Tile tile;
 		List<Action> actionList;
-		double prevTempBPM = newLevelSetting.getBpm();
+		double prevTempBPM = tiles.get(0).getTileMeta().getTempBPM();
 
 		for (int i = 1; i < tiles.size(); i++) {
 			tile = tiles.get(i);
 
 			ApplyEachReturnValue applyEachReturnValue = applyEachFunction
-					.apply(new ApplyEach(tile, tiles, newTiles));
+					.apply(new ApplyEach(i, tile, tiles, newTiles));
 
 			Tile newTile = applyEachReturnValue.getNewTile();
 			double nowTempBPM = applyEachReturnValue.getNowTempBPM();
@@ -69,8 +71,8 @@ public class MapSpeedConverterBase {
 
 			// SetSpeed
 			if (nowTempBPM != prevTempBPM) {
-				if (nowTempBPM == 0.0) {
-					System.out.println("E> tempBPM 0");
+				if (!Double.isFinite(nowTempBPM) || nowTempBPM <= EPSILON) {
+					System.err.println("Wrong TempBPM value (" + nowTempBPM + ")");
 				}
 				actionList.add(new SetSpeed(SpeedType.BPM, nowTempBPM, 1.0));
 			}
@@ -166,7 +168,9 @@ public class MapSpeedConverterBase {
 			prevTempBPM = nowTempBPM;
 		}
 
-		return new CustomLevel(newLevelSetting, newTiles);
+		CustomLevel newCustomLevel = new CustomLevel(newLevelSetting, newTiles);
+		fixFilterTiming(newCustomLevel);
+		return newCustomLevel;
 	}
 
 	private static void editAction(Tile tile, EventType eventType, Function<Action, Action> function) {
@@ -182,9 +186,7 @@ public class MapSpeedConverterBase {
 
 	}
 
-	public static List<Integer> removeNoneTile(CustomLevel customLevel) {
-		List<Integer> removedTileList = new ArrayList<>();
-		int floor = 0;
+	public static void removeNoneTile(CustomLevel customLevel) {
 
 		List<Tile> tileList = customLevel.getTiles();
 		Iterator<Tile> tileIt = tileList.iterator();
@@ -192,12 +194,11 @@ public class MapSpeedConverterBase {
 		Tile prevTile = tileIt.next();
 		while (tileIt.hasNext()) {
 			Tile nowTile = tileIt.next();
-			floor++;
 
 			if (nowTile.getAngle() == ANGLE_MID_TILE) {
 				tileIt.remove();
-				removedTileList.add(floor);
 
+				prevTile.getTileMeta().forceInit(nowTile.getTileMeta());
 				for (Map.Entry<EventType, List<Action>> entry : nowTile.getActionMap().entrySet()) {
 					EventType eventType = entry.getKey();
 
@@ -232,7 +233,29 @@ public class MapSpeedConverterBase {
 			prevTile = nowTile;
 		}
 
-		return removedTileList;
+	}
+
+	public static void fixFilterTiming(CustomLevel customLevel) {
+
+		for (Tile tile : customLevel.getTiles()) {
+			TileMeta tileMeta = tile.getTileMeta();
+
+			editAction(tile, EventType.SET_FILTER, (action) -> {
+				SetFilter a = (SetFilter) action;
+
+				double angleOffset = a.getAngleOffset();
+
+				if (a.getDisableOthers() == Toggle.ENABLED &&
+						DoubleMath.fuzzyEquals(tileMeta.getTravelAngle(), angleOffset, EPSILON)) {
+					angleOffset = Math.max(angleOffset - 0.001, 0.0);
+				}
+
+				return new SetFilter(a.getFilter(), a.getEnabled(), a.getIntensity(), a.getDisableOthers(),
+						angleOffset, a.getEventTag());
+			});
+		}
+
+
 	}
 
 }

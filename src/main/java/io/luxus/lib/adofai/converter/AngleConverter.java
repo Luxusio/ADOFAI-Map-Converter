@@ -1,9 +1,11 @@
 package io.luxus.lib.adofai.converter;
 
+import com.google.common.math.DoubleMath;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
+import static io.luxus.lib.adofai.Constants.EPSILON;
 
 public class AngleConverter {
 
@@ -89,26 +91,35 @@ public class AngleConverter {
         return new AngleConverter.Result(nextStaticAngle, currTravelAngle);
     }
 
-    public static double getCurrStaticAngle(double prevStaticAngle, double currTravelAngle, boolean reversed) {
+    public static Double getNextAngle(double currStaticAngle, double currTravelAngle, boolean reversed, boolean currNotNone) {
 
-        double currStaticAngle;
-        if (!reversed) {
-            currStaticAngle = prevStaticAngle + currTravelAngle - 180;
+        if (DoubleMath.fuzzyEquals(currTravelAngle, 0.0, EPSILON)) {
+            System.out.println(currStaticAngle + ", " + currTravelAngle + ", " + reversed + " : " + null);
+            return ANGLE_MID_TILE;
+        }
+
+        double nextAngle;
+        if (reversed) {
+            nextAngle = currStaticAngle + currTravelAngle;
         } else {
-            currStaticAngle = prevStaticAngle - currTravelAngle + 180;
+            nextAngle = currStaticAngle - currTravelAngle;
         }
 
-        if (currStaticAngle < 0) {
-            currStaticAngle += 360;
-        } else if(currStaticAngle >= 360) {
-            currStaticAngle -= 360;
+        if (currNotNone) {
+            nextAngle += 180;
         }
 
-        return currStaticAngle;
+        if (nextAngle < 0) {
+            nextAngle += 360;
+        } else if(nextAngle >= 360) {
+            nextAngle -= 360;
+        }
+
+        return nextAngle;
     }
 
     public static double getNextStaticAngle(double staticAngle, double relativeAngle, boolean reversed) {
-        if(reversed) {
+        if (reversed) {
             staticAngle = staticAngle + relativeAngle - 180;
         } else {
             staticAngle = staticAngle - relativeAngle + 180;
@@ -116,7 +127,7 @@ public class AngleConverter {
 
         if (staticAngle < 0) {
             staticAngle += 360;
-        } else if(staticAngle >= 360) {
+        } else if (staticAngle >= 360) {
             staticAngle -= 360;
         }
 

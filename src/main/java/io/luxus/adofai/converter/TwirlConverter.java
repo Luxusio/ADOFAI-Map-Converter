@@ -1,10 +1,10 @@
 package io.luxus.adofai.converter;
 
+import com.google.common.math.DoubleMath;
 import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEach;
 import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.action.Action;
 import io.luxus.lib.adofai.action.Twirl;
 import io.luxus.lib.adofai.action.type.EventType;
@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
+import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
+import static io.luxus.lib.adofai.Constants.EPSILON;
+
 public class TwirlConverter {
 	public static CustomLevel convert(String path, boolean allTwirl, boolean useCameraOptimization) throws ParseException, IOException {
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
@@ -24,27 +27,43 @@ public class TwirlConverter {
 		return MapSpeedConverterBase.convert(customLevel, useCameraOptimization,
 				new Function<MapSpeedConverterBase.ApplyEach, MapSpeedConverterBase.ApplyEachReturnValue>() {
 
-					private double staticAngle = 0.0;
+					private double prevStaticAngle = 0.0;
 					private boolean reversed = false;
 
 					@Override
 					public ApplyEachReturnValue apply(ApplyEach applyEach) {
+
+						int floor = applyEach.getFloor();
 						Tile tile = applyEach.getTile();
-						TileMeta tileMeta = tile.getTileMeta();
+
+						double relativeAngle = tile.getTileMeta().getTravelAngle();
+						if (relativeAngle == 0.0) {
+							relativeAngle = applyEach.getTileList().get(floor + 1).getTileMeta().getTravelAngle();
+						} else if (tile.getAngle() == ANGLE_MID_TILE) {
+							relativeAngle = applyEach.getTileList().get(floor - 1).getTileMeta().getTravelAngle();
+						}
+
+						Double currAngle;
+						if (DoubleMath.fuzzyEquals(relativeAngle, 0.0, EPSILON)) {
+							currAngle = ANGLE_MID_TILE;
+						} else {
+							currAngle = prevStaticAngle;
+						}
 
 						double mulValue = 1.0;
-						double nowTempBPM = mulValue * tileMeta.getBpm();
+						double nowTempBPM = mulValue * tile.getTileMeta().getBpm();
 
 						List<Action> actionList = tile.getActions(EventType.TWIRL);
 						actionList.clear();
-						if(allTwirl) actionList.add(new Twirl());
-						
-						Tile newTile = new Tile(staticAngle, new HashMap<>(tile.getActionMap()));
+						if (allTwirl) {
+							actionList.add(new Twirl());
+							reversed = !reversed;
+						}
+
+						prevStaticAngle = AngleConverter.getNextStaticAngle(prevStaticAngle, tile.getTileMeta().getTravelAngle(), reversed);
+
+						Tile newTile = new Tile(currAngle, new HashMap<>(tile.getActionMap()));
 						applyEach.getNewTileList().add(newTile);
-
-
-						if(allTwirl) reversed = !reversed;
-						staticAngle = AngleConverter.getNextStaticAngle(staticAngle, tileMeta.getRelativeAngle(), reversed);
 
 						return new ApplyEachReturnValue(
 								newTile, nowTempBPM,
