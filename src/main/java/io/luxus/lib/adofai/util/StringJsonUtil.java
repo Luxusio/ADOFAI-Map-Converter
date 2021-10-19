@@ -120,8 +120,18 @@ public class StringJsonUtil {
         writeVar(sb, value);
     }
 
+    public static <T> void writeVar(StringBuilder sb, String name, T value, Function<T, ?> mapper) {
+        Optional<?> o = Optional.ofNullable(value)
+                .map(mapper);
+        if (!o.isPresent()) return;
+
+        sb.append(", \"").append(name).append("\": ");
+        writeVar(sb, o.get());
+    }
+
     public static void writeVar(StringBuilder sb, String name, Object value) {
         if (value == null) return;
+
         sb.append(", \"").append(name).append("\": ");
         writeVar(sb, value);
     }

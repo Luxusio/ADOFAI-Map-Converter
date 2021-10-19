@@ -383,7 +383,7 @@ public class ActionFactory {
         switch (action.getEventType()) {
             case SET_SPEED: {
                 SetSpeed e = (SetSpeed) action;
-                writeVar(sb, "speedType", e.getSpeedType().getJsonName());
+                writeVar(sb, "speedType", e.getSpeedType(), SpeedType::getJsonName);
                 writeVar(sb, "beatsPerMinute", e.getBeatsPerMinute());
                 writeVar(sb, "bpmMultiplier", e.getBpmMultiplier());
                 break;
@@ -404,9 +404,9 @@ public class ActionFactory {
                 writeVar(sb, "bgImage", e.getBgImage());
                 writeVar(sb, "imageColor", e.getImageColor());
                 writeVar(sb, "parallax", e.getParallax());
-                writeVar(sb, "bgDisplayMode", e.getBgDisplayMode().getJsonName());
-                writeVar(sb, "lockRot", e.getLockRot().getJsonName());
-                writeVar(sb, "loopBG", e.getLoopBG().getJsonName());
+                writeVar(sb, "bgDisplayMode", e.getBgDisplayMode(), BGDisplayModeType::getJsonName);
+                writeVar(sb, "lockRot", e.getLockRot(), Toggle::getJsonName);
+                writeVar(sb, "loopBG", e.getLoopBG(), Toggle::getJsonName);
                 writeVar(sb, "unscaledSize", e.getUnscaledSize());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
@@ -414,22 +414,22 @@ public class ActionFactory {
             }
             case COLOR_TRACK: {
                 ColorTrack e = (ColorTrack) action;
-                writeVar(sb, "trackColorType", e.getTrackColorType().getJsonName());
+                writeVar(sb, "trackColorType", e.getTrackColorType(), TrackColorType::getJsonName);
                 writeVar(sb, "trackColor", e.getTrackColor());
                 writeVar(sb, "secondaryTrackColor", e.getSecondaryTrackColor());
                 writeVar(sb, "trackColorAnimDuration", e.getTrackColorAnimDuration());
-                writeVar(sb, "trackColorPulse", e.getTrackColorPulse().getJsonName());
+                writeVar(sb, "trackColorPulse", e.getTrackColorPulse(), TrackColorPulse::getJsonName);
                 writeVar(sb, "trackPulseLength", e.getTrackPulseLength());
-                writeVar(sb, "trackStyle", e.getTrackStyle().getJsonName());
+                writeVar(sb, "trackStyle", e.getTrackStyle(), TrackStyle::getJsonName);
                 writeVar(sb, "trackTexture", e.getTrackTexture());
                 writeVar(sb, "trackTextureScale", e.getTrackTextureScale());
                 break;
             }
             case ANIMATE_TRACK: {
                 AnimateTrack e = (AnimateTrack) action;
-                writeVar(sb, "trackAnimation", e.getTrackAnimation().getJsonName());
+                writeVar(sb, "trackAnimation", e.getTrackAnimation(), TrackAnimation::getJsonName);
                 writeVar(sb, "beatsAhead", e.getBeatsAhead());
-                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation().getJsonName());
+                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation(), TrackDisappearAnimation::getJsonName);
                 writeVar(sb, "beatsBehind", e.getBeatsBehind());
                 break;
             }
@@ -437,7 +437,7 @@ public class ActionFactory {
                 AddDecoration e = (AddDecoration) action;
                 writeVar(sb, "decorationImage", e.getDecorationImage());
                 writeVar(sb, "position", e.getPosition());
-                writeVar(sb, "relativeTo", e.getDecorationRelativeTo().getJsonName());
+                writeVar(sb, "relativeTo", e.getDecorationRelativeTo(), DecorationRelativeTo::getJsonName);
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
@@ -453,38 +453,38 @@ public class ActionFactory {
             case FLASH: {
                 Flash e = (Flash) action;
                 writeVar(sb, "duration", e.getDuration());
-                writeVar(sb, "plane", e.getPlane().getJsonName());
+                writeVar(sb, "plane", e.getPlane(), Plane::getJsonName);
                 writeVar(sb, "startColor", e.getStartColor());
                 writeVar(sb, "startOpacity", e.getStartOpacity());
                 writeVar(sb, "endColor", e.getEndColor());
                 writeVar(sb, "endOpacity", e.getEndOpacity());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase().getJsonName());
+                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case MOVE_CAMERA: {
                 MoveCamera e = (MoveCamera) action;
                 writeVar(sb, "duration", e.getDuration());
-                writeVar(sb, "relativeTo", e.getRelativeTo().getJsonName());
+                writeVar(sb, "relativeTo", e.getRelativeTo(), CameraRelativeTo::getJsonName);
                 writeVar(sb, "position", e.getPosition());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "zoom", e.getZoom());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase().getJsonName());
+                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case SET_HITSOUND: {
                 SetHitsound e = (SetHitsound) action;
-                writeVar(sb, "gameSound", e.getGameSound().getJsonName());
-                writeVar(sb, "hitsound", e.getHitsound().getJsonName());
+                writeVar(sb, "gameSound", e.getGameSound(), GameSound::getJsonName);
+                writeVar(sb, "hitsound", e.getHitsound(), HitSound::getJsonName);
                 writeVar(sb, "hitsoundVolume", e.getHitsoundVolume());
                 break;
             }
             case PLAY_SOUND: {
                 PlaySound e = (PlaySound) action;
-                writeVar(sb, "hitsound", e.getHitsound().getJsonName());
+                writeVar(sb, "hitsound", e.getHitsound(), HitSound::getJsonName);
                 writeVar(sb, "hitsoundVolume", e.getHitsoundVolume());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 break;
@@ -493,13 +493,13 @@ public class ActionFactory {
                 RecolorTrack e = (RecolorTrack) action;
                 writeVar(sb, "startTile", Arrays.asList(e.getStartTileNum(), e.getStartTilePosition().getJsonName()));
                 writeVar(sb, "endTile", Arrays.asList(e.getEndTileNum(), e.getEndTilePosition().getJsonName()));
-                writeVar(sb, "trackColorType", e.getTrackColorType().getJsonName());
+                writeVar(sb, "trackColorType", e.getTrackColorType(), TrackColorType::getJsonName);
                 writeVar(sb, "trackColor", e.getTrackColor());
                 writeVar(sb, "secondaryTrackColor", e.getSecondaryTrackColor());
                 writeVar(sb, "trackColorAnimDuration", e.getTrackColorAnimDuration());
-                writeVar(sb, "trackColorPulse", e.getTrackColorPulse().getJsonName());
+                writeVar(sb, "trackColorPulse", e.getTrackColorPulse(), TrackColorPulse::getJsonName);
                 writeVar(sb, "trackPulseLength", e.getTrackPulseLength());
-                writeVar(sb, "trackStyle", e.getTrackStyle().getJsonName());
+                writeVar(sb, "trackStyle", e.getTrackStyle(), TrackStyle::getJsonName);
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
@@ -514,23 +514,23 @@ public class ActionFactory {
                 writeVar(sb, "scale", e.getScale());
                 writeVar(sb, "opacity", e.getOpacity());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase().getJsonName());
+                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case SET_FILTER: {
                 SetFilter e = (SetFilter) action;
-                writeVar(sb, "filter", e.getFilter().getJsonName());
-                writeVar(sb, "enabled", e.getEnabled().getJsonName());
+                writeVar(sb, "filter", e.getFilter(), Filter::getJsonName);
+                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
                 writeVar(sb, "intensity", e.getIntensity());
-                writeVar(sb, "disableOthers", e.getDisableOthers().getJsonName());
+                writeVar(sb, "disableOthers", e.getDisableOthers(), Toggle::getJsonName);
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case HALL_OF_MIRRORS: {
                 HallOfMirrors e = (HallOfMirrors) action;
-                writeVar(sb, "enabled", e.getEnabled().getJsonName());
+                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
@@ -540,14 +540,14 @@ public class ActionFactory {
                 writeVar(sb, "duration", e.getDuration());
                 writeVar(sb, "strength", e.getStrength());
                 writeVar(sb, "intensity", e.getIntensity());
-                writeVar(sb, "fadeOut", e.getFadeOut().getJsonName());
+                writeVar(sb, "fadeOut", e.getFadeOut(), Toggle::getJsonName);
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case SET_PLANET_ROTATION: {
                 SetPlanetRotation e = (SetPlanetRotation) action;
-                writeVar(sb, "ease", e.getEase().getJsonName());
+                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "easeParts", e.getEaseParts());
                 break;
             }
@@ -561,14 +561,14 @@ public class ActionFactory {
                 writeVar(sb, "color", e.getColor());
                 writeVar(sb, "opacity", e.getOpacity());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase().getJsonName());
+                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case POSITION_TRACK: {
                 PositionTrack e = (PositionTrack) action;
                 writeVar(sb, "positionOffset", e.getPositionOffset());
-                writeVar(sb, "editorOnly", e.getEditorOnly().getJsonName());
+                writeVar(sb, "editorOnly", e.getEditorOnly(), Toggle::getJsonName);
                 break;
             }
             case REPEAT_EVENTS: {
@@ -580,7 +580,7 @@ public class ActionFactory {
             }
             case BLOOM: {
                 Bloom e = (Bloom) action;
-                writeVar(sb, "enabled", e.getEnabled().getJsonName());
+                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
                 writeVar(sb, "threshold", e.getThreshold());
                 writeVar(sb, "intensity", e.getIntensity());
                 writeVar(sb, "color", e.getColor());
@@ -614,9 +614,9 @@ public class ActionFactory {
             case ADD_TEXT: {
                 AddText e = (AddText) action;
                 writeVar(sb, "decText", e.getDecText());
-                writeVar(sb, "font", e.getFont().getJsonName());
+                writeVar(sb, "font", e.getFont(), Font::getJsonName);
                 writeVar(sb, "position", e.getPosition());
-                writeVar(sb, "relativeTo", e.getRelativeTo().getJsonName());
+                writeVar(sb, "relativeTo", e.getRelativeTo(), DecorationRelativeTo::getJsonName);
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
@@ -637,16 +637,16 @@ public class ActionFactory {
             }
             case CHANGE_TRACK: {
                 ChangeTrack e = (ChangeTrack) action;
-                writeVar(sb, "trackColorType", e.getTrackColorType().getJsonName());
+                writeVar(sb, "trackColorType", e.getTrackColorType(), TrackColorType::getJsonName);
                 writeVar(sb, "trackColor", e.getTrackColor());
                 writeVar(sb, "secondaryTrackColor", e.getSecondaryTrackColor());
                 writeVar(sb, "trackColorAnimDuration", e.getTrackColorAnimDuration());
-                writeVar(sb, "trackColorPulse", e.getTrackColorPulse().getJsonName());
+                writeVar(sb, "trackColorPulse", e.getTrackColorPulse(), TrackColorPulse::getJsonName);
                 writeVar(sb, "trackPulseLength", e.getTrackPulseLength());
-                writeVar(sb, "trackStyle", e.getTrackStyle().getJsonName());
-                writeVar(sb, "trackAnimation", e.getTrackAnimation().getJsonName());
+                writeVar(sb, "trackStyle", e.getTrackStyle(), TrackStyle::getJsonName);
+                writeVar(sb, "trackAnimation", e.getTrackAnimation(), TrackAnimation::getJsonName);
                 writeVar(sb, "beatsAhead", e.getBeatsAhead());
-                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation().getJsonName());
+                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation(), TrackDisappearAnimation::getJsonName);
                 writeVar(sb, "beatsBehind", e.getBeatsBehind());
                 break;
             }

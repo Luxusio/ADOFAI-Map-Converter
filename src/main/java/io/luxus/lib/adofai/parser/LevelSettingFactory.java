@@ -91,88 +91,83 @@ public class LevelSettingFactory {
         return levelSetting;
     }
 
-    public static void write(StringBuilder sb, LevelSetting levelSetting) {
+    public static void write(StringBuilder sb, LevelSetting s) {
         sb.append("\t\"settings\": \n\t{\n");
 
         boolean f = true; // isFirst
-        f = writeProperty(sb, levelSetting, f, "version", LevelSetting::getVersion);
-        f = writeProperty(sb, levelSetting, f, "artist", LevelSetting::getArtist);
-        f = writeProperty(sb, levelSetting, f, "specialArtistType", LevelSetting::getSpecialArtistType);
-        f = writeProperty(sb, levelSetting, f, "artistPermission", LevelSetting::getArtistPermission);
-        f = writeProperty(sb, levelSetting, f, "song", LevelSetting::getSong);
-        f = writeProperty(sb, levelSetting, f, "author", LevelSetting::getAuthor);
-        f = writeProperty(sb, levelSetting, f, "separateCountdownTime", LevelSetting::getSeparateCountdownTime, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "previewImage", LevelSetting::getPreviewImage);
-        f = writeProperty(sb, levelSetting, f, "previewIcon", LevelSetting::getPreviewIcon);
-        f = writeProperty(sb, levelSetting, f, "previewIconColor", LevelSetting::getPreviewIconColor);
-        f = writeProperty(sb, levelSetting, f, "previewSongStart", LevelSetting::getPreviewSongStart);
-        f = writeProperty(sb, levelSetting, f, "previewSongDuration", LevelSetting::getPreviewSongDuration);
-        f = writeProperty(sb, levelSetting, f, "seizureWarning", LevelSetting::getSeizureWarning, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "levelDesc", LevelSetting::getLevelDesc);
-        f = writeProperty(sb, levelSetting, f, "levelTags", LevelSetting::getLevelTags);
-        f = writeProperty(sb, levelSetting, f, "artistLinks", LevelSetting::getArtistLinks);
-        f = writeProperty(sb, levelSetting, f, "difficulty", LevelSetting::getDifficulty);
-        f = writeProperty(sb, levelSetting, f, "requiredMods", LevelSetting::getRequiredMods);
-        f = writeProperty(sb, levelSetting, f, "songFilename", LevelSetting::getSongFilename);
-        f = writeProperty(sb, levelSetting, f, "bpm", LevelSetting::getBpm);
-        f = writeProperty(sb, levelSetting, f, "volume", LevelSetting::getVolume);
-        f = writeProperty(sb, levelSetting, f, "offset", LevelSetting::getOffset);
-        f = writeProperty(sb, levelSetting, f, "pitch", LevelSetting::getPitch);
-        f = writeProperty(sb, levelSetting, f, "hitsound", LevelSetting::getHitsound, HitSound::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "hitsoundVolume", LevelSetting::getHitsoundVolume);
-        f = writeProperty(sb, levelSetting, f, "countdownTicks", LevelSetting::getCountdownTicks);
-        f = writeProperty(sb, levelSetting, f, "trackColorType", LevelSetting::getTrackColorType, TrackColorType::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "trackColor", LevelSetting::getTrackColor);
-        f = writeProperty(sb, levelSetting, f, "secondaryTrackColor", LevelSetting::getSecondaryTrackColor);
-        f = writeProperty(sb, levelSetting, f, "trackColorAnimDuration", LevelSetting::getTrackColorAnimDuration);
-        f = writeProperty(sb, levelSetting, f, "trackColorPulse", LevelSetting::getTrackColorPulse, TrackColorPulse::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "trackPulseLength", LevelSetting::getTrackPulseLength);
-        f = writeProperty(sb, levelSetting, f, "trackStyle", LevelSetting::getTrackStyle, TrackStyle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "trackAnimation", LevelSetting::getTrackAnimation, TrackAnimation::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "beatsAhead", LevelSetting::getBeatsAhead);
-        f = writeProperty(sb, levelSetting, f, "trackDisappearAnimation", LevelSetting::getTrackDisappearAnimation,  TrackDisappearAnimation::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "beatsBehind", LevelSetting::getBeatsBehind);
-        f = writeProperty(sb, levelSetting, f, "backgroundColor", LevelSetting::getBackgroundColor);
-        f = writeProperty(sb, levelSetting, f, "showDefaultBGIfNoImage", LevelSetting::getShowDefaultBGIfNoImage, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "bgImage", LevelSetting::getBgImage);
-        f = writeProperty(sb, levelSetting, f, "bgImageColor", LevelSetting::getBgImageColor);
-        f = writeProperty(sb, levelSetting, f, "parallax", LevelSetting::getParallax);
-        f = writeProperty(sb, levelSetting, f, "bgDisplayMode", LevelSetting::getBgDisplayMode, BGDisplayModeType::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "lockRot", LevelSetting::getLockRot, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "loopBG", LevelSetting::getLoopBG, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "unscaledSize", LevelSetting::getUnscaledSize);
-        f = writeProperty(sb, levelSetting, f, "relativeTo", LevelSetting::getRelativeTo, CameraRelativeTo::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "position", LevelSetting::getPosition);
-        f = writeProperty(sb, levelSetting, f, "rotation", LevelSetting::getRotation);
-        f = writeProperty(sb, levelSetting, f, "zoom", LevelSetting::getZoom);
-        f = writeProperty(sb, levelSetting, f, "bgVideo", LevelSetting::getBgVideo);
-        f = writeProperty(sb, levelSetting, f, "loopVideo", LevelSetting::getLoopVideo, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "vidOffset", LevelSetting::getVidOffset);
-        f = writeProperty(sb, levelSetting, f, "floorIconOutlines", LevelSetting::getFloorIconOutlines, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "stickToFloors", LevelSetting::getStickToFloors, Toggle::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "planetEase", LevelSetting::getPlanetEase, Ease::getJsonName);
-        f = writeProperty(sb, levelSetting, f, "planetEaseParts", LevelSetting::getPlanetEaseParts);
-        f = writeProperty(sb, levelSetting, f, "customClass", LevelSetting::getCustomClass);
-        f = writeProperty(sb, levelSetting, f, "legacyFlash", LevelSetting::getLegacyFlash);
-        f = writeProperty(sb, levelSetting, f, "legacySpriteTiles", LevelSetting::getLegacySpriteTiles);
+        f = writeProperty(sb, f, "version", s.getVersion());
+        f = writeProperty(sb, f, "artist", s.getArtist());
+        f = writeProperty(sb, f, "specialArtistType", s.getSpecialArtistType());
+        f = writeProperty(sb, f, "artistPermission", s.getArtistPermission());
+        f = writeProperty(sb, f, "song", s.getSong());
+        f = writeProperty(sb, f, "author", s.getAuthor());
+        f = writeProperty(sb, f, "separateCountdownTime", s.getSeparateCountdownTime(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "previewImage", s.getPreviewImage());
+        f = writeProperty(sb, f, "previewIcon", s.getPreviewIcon());
+        f = writeProperty(sb, f, "previewIconColor", s.getPreviewIconColor());
+        f = writeProperty(sb, f, "previewSongStart", s.getPreviewSongStart());
+        f = writeProperty(sb, f, "previewSongDuration", s.getPreviewSongDuration());
+        f = writeProperty(sb, f, "seizureWarning", s.getSeizureWarning(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "levelDesc", s.getLevelDesc());
+        f = writeProperty(sb, f, "levelTags", s.getLevelTags());
+        f = writeProperty(sb, f, "artistLinks", s.getArtistLinks());
+        f = writeProperty(sb, f, "difficulty", s.getDifficulty());
+        f = writeProperty(sb, f, "requiredMods", s.getRequiredMods());
+        f = writeProperty(sb, f, "songFilename", s.getSongFilename());
+        f = writeProperty(sb, f, "bpm", s.getBpm());
+        f = writeProperty(sb, f, "volume", s.getVolume());
+        f = writeProperty(sb, f, "offset", s.getOffset());
+        f = writeProperty(sb, f, "pitch", s.getPitch());
+        f = writeProperty(sb, f, "hitsound", s.getHitsound(), HitSound::getJsonName);
+        f = writeProperty(sb, f, "hitsoundVolume", s.getHitsoundVolume());
+        f = writeProperty(sb, f, "countdownTicks", s.getCountdownTicks());
+        f = writeProperty(sb, f, "trackColorType", s.getTrackColorType(), TrackColorType::getJsonName);
+        f = writeProperty(sb, f, "trackColor", s.getTrackColor());
+        f = writeProperty(sb, f, "secondaryTrackColor", s.getSecondaryTrackColor());
+        f = writeProperty(sb, f, "trackColorAnimDuration", s.getTrackColorAnimDuration());
+        f = writeProperty(sb, f, "trackColorPulse", s.getTrackColorPulse(), TrackColorPulse::getJsonName);
+        f = writeProperty(sb, f, "trackPulseLength", s.getTrackPulseLength());
+        f = writeProperty(sb, f, "trackStyle", s.getTrackStyle(), TrackStyle::getJsonName);
+        f = writeProperty(sb, f, "trackAnimation", s.getTrackAnimation(), TrackAnimation::getJsonName);
+        f = writeProperty(sb, f, "beatsAhead", s.getBeatsAhead());
+        f = writeProperty(sb, f, "trackDisappearAnimation", s.getTrackDisappearAnimation(),  TrackDisappearAnimation::getJsonName);
+        f = writeProperty(sb, f, "beatsBehind", s.getBeatsBehind());
+        f = writeProperty(sb, f, "backgroundColor", s.getBackgroundColor());
+        f = writeProperty(sb, f, "showDefaultBGIfNoImage", s.getShowDefaultBGIfNoImage(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "bgImage", s.getBgImage());
+        f = writeProperty(sb, f, "bgImageColor", s.getBgImageColor());
+        f = writeProperty(sb, f, "parallax", s.getParallax());
+        f = writeProperty(sb, f, "bgDisplayMode", s.getBgDisplayMode(), BGDisplayModeType::getJsonName);
+        f = writeProperty(sb, f, "lockRot", s.getLockRot(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "loopBG", s.getLoopBG(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "unscaledSize", s.getUnscaledSize());
+        f = writeProperty(sb, f, "relativeTo", s.getRelativeTo(), CameraRelativeTo::getJsonName);
+        f = writeProperty(sb, f, "position", s.getPosition());
+        f = writeProperty(sb, f, "rotation", s.getRotation());
+        f = writeProperty(sb, f, "zoom", s.getZoom());
+        f = writeProperty(sb, f, "bgVideo", s.getBgVideo());
+        f = writeProperty(sb, f, "loopVideo", s.getLoopVideo(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "vidOffset", s.getVidOffset());
+        f = writeProperty(sb, f, "floorIconOutlines", s.getFloorIconOutlines(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "stickToFloors", s.getStickToFloors(), Toggle::getJsonName);
+        f = writeProperty(sb, f, "planetEase", s.getPlanetEase(), Ease::getJsonName);
+        f = writeProperty(sb, f, "planetEaseParts", s.getPlanetEaseParts());
+        f = writeProperty(sb, f, "customClass", s.getCustomClass());
+        f = writeProperty(sb, f, "legacyFlash", s.getLegacyFlash());
+        f = writeProperty(sb, f, "legacySpriteTiles", s.getLegacySpriteTiles());
 
-        for (Map.Entry<String, Object> entry : levelSetting.getUnknownProperties().entrySet()) {
+        for (Map.Entry<String, Object> entry : s.getUnknownProperties().entrySet()) {
             f = writeProperty(sb, f, entry.getKey(), entry.getValue());
         }
 
         sb.append("\n\t}");
     }
 
-    private static <T> boolean writeProperty(StringBuilder sb, LevelSetting levelSetting, boolean isFirst, String name, Function<? super LevelSetting, T> mapper, Function<T, ?> mapper2) {
-        return writeProperty(sb, levelSetting, isFirst, name, setting -> {
-            T value = mapper.apply(setting);
-            return value != null ? mapper2.apply(value) : null;
-        });
-    }
+    private static <T> boolean writeProperty(StringBuilder sb, boolean isFirst, String name, T value, Function<T, ?> mapper) {
+        return Optional.ofNullable(value)
+                .map(mapper)
 
-    private static boolean writeProperty(StringBuilder sb, LevelSetting levelSetting, boolean isFirst, String name, Function<? super LevelSetting, ?> mapper) {
-        Object obj = mapper.apply(levelSetting);
-        return writeProperty(sb, isFirst, name, obj);
+                .map(o -> writeProperty(sb, isFirst, name, o)).orElse(isFirst);
     }
 
     private static boolean writeProperty(StringBuilder sb, boolean isFirst, String name, Object value) {
