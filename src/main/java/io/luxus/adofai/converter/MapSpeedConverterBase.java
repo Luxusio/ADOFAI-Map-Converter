@@ -94,7 +94,7 @@ public class MapSpeedConverterBase {
 			editAction(newTile, EventType.FLASH, (action) -> {
 				Flash a = (Flash) action;
 				return new Flash(a.getDuration() * bpmMultiplier, a.getPlane(), a.getStartColor(), a.getStartOpacity(),
-						a.getEndColor(), a.getEndOpacity(), a.getAngleOffset() * angleMultiplier, a.getEventTag());
+						a.getEndColor(), a.getEndOpacity(), a.getAngleOffset() * angleMultiplier, a.getEase(), a.getEventTag());
 			});
 
 			// MoveCamera

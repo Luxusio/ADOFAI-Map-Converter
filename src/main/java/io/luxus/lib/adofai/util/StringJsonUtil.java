@@ -2,9 +2,8 @@ package io.luxus.lib.adofai.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 public class StringJsonUtil {
 
@@ -68,6 +67,54 @@ public class StringJsonUtil {
         return sb.toString();
     }
 
+    public static <T> Function<String, T> getOrThrowFunc(Map<String, T> map) {
+        return name -> {
+            T result = map.get(name);
+            if (result == null) throw new IllegalStateException("Property not found!(" + name + ")");
+            return result;
+        };
+    }
+
+    public static <T1, T2> T2 readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T1> mapper, Function<T1, T2> mapper2) {
+        return readPropertyO(map, name, jsonNode -> jsonNode.map(mapper).map(mapper2)).orElse(null);
+    }
+
+    public static <T> T readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
+        return readPropertyO(map, name, jsonNode -> jsonNode.map(mapper)).orElse(null);
+    }
+
+    public static <T> Optional<T> readPropertyO(Map<String, JsonNode> map, String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
+        JsonNode node = map.remove(name);
+        Optional<JsonNode> optional = Optional.ofNullable(node);
+        try {
+            return mapper.apply(optional);
+        } catch (Throwable t) {
+            map.put(name, node);
+            throw t;
+        }
+    }
+
+    public static <R> Function<JsonNode, List<R>> nodeToXYListFunc(Function<? super JsonNode, ? extends R> mapper) {
+        return node -> {
+            List<R> result = nodeToList(node, mapper);
+            if (result.size() == 0) return null;
+            else if (result.size() == 1) {
+                result.add(result.get(0));
+            }
+            else if (result.size() > 2) throw new IllegalStateException("property is more than 2");
+            return result;
+        };
+    }
+
+    public static <R> List<R> nodeToList(JsonNode node, Function<? super JsonNode, ? extends R> mapper) {
+        List<R> list = new ArrayList<>();
+        Iterator<JsonNode> it = node.elements();
+        while (it.hasNext()) {
+            list.add(mapper.apply(it.next()));
+        }
+        return list;
+    }
+
     public static void startWriteObj(StringBuilder sb, String name, Object value) {
         sb.append("\t\t{ \"").append(name).append("\": ");
         writeVar(sb, value);
@@ -85,7 +132,9 @@ public class StringJsonUtil {
 
     public static void writeVar(StringBuilder sb, Object value) {
         if (value instanceof String) {
-            sb.append('"').append(((String) value).replace("\n", "\\n")).append('"');
+            sb.append('"').append(((String) value)
+                    .replace("\n", "\\n")
+                    .replace("\"", "\\\"")).append('"');
         }
         else if (value instanceof Boolean) {
             sb.append(value);

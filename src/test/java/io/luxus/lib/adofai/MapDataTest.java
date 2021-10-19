@@ -10,6 +10,7 @@ import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.ActionFactory;
 import io.luxus.lib.adofai.parser.CustomLevelFactory;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
+import io.luxus.lib.adofai.util.StringJsonUtil;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -28,8 +29,9 @@ class MapDataTest {
         JsonNode node = new ObjectMapper().readTree(new File(path));
 
         // when
-        CustomLevel customLevel = CustomLevelParser.read(node);
+        CustomLevel customLevel = CustomLevelParser.readPath(path);
         CustomLevel customLevel2 = CustomLevelParser.readPath("./src/test/resources/test/sb.adofai");
+        CustomLevel customLevel3 = CustomLevelParser.readPath("./src/test/resources/test/r77-AllEffects.adofai");
 
         // then
         assertNotNull(customLevel);
@@ -47,8 +49,8 @@ class MapDataTest {
     @Test
     void testWriteLevel() throws Exception {
         // given
-        String path = "./src/test/resources/test/test.adofai";
-        JsonNode node = new ObjectMapper().readTree(new File(path));
+        String path = "./src/test/resources/test/r77-AllEffects.adofai";
+        JsonNode node = new ObjectMapper().readTree(StringJsonUtil.fixJsonString(CustomLevelParser.readString(new File(path))));
 
         // when
         CustomLevel customLevel = CustomLevelParser.read(node);

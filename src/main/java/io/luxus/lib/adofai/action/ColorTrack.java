@@ -19,12 +19,15 @@ public class ColorTrack extends Action {
 	private TrackColorPulse trackColorPulse = TrackColorPulse.NONE;
 	private Long trackPulseLength = 10L;
 	private TrackStyle trackStyle = TrackStyle.STANDARD;
+	private String trackTexture = "";
+	private Double trackTextureScale = 1.0;
 	
 	public ColorTrack() {
 		super(EventType.COLOR_TRACK);
 	}
 
-	public ColorTrack(TrackColorType trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration, TrackColorPulse trackColorPulse, Long trackPulseLength, TrackStyle trackStyle) {
+	public ColorTrack(TrackColorType trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration, TrackColorPulse trackColorPulse, Long trackPulseLength, TrackStyle trackStyle,
+					  String trackTexture, Double trackTextureScale) {
 		this();
 		this.trackColorType = trackColorType;
 		this.trackColor = trackColor;
@@ -33,6 +36,8 @@ public class ColorTrack extends Action {
 		this.trackColorPulse = trackColorPulse;
 		this.trackPulseLength = trackPulseLength;
 		this.trackStyle = trackStyle;
+		this.trackTexture = trackTexture;
+		this.trackTextureScale = trackTextureScale;
 	}
 
 }

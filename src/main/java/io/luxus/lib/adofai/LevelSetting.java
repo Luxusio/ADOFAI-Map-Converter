@@ -3,10 +3,7 @@ package io.luxus.lib.adofai;
 import io.luxus.lib.adofai.action.type.*;
 import lombok.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter @Setter
 @ToString
@@ -32,6 +29,7 @@ public class LevelSetting {
     private String levelTags = "";
     private String artistLinks = "";
     private Long difficulty = 1L;
+    private List<String> requiredMods = new ArrayList<>();
     private String songFilename = "";
     private Double bpm = 100.0;
     private Long volume = 100L;
@@ -71,6 +69,7 @@ public class LevelSetting {
     private Toggle stickToFloors = Toggle.DISABLED;
     private Ease planetEase = Ease.LINEAR;
     private Long planetEaseParts = 1L;
+    private String customClass = "";
     private Boolean legacyFlash = false;
     private Boolean legacySpriteTiles = false;
     private Map<String, Object> unknownProperties = new HashMap<>();

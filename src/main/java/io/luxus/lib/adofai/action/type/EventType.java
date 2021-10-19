@@ -8,6 +8,7 @@ public enum EventType {
     SET_SPEED("SetSpeed", true),
     TWIRL("Twirl", true),
     EDITOR_COMMENT("EditorComment", false),
+    BOOKMARK("Bookmark", true),
     CHECK_POINT("Checkpoint", true),
     CUSTOM_BACKGROUND("CustomBackground", false), // angleOffset
     COLOR_TRACK("ColorTrack", true),
@@ -16,6 +17,7 @@ public enum EventType {
     FLASH("Flash", false), // duration , angleOffset
     MOVE_CAMERA("MoveCamera", false), // complete
     SET_HITSOUND("SetHitsound", true),
+    PLAY_SOUND("PlaySound", false),
     RECOLOR_TRACK("RecolorTrack", false), // angleoffset
     MOVE_TRACK("MoveTrack", false), // duration, angleOffset
     SET_FILTER("SetFilter", false), // angleOffset

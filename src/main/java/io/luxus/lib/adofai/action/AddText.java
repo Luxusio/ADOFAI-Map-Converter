@@ -20,7 +20,7 @@ public class AddText extends Action {
 	private DecorationRelativeTo relativeTo = DecorationRelativeTo.TILE;
 	private List<Double> pivotOffset = Arrays.asList(0.0, 0.0);
 	private Double rotation = 0.0;
-	private Long scale = 100L;
+	private List<Long> scale = Arrays.asList(100L, 100L);
 	private String color = "ffffff";
 	private Long opacity = 100L;
 	private Long depth = -1L;
@@ -32,7 +32,7 @@ public class AddText extends Action {
 	}
 
 	public AddText(String decText, Font font, List<Double> position, DecorationRelativeTo relativeTo, List<Double> pivotOffset,
-				   Double rotation, Long scale, String color, Long opacity, Long depth, Long parallax, String tag) {
+				   Double rotation, List<Long> scale, String color, Long opacity, Long depth, Long parallax, String tag) {
 		this();
 		this.decText = decText;
 		this.font = font;

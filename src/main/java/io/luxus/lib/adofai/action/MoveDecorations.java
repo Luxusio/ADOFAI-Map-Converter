@@ -17,7 +17,7 @@ public class MoveDecorations extends Action {
 	private String tag = "";
 	private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
 	private Double rotationOffset = 0.0;
-	private Long scale = 100L;
+	private List<Long> scale = Arrays.asList(100L, 100L);
 	private String color = "ffffff";
 	private Long opacity = 100L;
 	private Double angleOffset = 0.0;
@@ -29,7 +29,7 @@ public class MoveDecorations extends Action {
 	}
 
 	public MoveDecorations(Double duration, String tag, List<Double> positionOffset, Double rotationOffset,
-						   Long scale, String color, Long opacity, Double angleOffset, Ease ease, String eventTag) {
+						   List<Long> scale, String color, Long opacity, Double angleOffset, Ease ease, String eventTag) {
 		this();
 		this.duration = duration;
 		this.tag = tag;

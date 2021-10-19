@@ -42,7 +42,7 @@ public class TransposeMapConverter {
 	
 	private static MoveTrack getTransposeMoveTrack(long opacity) {
 		return new MoveTrack(0L, TilePosition.START, 0L, TilePosition.END,
-				0.0, Arrays.asList(0.0, 0.0), 0.0, 100L, opacity, 0.0, Ease.LINEAR, "");
+				0.0, Arrays.asList(0.0, 0.0), 0.0, Arrays.asList(100L, 100L), opacity, 0.0, Ease.LINEAR, "");
 	}
 	
 	private static void removeActions(Tile tile, long opacity) {

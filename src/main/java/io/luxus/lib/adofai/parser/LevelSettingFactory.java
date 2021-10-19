@@ -1,17 +1,16 @@
 package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sun.glass.ui.Window;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.action.type.*;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static io.luxus.lib.adofai.parser.ActionFactory.*;
+import static io.luxus.lib.adofai.util.StringJsonUtil.*;
 
 public class LevelSettingFactory {
 
@@ -31,56 +30,58 @@ public class LevelSettingFactory {
                 readProperty(map, "artistPermission", JsonNode::asText),
                 readProperty(map, "song", JsonNode::asText),
                 readProperty(map, "author", JsonNode::asText),
-                readProperty(map, "separateCountdownTime", jsonNode -> toggleMap.get(jsonNode.asText())),
+                readProperty(map, "separateCountdownTime", JsonNode::asText, getOrThrowFunc(toggleMap)),
                 readProperty(map, "previewImage", JsonNode::asText),
                 readProperty(map, "previewIcon", JsonNode::asText),
                 readProperty(map, "previewIconColor", JsonNode::asText),
                 readProperty(map, "previewSongStart", JsonNode::asLong),
                 readProperty(map, "previewSongDuration", JsonNode::asLong),
-                readProperty(map, "seizureWarning", jsonNode -> toggleMap.get(jsonNode.asText())),
+                readProperty(map, "seizureWarning", JsonNode::asText, getOrThrowFunc(toggleMap)),
                 readProperty(map, "levelDesc", JsonNode::asText),
                 readProperty(map, "levelTags", JsonNode::asText),
                 readProperty(map, "artistLinks", JsonNode::asText),
                 readProperty(map, "difficulty", JsonNode::asLong),
+                readProperty(map, "requiredMods", jsonNode -> nodeToList(jsonNode, JsonNode::asText)),
                 readProperty(map, "songFilename", JsonNode::asText),
                 readProperty(map, "bpm", JsonNode::asDouble),
                 readProperty(map, "volume", JsonNode::asLong),
                 readProperty(map, "offset", JsonNode::asLong),
                 readProperty(map, "pitch", JsonNode::asLong),
-                readProperty(map, "hitsound", jsonNode -> hitSoundMap.get(jsonNode.asText())),
+                readProperty(map, "hitsound", JsonNode::asText, getOrThrowFunc(hitSoundMap)),
                 readProperty(map, "hitsoundVolume", JsonNode::asLong),
                 readProperty(map, "countdownTicks", JsonNode::asLong),
-                readProperty(map, "trackColorType", jsonNode -> trackColorTypeMap.get(jsonNode.asText())),
+                readProperty(map, "trackColorType", JsonNode::asText, getOrThrowFunc(trackColorTypeMap)),
                 readProperty(map, "trackColor", JsonNode::asText),
                 readProperty(map, "secondaryTrackColor", JsonNode::asText),
                 readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
-                readProperty(map, "trackColorPulse", jsonNode -> trackColorPulseMap.get(jsonNode.asText())),
+                readProperty(map, "trackColorPulse", JsonNode::asText, getOrThrowFunc(trackColorPulseMap)),
                 readProperty(map, "trackPulseLength", JsonNode::asLong),
-                readProperty(map, "trackStyle", jsonNode -> trackStyleMap.get(jsonNode.asText())),
-                readProperty(map, "trackAnimation", jsonNode -> trackAnimationMap.get(jsonNode.asText())),
+                readProperty(map, "trackStyle", JsonNode::asText, getOrThrowFunc(trackStyleMap)),
+                readProperty(map, "trackAnimation", JsonNode::asText, getOrThrowFunc(trackAnimationMap)),
                 readProperty(map, "beatsAhead", JsonNode::asLong),
-                readProperty(map, "trackDisappearAnimation", jsonNode -> trackDisappearAnimationMap.get(jsonNode.asText())),
+                readProperty(map, "trackDisappearAnimation", JsonNode::asText, getOrThrowFunc(trackDisappearAnimationMap)),
                 readProperty(map, "beatsBehind", JsonNode::asLong),
                 readProperty(map, "backgroundColor", JsonNode::asText),
-                readProperty(map, "showDefaultBGIfNoImage", jsonNode -> toggleMap.get(jsonNode.asText())),
+                readProperty(map, "showDefaultBGIfNoImage", JsonNode::asText, getOrThrowFunc(toggleMap)),
                 readProperty(map, "bgImage", JsonNode::asText),
                 readProperty(map, "bgImageColor", JsonNode::asText),
-                readProperty(map, "parallax", jsonNode -> Arrays.asList(jsonNode.get(0).asLong(), jsonNode.get(1).asLong())),
-                readProperty(map, "bgDisplayMode", jsonNode -> bgDisplayModeTypeMap.get(jsonNode.asText())),
-                readProperty(map, "lockRot", jsonNode -> toggleMap.get(jsonNode.asText())),
-                readProperty(map, "loopBG", jsonNode -> toggleMap.get(jsonNode.asText())),
+                readProperty(map, "parallax", nodeToXYListFunc(JsonNode::asLong)),
+                readProperty(map, "bgDisplayMode", JsonNode::asText, getOrThrowFunc(bgDisplayModeTypeMap)),
+                readProperty(map, "lockRot", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                readProperty(map, "loopBG", JsonNode::asText, getOrThrowFunc(toggleMap)),
                 readProperty(map, "unscaledSize", JsonNode::asLong),
-                readProperty(map, "relativeTo", jsonNode -> cameraRelativeToMap.get(jsonNode.asText())),
-                readProperty(map, "position", jsonNode -> Arrays.asList(jsonNode.get(0).asDouble(), jsonNode.get(1).asDouble())),
+                readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(cameraRelativeToMap)),
+                readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
                 readProperty(map, "rotation", JsonNode::asDouble),
                 readProperty(map, "zoom", JsonNode::asLong),
                 readProperty(map, "bgVideo", JsonNode::asText),
-                readProperty(map, "loopVideo", jsonNode -> toggleMap.get(jsonNode.asText())),
+                readProperty(map, "loopVideo", JsonNode::asText, getOrThrowFunc(toggleMap)),
                 readProperty(map, "vidOffset", JsonNode::asLong),
-                readProperty(map, "floorIconOutlines", jsonNode -> toggleMap.get(jsonNode.asText())),
-                readProperty(map, "stickToFloors", jsonNode -> toggleMap.get(jsonNode.asText())),
-                readProperty(map, "planetEase", jsonNode -> easeMap.get(jsonNode.asText())),
+                readProperty(map, "floorIconOutlines", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                readProperty(map, "stickToFloors", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                readProperty(map, "planetEase", JsonNode::asText, getOrThrowFunc(easeMap)),
                 readProperty(map, "planetEaseParts", JsonNode::asLong),
+                readProperty(map, "customClass", JsonNode::asText),
                 readProperty(map, "legacyFlash", JsonNode::asBoolean),
                 readProperty(map, "legacySpriteTiles", JsonNode::asBoolean),
                 new HashMap<>());
@@ -88,14 +89,6 @@ public class LevelSettingFactory {
         levelSetting.getUnknownProperties().putAll(map);
 
         return levelSetting;
-    }
-
-    private static <R> R readProperty(Map<String, JsonNode> map, String name, Function<? super JsonNode, ? extends R> mapper) {
-        JsonNode node = map.remove(name);
-        if (node != null) {
-            return mapper.apply(node);
-        }
-        return null;
     }
 
     public static void write(StringBuilder sb, LevelSetting levelSetting) {
@@ -119,6 +112,7 @@ public class LevelSettingFactory {
         f = writeProperty(sb, levelSetting, f, "levelTags", LevelSetting::getLevelTags);
         f = writeProperty(sb, levelSetting, f, "artistLinks", LevelSetting::getArtistLinks);
         f = writeProperty(sb, levelSetting, f, "difficulty", LevelSetting::getDifficulty);
+        f = writeProperty(sb, levelSetting, f, "requiredMods", LevelSetting::getRequiredMods);
         f = writeProperty(sb, levelSetting, f, "songFilename", LevelSetting::getSongFilename);
         f = writeProperty(sb, levelSetting, f, "bpm", LevelSetting::getBpm);
         f = writeProperty(sb, levelSetting, f, "volume", LevelSetting::getVolume);
@@ -158,6 +152,7 @@ public class LevelSettingFactory {
         f = writeProperty(sb, levelSetting, f, "stickToFloors", LevelSetting::getStickToFloors, Toggle::getJsonName);
         f = writeProperty(sb, levelSetting, f, "planetEase", LevelSetting::getPlanetEase, Ease::getJsonName);
         f = writeProperty(sb, levelSetting, f, "planetEaseParts", LevelSetting::getPlanetEaseParts);
+        f = writeProperty(sb, levelSetting, f, "customClass", LevelSetting::getCustomClass);
         f = writeProperty(sb, levelSetting, f, "legacyFlash", LevelSetting::getLegacyFlash);
         f = writeProperty(sb, levelSetting, f, "legacySpriteTiles", LevelSetting::getLegacySpriteTiles);
 

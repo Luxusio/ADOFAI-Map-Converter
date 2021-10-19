@@ -45,7 +45,7 @@ public class CustomLevelParser {
         }
     }
 
-    private static String readString(File f) throws IOException {
+    public static String readString(File f) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
 
         StringBuilder sb = new StringBuilder();

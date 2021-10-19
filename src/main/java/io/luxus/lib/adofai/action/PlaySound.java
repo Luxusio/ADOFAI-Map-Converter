@@ -9,21 +9,21 @@ import lombok.ToString;
 
 @Getter @Setter
 @ToString
-public class SetHitsound extends Action {
+public class PlaySound extends Action {
 
-	private GameSound gameSound = GameSound.HITSOUND;
 	private HitSound hitsound = HitSound.KICK;
 	private Long hitsoundVolume = 100L;
-	
-	public SetHitsound() {
-		super(EventType.SET_HITSOUND);
+	private Double angleOffset = 0.0;
+
+	public PlaySound() {
+		super(EventType.PLAY_SOUND);
 	}
 
-	public SetHitsound(GameSound gameSound, HitSound hitsound, Long hitsoundVolume) {
+	public PlaySound(HitSound hitsound, Long hitsoundVolume, Double angleOffset) {
 		this();
-		this.gameSound = gameSound;
 		this.hitsound = hitsound;
 		this.hitsoundVolume = hitsoundVolume;
+		this.angleOffset = angleOffset;
 	}
 
 }

@@ -18,6 +18,7 @@ public class ActionFactory {
     public static final Map<String, Ease> easeMap = getMap(Ease.values(), Ease::getJsonName);
     public static final Map<String, Filter> filterMap = getMap(Filter.values(), Filter::getJsonName);
     public static final Map<String, Font> fontMap = getMap(Font.values(), Font::getJsonName);
+    public static final Map<String, GameSound> gameSoundMap = getMap(GameSound.values(), GameSound::getJsonName);
     public static final Map<String, HitSound> hitSoundMap = getMap(HitSound.values(), HitSound::getJsonName);
     public static final Map<String, Plane> planeMap = getMap(Plane.values(), Plane::getJsonName);
     public static final Map<String, SpeedType> speedTypeMap = getMap(SpeedType.values(), SpeedType::getJsonName);
@@ -61,20 +62,24 @@ public class ActionFactory {
 
     private static Action read(Map<String, JsonNode> map) {
 
-        long floor = map.remove("floor").asLong();
+        map.remove("floor").asLong();
         EventType eventType = eventTypeMap.getOrDefault(map.remove("eventType").asText(), EventType.UNKNOWN);
 
         Action action = null;
         switch (eventType) {
             case SET_SPEED: {
                 action = new SetSpeed(
-                        readVar(map, "speedType", JsonNode::asText, speedTypeMap::get),
-                        readVar(map, "beatsPerMinute", JsonNode::asDouble),
-                        readVar(map, "bpmMultiplier", JsonNode::asDouble));
+                        readProperty(map, "speedType", JsonNode::asText, getOrThrowFunc(speedTypeMap)),
+                        readProperty(map, "beatsPerMinute", JsonNode::asDouble),
+                        readProperty(map, "bpmMultiplier", JsonNode::asDouble));
                 break;
             }
             case TWIRL: {
                 action = new Twirl();
+                break;
+            }
+            case BOOKMARK: {
+                action = new Bookmark();
                 break;
             }
             case CHECK_POINT: {
@@ -83,103 +88,106 @@ public class ActionFactory {
             }
             case EDITOR_COMMENT: {
                 action = new EditorComment(
-                        readVar(map, "comment", JsonNode::asText));
+                        readProperty(map, "comment", JsonNode::asText));
                 break;
             }
             case CUSTOM_BACKGROUND: {
                 action = new CustomBackground(
-                        readVar(map, "color", JsonNode::asText),
-                        readVar(map, "bgImage", JsonNode::asText),
-                        readVar(map, "imageColor", JsonNode::asText),
-                        readVar(map, "parallax", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "bgDisplayMode", JsonNode::asText, bgDisplayModeTypeMap::get),
-                        readVar(map, "lockRot", JsonNode::asText, toggleMap::get),
-                        readVar(map, "loopBG", JsonNode::asText, toggleMap::get),
-                        readVar(map, "unscaledSize", JsonNode::asLong),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText)
+                        readProperty(map, "color", JsonNode::asText),
+                        readProperty(map, "bgImage", JsonNode::asText),
+                        readProperty(map, "imageColor", JsonNode::asText),
+                        readProperty(map, "parallax", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "bgDisplayMode", JsonNode::asText, getOrThrowFunc(bgDisplayModeTypeMap)),
+                        readProperty(map, "lockRot", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "loopBG", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "unscaledSize", JsonNode::asLong),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText)
                 );
                 break;
             }
             case COLOR_TRACK: {
                 action = new ColorTrack(
-                        readVar(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
-                        readVar(map, "trackColor", JsonNode::asText),
-                        readVar(map, "secondaryTrackColor", JsonNode::asText),
-                        readVar(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readVar(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
-                        readVar(map, "trackPulseLength", JsonNode::asLong),
-                        readVar(map, "trackStyle", JsonNode::asText, trackStyleMap::get));
+                        readProperty(map, "trackColorType", JsonNode::asText, getOrThrowFunc(trackColorTypeMap)),
+                        readProperty(map, "trackColor", JsonNode::asText),
+                        readProperty(map, "secondaryTrackColor", JsonNode::asText),
+                        readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
+                        readProperty(map, "trackColorPulse", JsonNode::asText, getOrThrowFunc(trackColorPulseMap)),
+                        readProperty(map, "trackPulseLength", JsonNode::asLong),
+                        readProperty(map, "trackStyle", JsonNode::asText, getOrThrowFunc(trackStyleMap)),
+                        readProperty(map, "trackTexture", JsonNode::asText),
+                        readProperty(map, "trackTextureScale", JsonNode::asDouble));
                 break;
             }
             case ANIMATE_TRACK: {
                 action = new AnimateTrack(
-                        readVar(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
-                        readVar(map, "beatsAhead", JsonNode::asDouble),
-                        readVar(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
-                        readVar(map, "beatsBehind", JsonNode::asDouble));
+                        readProperty(map, "trackAnimation", JsonNode::asText, getOrThrowFunc(trackAnimationMap)),
+                        readProperty(map, "beatsAhead", JsonNode::asDouble),
+                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, getOrThrowFunc(trackDisappearAnimationMap)),
+                        readProperty(map, "beatsBehind", JsonNode::asDouble));
                 break;
             }
             case ADD_DECORATION: {
                 action = new AddDecoration(
-                        readVar(map, "decorationImage", JsonNode::asText),
-                        readVar(map, "position", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
-                        readVar(map, "pivotOffset", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "rotation", JsonNode::asDouble),
-                        readVar(map, "scale", JsonNode::asLong),
-                        readVar(map, "color", JsonNode::asText),
-                        readVar(map, "opacity", JsonNode::asLong),
-                        readVar(map, "depth", JsonNode::asLong),
-                        readVar(map, "parallax", JsonNode::asLong),
-                        readVar(map, "tag", JsonNode::asText));
+                        readProperty(map, "decorationImage", JsonNode::asText),
+                        readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(decorationRelativeToMap)),
+                        readProperty(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "rotation", JsonNode::asDouble),
+                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "tile", nodeToXYListFunc(JsonNode::asLong)),
+                        readProperty(map, "color", JsonNode::asText),
+                        readProperty(map, "opacity", JsonNode::asLong),
+                        readProperty(map, "depth", JsonNode::asLong),
+                        readProperty(map, "parallax", JsonNode::asLong),
+                        readProperty(map, "tag", JsonNode::asText),
+                        readProperty(map, "components", JsonNode::asText));
                 break;
             }
             case FLASH: {
                 action = new Flash(
-                        readVar(map, "duration", JsonNode::asDouble),
-                        readVar(map, "plane", JsonNode::asText, planeMap::get),
-                        readVar(map, "startColor", JsonNode::asText),
-                        readVar(map, "startOpacity", JsonNode::asLong),
-                        readVar(map, "endColor", JsonNode::asText),
-                        readVar(map, "endOpacity", JsonNode::asLong),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "duration", JsonNode::asDouble),
+                        readProperty(map, "plane", JsonNode::asText, getOrThrowFunc(planeMap)),
+                        readProperty(map, "startColor", JsonNode::asText),
+                        readProperty(map, "startOpacity", JsonNode::asLong),
+                        readProperty(map, "endColor", JsonNode::asText),
+                        readProperty(map, "endOpacity", JsonNode::asLong),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case MOVE_CAMERA: {
                 action = new MoveCamera(
-                        readVar(map, "duration", JsonNode::asDouble),
-                        readVar(map, "relativeTo", JsonNode::asText, cameraRelativeToMap::get),
-                        readVar(map, "position", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "rotation", JsonNode::asDouble),
-                        readVar(map, "zoom", JsonNode::asLong),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "ease", JsonNode::asText, easeMap::get),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "duration", JsonNode::asDouble),
+                        readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(cameraRelativeToMap)),
+                        readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "rotation", JsonNode::asDouble),
+                        readProperty(map, "zoom", JsonNode::asLong),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_HITSOUND: {
-                HitSound hitSound = hitSoundMap.get(readVar(map, "hitsound", JsonNode::asText));
-                if (hitSound == null) break;
                 action = new SetHitsound(
-                        hitSound,
-                        readVar(map, "hitsoundVolume", JsonNode::asLong));
+                        readProperty(map, "gameSound", JsonNode::asText, getOrThrowFunc(gameSoundMap)),
+                        readProperty(map, "hitsound", JsonNode::asText, getOrThrowFunc(hitSoundMap)),
+                        readProperty(map, "hitsoundVolume", JsonNode::asLong));
+                break;
+            }
+            case PLAY_SOUND: {
+                action = new PlaySound(
+                        readProperty(map, "hitsound", JsonNode::asText, getOrThrowFunc(hitSoundMap)),
+                        readProperty(map, "hitsoundVolume", JsonNode::asLong),
+                        readProperty(map, "angleOffset", JsonNode::asDouble));
                 break;
             }
             case RECOLOR_TRACK: {
-                List<Object> startTile = readVar(map, "startTile", jsonNode -> Arrays.asList(
+                List<Object> startTile = readProperty(map, "startTile", jsonNode -> Arrays.asList(
                         jsonNode.get(0).asLong(),
                         tilePositionMap.get(jsonNode.get(1).asText())));
-                List<Object> endTile = readVar(map, "endTile", jsonNode -> Arrays.asList(
+                List<Object> endTile = readProperty(map, "endTile", jsonNode -> Arrays.asList(
                         jsonNode.get(0).asLong(),
                         tilePositionMap.get(jsonNode.get(1).asText())));
 
@@ -188,22 +196,22 @@ public class ActionFactory {
                         startTile != null ? (TilePosition) startTile.get(1) : null,
                         endTile != null ? (Long) endTile.get(0) : null,
                         endTile != null ? (TilePosition) endTile.get(1) : null,
-                        readVar(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
-                        readVar(map, "trackColor", JsonNode::asText),
-                        readVar(map, "secondaryTrackColor", JsonNode::asText),
-                        readVar(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readVar(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
-                        readVar(map, "trackPulseLength", JsonNode::asLong),
-                        readVar(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "trackColorType", JsonNode::asText, getOrThrowFunc(trackColorTypeMap)),
+                        readProperty(map, "trackColor", JsonNode::asText),
+                        readProperty(map, "secondaryTrackColor", JsonNode::asText),
+                        readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
+                        readProperty(map, "trackColorPulse", JsonNode::asText, getOrThrowFunc(trackColorPulseMap)),
+                        readProperty(map, "trackPulseLength", JsonNode::asLong),
+                        readProperty(map, "trackStyle", JsonNode::asText, getOrThrowFunc(trackStyleMap)),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case MOVE_TRACK: {
-                List<Object> startTile = readVar(map, "startTile", jsonNode -> Arrays.asList(
+                List<Object> startTile = readProperty(map, "startTile", jsonNode -> Arrays.asList(
                         jsonNode.get(0).asLong(),
                         tilePositionMap.get(jsonNode.get(1).asText())));
-                List<Object> endTile = readVar(map, "endTile", jsonNode -> Arrays.asList(
+                List<Object> endTile = readProperty(map, "endTile", jsonNode -> Arrays.asList(
                         jsonNode.get(0).asLong(),
                         tilePositionMap.get(jsonNode.get(1).asText())));
 
@@ -212,162 +220,146 @@ public class ActionFactory {
                         startTile != null ? (TilePosition) startTile.get(1) : null,
                         endTile != null ? (Long) endTile.get(0) : null,
                         endTile != null ? (TilePosition) endTile.get(1) : null,
-                        readVar(map, "duration", JsonNode::asDouble),
-                        readVar(map, "positionOffset", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "rotationOffset", JsonNode::asDouble),
-                        readVar(map, "scale", JsonNode::asLong),
-                        readVar(map, "opacity", JsonNode::asLong),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "ease", JsonNode::asText, easeMap::get),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "duration", JsonNode::asDouble),
+                        readProperty(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "rotationOffset", JsonNode::asDouble),
+                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
+                        readProperty(map, "opacity", JsonNode::asLong),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_FILTER: {
                 action = new SetFilter(
-                        readVar(map, "filter", JsonNode::asText, filterMap::get),
-                        readVar(map, "enabled", JsonNode::asText, toggleMap::get),
-                        readVar(map, "intensity", JsonNode::asLong),
-                        readVar(map, "disableOthers", JsonNode::asText, toggleMap::get),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "filter", JsonNode::asText, getOrThrowFunc(filterMap)),
+                        readProperty(map, "enabled", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "intensity", JsonNode::asLong),
+                        readProperty(map, "disableOthers", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case HALL_OF_MIRRORS: {
                 action = new HallOfMirrors(
-                        readVar(map, "enabled", JsonNode::asText, toggleMap::get),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "enabled", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SHAKE_SCREEN: {
                 action = new ShakeScreen(
-                        readVar(map, "duration", JsonNode::asDouble),
-                        readVar(map, "strength", JsonNode::asLong),
-                        readVar(map, "intensity", JsonNode::asLong),
-                        readVar(map, "fadeOut", JsonNode::asText, toggleMap::get),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "duration", JsonNode::asDouble),
+                        readProperty(map, "strength", JsonNode::asLong),
+                        readProperty(map, "intensity", JsonNode::asLong),
+                        readProperty(map, "fadeOut", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_PLANET_ROTATION: {
                 action = new SetPlanetRotation(
-                        readVar(map, "ease", JsonNode::asText, easeMap::get),
-                        readVar(map, "easeParts", JsonNode::asLong));
+                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "easeParts", JsonNode::asLong));
                 break;
             }
             case MOVE_DECORATIONS: {
                 action = new MoveDecorations(
-                        readVar(map, "duration", JsonNode::asDouble),
-                        readVar(map, "tag", JsonNode::asText),
-                        readVar(map, "positionOffset", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "rotationOffset", JsonNode::asDouble),
-                        readVar(map, "scale", JsonNode::asLong),
-                        readVar(map, "color", JsonNode::asText),
-                        readVar(map, "opacity", JsonNode::asLong),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "ease", JsonNode::asText, easeMap::get),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "duration", JsonNode::asDouble),
+                        readProperty(map, "tag", JsonNode::asText),
+                        readProperty(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "rotationOffset", JsonNode::asDouble),
+                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
+                        readProperty(map, "color", JsonNode::asText),
+                        readProperty(map, "opacity", JsonNode::asLong),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case POSITION_TRACK: {
                 action = new PositionTrack(
-                        readVar(map, "positionOffset", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "editorOnly", JsonNode::asText, toggleMap::get));
+                        readProperty(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "editorOnly", JsonNode::asText, getOrThrowFunc(toggleMap)));
                 break;
             }
             case REPEAT_EVENTS: {
                 action = new RepeatEvents(
-                        readVar(map, "repetitions", JsonNode::asLong),
-                        readVar(map, "interval", JsonNode::asDouble),
-                        readVar(map, "tag", JsonNode::asText));
+                        readProperty(map, "repetitions", JsonNode::asLong),
+                        readProperty(map, "interval", JsonNode::asDouble),
+                        readProperty(map, "tag", JsonNode::asText));
                 break;
             }
             case BLOOM: {
-                Toggle enabled = toggleMap.get(readVar(map, "enabled", JsonNode::asText));
-                if (enabled == null) break;
                 action = new Bloom(
-                        enabled,
-                        readVar(map, "threshold", JsonNode::asLong),
-                        readVar(map, "intensity", JsonNode::asLong),
-                        readVar(map, "color", JsonNode::asText),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "enabled", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "threshold", JsonNode::asLong),
+                        readProperty(map, "intensity", JsonNode::asLong),
+                        readProperty(map, "color", JsonNode::asText),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_CONDITIONAL_EVENTS: {
                 action = new SetConditionalEvents(
-                        readVar(map, "perfectTag", JsonNode::asText),
-                        readVar(map, "hitTag", JsonNode::asText),
-                        readVar(map, "barelyTag", JsonNode::asText),
-                        readVar(map, "missTag", JsonNode::asText),
-                        readVar(map, "lossTag", JsonNode::asText));
+                        readProperty(map, "perfectTag", JsonNode::asText),
+                        readProperty(map, "hitTag", JsonNode::asText),
+                        readProperty(map, "barelyTag", JsonNode::asText),
+                        readProperty(map, "missTag", JsonNode::asText),
+                        readProperty(map, "lossTag", JsonNode::asText));
                 break;
             }
             case SCREEN_TILE: {
                 action = new ScreenTile(
-                        readVar(map, "tile", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "tile", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SCREEN_SCROLL: {
                 action = new ScreenScroll(
-                        readVar(map, "scroll", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "scroll", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case ADD_TEXT: {
                 action = new AddText(
-                        readVar(map, "decText", JsonNode::asText),
-                        readVar(map, "font", JsonNode::asText, fontMap::get),
-                        readVar(map, "position", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
-                        readVar(map, "pivotOffset", jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asDouble(),
-                                jsonNode.get(1).asDouble())),
-                        readVar(map, "rotation", JsonNode::asDouble),
-                        readVar(map, "scale", JsonNode::asLong),
-                        readVar(map, "color", JsonNode::asText),
-                        readVar(map, "opacity", JsonNode::asLong),
-                        readVar(map, "depth", JsonNode::asLong),
-                        readVar(map, "parallax", JsonNode::asLong),
-                        readVar(map, "tag", JsonNode::asText));
+                        readProperty(map, "decText", JsonNode::asText),
+                        readProperty(map, "font", JsonNode::asText, getOrThrowFunc(fontMap)),
+                        readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(decorationRelativeToMap)),
+                        readProperty(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)),
+                        readProperty(map, "rotation", JsonNode::asDouble),
+                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
+                        readProperty(map, "color", JsonNode::asText),
+                        readProperty(map, "opacity", JsonNode::asLong),
+                        readProperty(map, "depth", JsonNode::asLong),
+                        readProperty(map, "parallax", JsonNode::asLong),
+                        readProperty(map, "tag", JsonNode::asText));
                 break;
             }
             case SET_TEXT: {
                 action = new SetText(
-                        readVar(map, "decText", JsonNode::asText),
-                        readVar(map, "tag", JsonNode::asText),
-                        readVar(map, "angleOffset", JsonNode::asDouble),
-                        readVar(map, "eventTag", JsonNode::asText));
+                        readProperty(map, "decText", JsonNode::asText),
+                        readProperty(map, "tag", JsonNode::asText),
+                        readProperty(map, "angleOffset", JsonNode::asDouble),
+                        readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case CHANGE_TRACK: {
                 action = new ChangeTrack(
-                        readVar(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
-                        readVar(map, "trackColor", JsonNode::asText),
-                        readVar(map, "secondaryTrackColor", JsonNode::asText),
-                        readVar(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readVar(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
-                        readVar(map, "trackPulseLength", JsonNode::asLong),
-                        readVar(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
-                        readVar(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
-                        readVar(map, "beatsAhead", JsonNode::asDouble),
-                        readVar(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
-                        readVar(map, "beatsBehind", JsonNode::asDouble));
+                        readProperty(map, "trackColorType", JsonNode::asText, getOrThrowFunc(trackColorTypeMap)),
+                        readProperty(map, "trackColor", JsonNode::asText),
+                        readProperty(map, "secondaryTrackColor", JsonNode::asText),
+                        readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
+                        readProperty(map, "trackColorPulse", JsonNode::asText, getOrThrowFunc(trackColorPulseMap)),
+                        readProperty(map, "trackPulseLength", JsonNode::asLong),
+                        readProperty(map, "trackStyle", JsonNode::asText, getOrThrowFunc(trackStyleMap)),
+                        readProperty(map, "trackAnimation", JsonNode::asText, getOrThrowFunc(trackAnimationMap)),
+                        readProperty(map, "beatsAhead", JsonNode::asDouble),
+                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, getOrThrowFunc(trackDisappearAnimationMap)),
+                        readProperty(map, "beatsBehind", JsonNode::asDouble));
                 break;
             }
             case UNKNOWN: {
@@ -380,21 +372,6 @@ public class ActionFactory {
         }
 
         return action;
-    }
-
-    private static <T> T readVar(Map<String, JsonNode> map, String name, Function<JsonNode, String> mapper, Function<String, T> mapper2) {
-        return readVar(map, name, node -> {
-            T result = mapper2.apply(mapper.apply(node));
-            if (result == null) throw new IllegalStateException("Cannot find value(" + mapper.apply(node) + ")");
-            return result;
-        });
-    }
-
-    private static <T> T readVar(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
-        JsonNode node = map.remove(name);
-
-        if (node == null) return null;
-        return mapper.apply(node);
     }
 
     public static void write(StringBuilder sb, long floor, Action action) {
@@ -412,6 +389,7 @@ public class ActionFactory {
                 break;
             }
             case TWIRL:
+            case BOOKMARK:
             case CHECK_POINT: {
                 break;
             }
@@ -443,6 +421,8 @@ public class ActionFactory {
                 writeVar(sb, "trackColorPulse", e.getTrackColorPulse().getJsonName());
                 writeVar(sb, "trackPulseLength", e.getTrackPulseLength());
                 writeVar(sb, "trackStyle", e.getTrackStyle().getJsonName());
+                writeVar(sb, "trackTexture", e.getTrackTexture());
+                writeVar(sb, "trackTextureScale", e.getTrackTextureScale());
                 break;
             }
             case ANIMATE_TRACK: {
@@ -461,11 +441,13 @@ public class ActionFactory {
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
+                writeVar(sb, "tile", e.getTile());
                 writeVar(sb, "color", e.getColor());
                 writeVar(sb, "opacity", e.getOpacity());
                 writeVar(sb, "depth", e.getDepth());
                 writeVar(sb, "parallax", e.getParallax());
                 writeVar(sb, "tag", e.getTag());
+                writeVar(sb, "components", e.getComponents());
                 break;
             }
             case FLASH: {
@@ -477,6 +459,7 @@ public class ActionFactory {
                 writeVar(sb, "endColor", e.getEndColor());
                 writeVar(sb, "endOpacity", e.getEndOpacity());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
+                writeVar(sb, "ease", e.getEase().getJsonName());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
@@ -494,8 +477,16 @@ public class ActionFactory {
             }
             case SET_HITSOUND: {
                 SetHitsound e = (SetHitsound) action;
+                writeVar(sb, "gameSound", e.getGameSound().getJsonName());
                 writeVar(sb, "hitsound", e.getHitsound().getJsonName());
                 writeVar(sb, "hitsoundVolume", e.getHitsoundVolume());
+                break;
+            }
+            case PLAY_SOUND: {
+                PlaySound e = (PlaySound) action;
+                writeVar(sb, "hitsound", e.getHitsound().getJsonName());
+                writeVar(sb, "hitsoundVolume", e.getHitsoundVolume());
+                writeVar(sb, "angleOffset", e.getAngleOffset());
                 break;
             }
             case RECOLOR_TRACK: {

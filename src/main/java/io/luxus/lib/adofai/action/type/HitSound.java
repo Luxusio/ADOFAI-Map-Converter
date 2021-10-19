@@ -20,6 +20,13 @@ public enum HitSound {
     STICK("Stick"),
     REVERB_CLACK("ReverbClack"),
     SQUARESHOT("Squareshot"),
+    POWER_DOWN("PowerDown"),
+    POWER_UP("PowerUp"),
+    KICK_HOUSE("KickHouse"),
+    KICK_RUPTURE("KickRupture"),
+    HAT_HOUSE("HatHouse"),
+    SNARE_HOUSE("SnareHouse"),
+    SNARE_VAPOR("SnareVapor"),
     ;
 
     private final String jsonName;

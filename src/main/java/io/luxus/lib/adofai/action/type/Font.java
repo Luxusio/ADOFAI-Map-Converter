@@ -1,8 +1,10 @@
 package io.luxus.lib.adofai.action.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum Font {
     DEFAULT("Default"),
     ARIAL("Arial"),
@@ -12,10 +14,6 @@ public enum Font {
     IMPACT("Impact"),
     TIMES_NEW_ROMAN("TimesNewRoman"),
     ;
-
-    Font(String jsonName) {
-        this.jsonName = jsonName;
-    }
 
     private final String jsonName;
 

@@ -21,7 +21,7 @@ public class MoveTrack extends Action {
 	private Double duration = 1.0;
 	private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
 	private Double rotationOffset = 0.0;
-	private Long scale = 100L;
+	private List<Long> scale = Arrays.asList(100L, 100L);
 	private Long opacity = 100L;
 	private Double angleOffset = 0.0;
 	private Ease ease = Ease.LINEAR;
@@ -32,7 +32,7 @@ public class MoveTrack extends Action {
 	}
 
 	public MoveTrack(Long startTileNum, TilePosition startTilePosition, Long endTileNum, TilePosition endTilePosition,
-					 Double duration, List<Double> positionOffset, Double rotationOffset, Long scale, Long opacity,
+					 Double duration, List<Double> positionOffset, Double rotationOffset, List<Long> scale, Long opacity,
 					 Double angleOffset, Ease ease, String eventTag) {
 		this();
 		this.startTileNum = startTileNum;

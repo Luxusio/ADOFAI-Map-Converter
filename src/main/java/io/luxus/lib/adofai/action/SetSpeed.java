@@ -20,13 +20,9 @@ public class SetSpeed extends Action {
 	
 	public SetSpeed(SpeedType speedType, Double beatsPerMinute, Double bpmMultiplier) {
 		this();
-		this.speedType = speedType;
+		if (speedType != null) this.speedType = speedType;
 		this.beatsPerMinute = beatsPerMinute;
 		this.bpmMultiplier = bpmMultiplier;
-
-		if (this.speedType == null) {
-			this.speedType = SpeedType.BPM;
-		}
 	}
 
 }
