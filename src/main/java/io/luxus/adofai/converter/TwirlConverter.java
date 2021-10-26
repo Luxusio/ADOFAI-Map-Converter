@@ -19,7 +19,7 @@ import java.util.function.Function;
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 public class TwirlConverter {
-	public static CustomLevel convert(String path, boolean allTwirl, boolean useCameraOptimization) throws IOException {
+	public static CustomLevel convert(String path, double rate, boolean useCameraOptimization) throws IOException {
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
 
 		return MapSpeedConverterBase.convert(customLevel, useCameraOptimization,
@@ -53,7 +53,7 @@ public class TwirlConverter {
 
 						List<Action> actionList = tile.getActions(EventType.TWIRL);
 						actionList.clear();
-						if (allTwirl) {
+						if (rate > Math.random()) {
 							actionList.add(new Twirl());
 							reversed = !reversed;
 						}

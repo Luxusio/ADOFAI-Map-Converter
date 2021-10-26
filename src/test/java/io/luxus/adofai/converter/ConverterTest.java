@@ -10,7 +10,7 @@ public class ConverterTest {
     @Test
     void testLinearConvert() throws Exception {
         // given
-        String path = "./src/test/resources/test/sb.adofai";
+        String path = "./src/test/resources/test/The Yandere's Puppet Show.adofai";
         String outPath = path.substring(0, path.length() - 7);
 
         // when
@@ -20,8 +20,9 @@ public class ConverterTest {
         //CustomLevelParser.write(ShapedMapConverter.convert(path, Arrays.asList(0.0, 135.0), false), outPath + " Shape.adofai");
         CustomLevelParser.write(ShapedMapConverter.convert(path, Arrays.asList(0.0, 90.0), false), outPath + " Shape.adofai");
         CustomLevelParser.write(MapShapedMapConverter.convert(path, CustomLevelParser.readPath("./src/test/resources/test/bmb.adofai"), false), outPath + " bmb Shape.adofai");
-        CustomLevelParser.write(TwirlConverter.convert(path, true, false), outPath + " All Twirl.adofai");
-        CustomLevelParser.write(TwirlConverter.convert(path, false, false), outPath + " No Twirl.adofai");
+        CustomLevelParser.write(TwirlConverter.convert(path, 1.0, false), outPath + " All Twirl.adofai");
+        CustomLevelParser.write(TwirlConverter.convert(path, 0.0, false), outPath + " No Twirl.adofai");
+        CustomLevelParser.write(TwirlConverter.convert(path, 0.1, false), outPath + " Twirl rate 0.1.adofai");
         CustomLevelParser.write(NonEffectConverter.convert(path, true, true, true, true), outPath + " Non-Effect.adofai");
         CustomLevelParser.write(TransposeMapConverter.convert(path, 30), outPath + " Transpose.adofai");
 
