@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
+import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleExclude360;
+import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleInclude360;
 
 public class AngleConverter {
 
@@ -37,12 +39,7 @@ public class AngleConverter {
                 currTravelAngle += 180;
             }
 
-            if (currTravelAngle <= 0) {
-                currTravelAngle += 360;
-            }
-            else if (currTravelAngle > 360) {
-                currTravelAngle -= 360;
-            }
+            currTravelAngle = generalizeAngleInclude360(currTravelAngle);
         }
 
         return new Result(currStaticAngle, currTravelAngle);
@@ -66,13 +63,7 @@ public class AngleConverter {
             nextAngle += 180;
         }
 
-        if (nextAngle < 0) {
-            nextAngle += 360;
-        } else if(nextAngle >= 360) {
-            nextAngle -= 360;
-        }
-
-        return nextAngle;
+        return generalizeAngleExclude360(nextAngle);
     }
 
     public static double getNextStaticAngle(double staticAngle, double relativeAngle, boolean reversed) {
@@ -82,13 +73,7 @@ public class AngleConverter {
             staticAngle = staticAngle - relativeAngle + 180;
         }
 
-        if (staticAngle < 0) {
-            staticAngle += 360;
-        } else if (staticAngle >= 360) {
-            staticAngle -= 360;
-        }
-
-        return staticAngle;
+        return generalizeAngleExclude360(staticAngle);
     }
 
 }

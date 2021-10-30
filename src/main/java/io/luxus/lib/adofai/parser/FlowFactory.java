@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
+import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleExclude360;
 
 public class FlowFactory {
 
@@ -34,18 +35,20 @@ public class FlowFactory {
             }
         }
 
+        return pathDataToAngleData(pathData);
+    }
+
+    public static List<Double> pathDataToAngleData(List<TileAngle> pathData) {
         double staticAngle = 0;
-        int size = pathData.size();
-        List<Double> angleData = new ArrayList<>(size + 1);
-        angleData.add(ANGLE_MID_TILE);
+        List<Double> angleData = new ArrayList<>(pathData.size() + 1);
+        angleData.add(0.0);
 
         for (TileAngle angle : pathData) {
             if (angle == TileAngle.NONE) {
                 angleData.add(ANGLE_MID_TILE);
             } else {
                 if (angle.isRelative()) {
-                    staticAngle += angle.getSize();
-                    if (staticAngle >= 360.0) staticAngle -= 360.0;
+                    staticAngle = generalizeAngleExclude360(staticAngle + 180 - angle.getSize());
                 }
                 else staticAngle = angle.getSize();
                 angleData.add(staticAngle);
@@ -53,7 +56,6 @@ public class FlowFactory {
         }
 
         return angleData;
-
     }
 
     public static List<Double> readAngleData(JsonNode node) {
@@ -117,7 +119,7 @@ public class FlowFactory {
             return TileAngle.NONE;
         }
 
-        double relativeAngle = nextAngle - currAngle;
+        double relativeAngle = generalizeAngleExclude360(180 - nextAngle + currAngle);
 
         for (TileAngle angle : TileAngle.values()) {
             if (NumberUtil.fuzzyEquals(
