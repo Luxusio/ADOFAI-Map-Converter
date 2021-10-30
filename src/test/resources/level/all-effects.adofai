@@ -47,7 +47,7 @@
 		"lockRot": "Disabled", 
 		"loopBG": "Disabled", 
 		"unscaledSize": 100,
-		"relativeTo": "Player", 
+		"decorationRelativeTo": "Player",
 		"position": [0, 0], 
 		"rotation": 0, 
 		"zoom": 100,
@@ -68,9 +68,9 @@
 		{ "floor": 1, "eventType": "CustomBackground", "color": "000000", "bgImage": "", "imageColor": "ffffff", "parallax": [100, 100], "bgDisplayMode": "FitToScreen", "lockRot": "Disabled", "loopBG": "Disabled", "unscaledSize": 100, "angleOffset": 0, "eventTag": "" },
 		{ "floor": 1, "eventType": "ColorTrack", "trackColorType": "Single", "trackColor": "debb7b", "secondaryTrackColor": "ffffff", "trackColorAnimDuration": 2, "trackColorPulse": "None", "trackPulseLength": 10, "trackStyle": "Standard" },
 		{ "floor": 1, "eventType": "AnimateTrack", "trackAnimation": "None", "beatsAhead": 3, "trackDisappearAnimation": "None", "beatsBehind": 4 },
-		{ "floor": 1, "eventType": "AddDecoration", "decorationImage": "", "position": [0, 0], "relativeTo": "Tile", "pivotOffset": [0, 0], "rotation": 0, "scale": 100, "color": "ffffff", "depth": 0, "tag": "" },
+		{ "floor": 1, "eventType": "AddDecoration", "decorationImage": "", "position": [0, 0], "decorationRelativeTo": "Tile", "pivotOffset": [0, 0], "rotation": 0, "scale": 100, "color": "ffffff", "depth": 0, "tag": "" },
 		{ "floor": 1, "eventType": "Flash", "duration": 1, "plane": "Background", "startColor": "ffffff", "startOpacity": 100, "endColor": "ffffff", "endOpacity": 0, "angleOffset": 0, "eventTag": "" },
-		{ "floor": 1, "eventType": "MoveCamera", "duration": 1, "relativeTo": "Player", "position": [0, 0], "rotation": 0, "zoom": 100, "angleOffset": 0, "ease": "Linear", "eventTag": "" },
+		{ "floor": 1, "eventType": "MoveCamera", "duration": 1, "decorationRelativeTo": "Player", "position": [0, 0], "rotation": 0, "zoom": 100, "angleOffset": 0, "ease": "Linear", "eventTag": "" },
 		{ "floor": 1, "eventType": "SetHitsound", "hitsound": "Kick", "hitsoundVolume": 100 },
 		{ "floor": 1, "eventType": "RecolorTrack", "startTile": [0, "ThisTile"], "endTile": [0, "ThisTile"], "trackColorType": "Single", "trackColor": "debb7b", "secondaryTrackColor": "ffffff", "trackColorAnimDuration": 2, "trackColorPulse": "None", "trackPulseLength": 10, "trackStyle": "Standard", "angleOffset": 0, "eventTag": "" },
 		{ "floor": 1, "eventType": "MoveTrack", "startTile": [0, "ThisTile"], "endTile": [0, "ThisTile"], "duration": 1, "positionOffset": [0, 0], "rotationOffset": 0, "scale": 100, "opacity": 100, "angleOffset": 0, "ease": "Linear", "eventTag": "" },
@@ -85,7 +85,7 @@
 		{ "floor": 1, "eventType": "SetConditionalEvents", "perfectTag": "NONE", "hitTag": "NONE", "barelyTag": "NONE", "missTag": "NONE", "lossTag": "NONE" },
 		{ "floor": 1, "eventType": "ScreenTile", "tile": [1, 1], "angleOffset": 0, "eventTag": "" },
 		{ "floor": 1, "eventType": "ScreenScroll", "scroll": [0, 0], "angleOffset": 0, "eventTag": "" },
-		{ "floor": 1, "eventType": "AddText", "decText": "텍스트", "font": "Default", "position": [0, 0], "relativeTo": "Tile", "pivotOffset": [0, 0], "rotation": 0, "scale": 100, "color": "ffffff", "depth": -1, "tag": "" },
+		{ "floor": 1, "eventType": "AddText", "decText": "텍스트", "font": "Default", "position": [0, 0], "decorationRelativeTo": "Tile", "pivotOffset": [0, 0], "rotation": 0, "scale": 100, "color": "ffffff", "depth": -1, "tag": "" },
 		{ "floor": 1, "eventType": "SetText", "decText": "텍스트", "tag": "", "angleOffset": 0, "eventTag": "" }
 	]
 }

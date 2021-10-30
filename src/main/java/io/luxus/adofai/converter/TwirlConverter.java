@@ -1,65 +1,71 @@
 package io.luxus.adofai.converter;
 
+import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEach;
+import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
+import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.action.Action;
+import io.luxus.lib.adofai.action.Twirl;
+import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.converter.AngleConverter;
+import io.luxus.lib.adofai.parser.CustomLevelParser;
+import io.luxus.lib.adofai.util.NumberUtil;
+
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-import org.json.simple.parser.ParseException;
-
-import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEach;
-import io.luxus.adofai.converter.MapSpeedConverterBase.ApplyEachReturnValue;
-import io.luxus.api.adofai.ADOFAIMap;
-import io.luxus.api.adofai.MapData;
-import io.luxus.api.adofai.Tile;
-import io.luxus.api.adofai.TileData;
-import io.luxus.api.adofai.action.Action;
-import io.luxus.api.adofai.action.Twirl;
-import io.luxus.api.adofai.converter.AngleConverter;
-import io.luxus.api.adofai.type.EventType;
-import io.luxus.api.adofai.type.TileAngle;
+import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 public class TwirlConverter {
-	public static MapData convert(String path, boolean allTwirl, boolean useCameraOptimization) throws ParseException, IOException {
-		ADOFAIMap adofaiMap = MapSpeedConverterBase.getMap(path);
+	public static CustomLevel convert(String path, double rate, boolean useCameraOptimization) throws IOException {
+		CustomLevel customLevel = CustomLevelParser.readPath(path);
 
-		return MapSpeedConverterBase.convert(path, new ArrayList<>(), adofaiMap, useCameraOptimization, 
+		return MapSpeedConverterBase.convert(customLevel, useCameraOptimization,
 				new Function<MapSpeedConverterBase.ApplyEach, MapSpeedConverterBase.ApplyEachReturnValue>() {
-					private double staticAngle = 0.0;
+
+					private double prevStaticAngle = 0.0;
 					private boolean reversed = false;
+
 					@Override
 					public ApplyEachReturnValue apply(ApplyEach applyEach) {
+
 						int floor = applyEach.getFloor();
 						Tile tile = applyEach.getTile();
-						
-						double relativeAngle = tile.getRelativeAngle();
-						if (tile.getRelativeAngle() == 0.0) {
-							relativeAngle = applyEach.getTileList().get(floor + 1).getRelativeAngle();
-						} else if(tile.getTileAngle() == TileAngle.NONE) {
-							relativeAngle = applyEach.getTileList().get(floor - 1).getRelativeAngle();
+
+						double relativeAngle = tile.getTileMeta().getTravelAngle();
+						if (relativeAngle == 0.0) {
+							relativeAngle = applyEach.getTileList().get(floor + 1).getTileMeta().getTravelAngle();
+						} else if (tile.getAngle() == ANGLE_MID_TILE) {
+							relativeAngle = applyEach.getTileList().get(floor - 1).getTileMeta().getTravelAngle();
 						}
-						
-						//TileAngle newTileAngle = AngleConverter.getNextAngle(staticAngle, relativeAngle, tile.isReversed());
-						//staticAngle = AngleConverter.getNextStaticAngle(staticAngle, tile.getRelativeAngle(), tile.isReversed());
-						
-						TileAngle newTileAngle = AngleConverter.getNextAngle(staticAngle, relativeAngle, tile.isReversed());
-						if(allTwirl) reversed = !reversed;
-						staticAngle = AngleConverter.getNextStaticAngle(staticAngle, tile.getRelativeAngle(), reversed);
-						
+
+						Double currAngle;
+						if (NumberUtil.fuzzyEquals(relativeAngle, 0.0)) {
+							currAngle = ANGLE_MID_TILE;
+						} else {
+							currAngle = prevStaticAngle;
+						}
+
 						double mulValue = 1.0;
-						double nowTempBPM = mulValue * tile.getBpm();
-						double bpmMultiplier = mulValue;
-						double angleMultiplier = mulValue;
-						
-						List<Action> actionList = tile.getActionList(EventType.TWIRL);
+						double nowTempBPM = mulValue * tile.getTileMeta().getBpm();
+
+						List<Action> actionList = tile.getActions(EventType.TWIRL);
 						actionList.clear();
-						if(allTwirl) actionList.add(new Twirl());
-						
-						TileData tileData = new TileData(floor, newTileAngle, tile.getActionListMap());
-						applyEach.getNewTileDataList().add(tileData);
+						if (rate > Math.random()) {
+							actionList.add(new Twirl());
+							reversed = !reversed;
+						}
+
+						prevStaticAngle = AngleConverter.getNextStaticAngle(prevStaticAngle, tile.getTileMeta().getTravelAngle(), reversed);
+
+						Tile newTile = new Tile(currAngle, new HashMap<>(tile.getActionMap()));
+						applyEach.getNewTileList().add(newTile);
+
 						return new ApplyEachReturnValue(
-								tileData, nowTempBPM,
-								bpmMultiplier, angleMultiplier);
+								newTile, nowTempBPM,
+								mulValue, mulValue);
 					}
 				});
 	}

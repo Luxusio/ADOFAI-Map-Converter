@@ -16,9 +16,11 @@ public class FileUtil {
 	
 	private static List<String> findRecursive(File directory, String regex, List<String> fileList) {
 		File[] fileArray = directory.listFiles();
-		for(File file : fileArray) {
-			if(file.isDirectory()) findRecursive(file, regex, fileList);
-			if(file.getName().matches(regex)) fileList.add(file.getAbsolutePath());
+		if (fileArray != null) {
+			for (File file : fileArray) {
+				if (file.isDirectory()) findRecursive(file, regex, fileList);
+				if (file.getName().matches(regex)) fileList.add(file.getAbsolutePath());
+			}
 		}
 		return fileList;
 	}
