@@ -4,7 +4,6 @@ import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.converter.AngleConverter;
-import io.luxus.lib.adofai.parser.CustomLevelParser;
 
 import java.io.IOException;
 import java.util.HashMap;

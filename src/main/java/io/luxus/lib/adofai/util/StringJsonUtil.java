@@ -112,7 +112,11 @@ public class StringJsonUtil {
         JsonNode node = map.remove(name);
         Optional<JsonNode> optional = Optional.ofNullable(node);
         try {
-            return mapper.apply(optional);
+            Optional<T> o = mapper.apply(optional);
+            if (node != null && !o.isPresent()) {
+                map.put(name, node);
+            }
+            return o;
         } catch (Throwable t) {
             map.put(name, node);
             throw t;
@@ -122,11 +126,18 @@ public class StringJsonUtil {
     public static <R> Function<JsonNode, List<R>> nodeToXYListFunc(Function<? super JsonNode, ? extends R> mapper) {
         return node -> {
             List<R> result = nodeToList(node, mapper);
-            if (result.size() == 0) return null;
+            if (result.size() == 0) {
+                R value = mapper.apply(node);
+                if (value == null) return null;
+                result.add(value);
+                result.add(value);
+            }
             else if (result.size() == 1) {
                 result.add(result.get(0));
             }
-            else if (result.size() > 2) throw new IllegalStateException("property is more than 2");
+            else if (result.size() > 2) {
+                throw new IllegalStateException("property is more than 2");
+            }
             return result;
         };
     }

@@ -53,7 +53,7 @@ public class ActionFactory {
         }
 
         if (action == null) {
-            System.err.println("Failed to read action " + node);
+            System.err.println("Failed to read action rest=" + map + ", " + node);
             action = new UnknownAction(node);
         }
 
@@ -69,7 +69,7 @@ public class ActionFactory {
         switch (eventType) {
             case SET_SPEED: {
                 action = new SetSpeed(
-                        readProperty(map, "speedType", JsonNode::asText, getOrThrowFunc(speedTypeMap)),
+                        readProperty(map, "speedType", JsonNode::asText, speedTypeMap::get),
                         readProperty(map, "beatsPerMinute", JsonNode::asDouble),
                         readProperty(map, "bpmMultiplier", JsonNode::asDouble));
                 break;
@@ -97,9 +97,9 @@ public class ActionFactory {
                         readProperty(map, "bgImage", JsonNode::asText),
                         readProperty(map, "imageColor", JsonNode::asText),
                         readProperty(map, "parallax", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "bgDisplayMode", JsonNode::asText, getOrThrowFunc(bgDisplayModeTypeMap)),
-                        readProperty(map, "lockRot", JsonNode::asText, getOrThrowFunc(toggleMap)),
-                        readProperty(map, "loopBG", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "bgDisplayMode", JsonNode::asText, bgDisplayModeTypeMap::get),
+                        readProperty(map, "lockRot", JsonNode::asText, toggleMap::get),
+                        readProperty(map, "loopBG", JsonNode::asText, toggleMap::get),
                         readProperty(map, "unscaledSize", JsonNode::asLong),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
                         readProperty(map, "eventTag", JsonNode::asText)
@@ -108,30 +108,31 @@ public class ActionFactory {
             }
             case COLOR_TRACK: {
                 action = new ColorTrack(
-                        readProperty(map, "trackColorType", JsonNode::asText, getOrThrowFunc(trackColorTypeMap)),
+                        readProperty(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
                         readProperty(map, "trackColor", JsonNode::asText),
                         readProperty(map, "secondaryTrackColor", JsonNode::asText),
                         readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readProperty(map, "trackColorPulse", JsonNode::asText, getOrThrowFunc(trackColorPulseMap)),
+                        readProperty(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
                         readProperty(map, "trackPulseLength", JsonNode::asLong),
-                        readProperty(map, "trackStyle", JsonNode::asText, getOrThrowFunc(trackStyleMap)),
+                        readProperty(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
                         readProperty(map, "trackTexture", JsonNode::asText),
                         readProperty(map, "trackTextureScale", JsonNode::asDouble));
                 break;
             }
             case ANIMATE_TRACK: {
                 action = new AnimateTrack(
-                        readProperty(map, "trackAnimation", JsonNode::asText, getOrThrowFunc(trackAnimationMap)),
+                        readProperty(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
                         readProperty(map, "beatsAhead", JsonNode::asDouble),
-                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, getOrThrowFunc(trackDisappearAnimationMap)),
+                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
                         readProperty(map, "beatsBehind", JsonNode::asDouble));
                 break;
             }
             case ADD_DECORATION: {
                 action = new AddDecoration(
-                        readProperty(map, "decorationImage", JsonNode::asText),
+                        readPropertyO(map, "decorationImage", o -> o.map(JsonNode::asText))
+                                .orElse(readProperty(map, "decText", JsonNode::asText)),
                         readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(decorationRelativeToMap)),
+                        readProperty(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
                         readProperty(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)),
                         readProperty(map, "rotation", JsonNode::asDouble),
                         readProperty(map, "scale", nodeToXYListFunc(JsonNode::asDouble)),
@@ -147,38 +148,38 @@ public class ActionFactory {
             case FLASH: {
                 action = new Flash(
                         readProperty(map, "duration", JsonNode::asDouble),
-                        readProperty(map, "plane", JsonNode::asText, getOrThrowFunc(planeMap)),
+                        readProperty(map, "plane", JsonNode::asText, planeMap::get),
                         readProperty(map, "startColor", JsonNode::asText),
                         readProperty(map, "startOpacity", JsonNode::asLong),
                         readProperty(map, "endColor", JsonNode::asText),
                         readProperty(map, "endOpacity", JsonNode::asLong),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case MOVE_CAMERA: {
                 action = new MoveCamera(
                         readProperty(map, "duration", JsonNode::asDouble),
-                        readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(cameraRelativeToMap)),
+                        readProperty(map, "relativeTo", JsonNode::asText, cameraRelativeToMap::get),
                         readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
                         readProperty(map, "rotation", JsonNode::asDouble),
                         readProperty(map, "zoom", JsonNode::asLong),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_HITSOUND: {
                 action = new SetHitsound(
-                        readProperty(map, "gameSound", JsonNode::asText, getOrThrowFunc(gameSoundMap)),
-                        readProperty(map, "hitsound", JsonNode::asText, getOrThrowFunc(hitSoundMap)),
+                        readProperty(map, "gameSound", JsonNode::asText, gameSoundMap::get),
+                        readProperty(map, "hitsound", JsonNode::asText, hitSoundMap::get),
                         readProperty(map, "hitsoundVolume", JsonNode::asLong));
                 break;
             }
             case PLAY_SOUND: {
                 action = new PlaySound(
-                        readProperty(map, "hitsound", JsonNode::asText, getOrThrowFunc(hitSoundMap)),
+                        readProperty(map, "hitsound", JsonNode::asText, hitSoundMap::get),
                         readProperty(map, "hitsoundVolume", JsonNode::asLong),
                         readProperty(map, "angleOffset", JsonNode::asDouble));
                 break;
@@ -196,13 +197,13 @@ public class ActionFactory {
                         startTile != null ? (TilePosition) startTile.get(1) : null,
                         endTile != null ? (Long) endTile.get(0) : null,
                         endTile != null ? (TilePosition) endTile.get(1) : null,
-                        readProperty(map, "trackColorType", JsonNode::asText, getOrThrowFunc(trackColorTypeMap)),
+                        readProperty(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
                         readProperty(map, "trackColor", JsonNode::asText),
                         readProperty(map, "secondaryTrackColor", JsonNode::asText),
                         readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readProperty(map, "trackColorPulse", JsonNode::asText, getOrThrowFunc(trackColorPulseMap)),
+                        readProperty(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
                         readProperty(map, "trackPulseLength", JsonNode::asLong),
-                        readProperty(map, "trackStyle", JsonNode::asText, getOrThrowFunc(trackStyleMap)),
+                        readProperty(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
@@ -226,23 +227,23 @@ public class ActionFactory {
                         readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
                         readProperty(map, "opacity", JsonNode::asLong),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_FILTER: {
                 action = new SetFilter(
-                        readProperty(map, "filter", JsonNode::asText, getOrThrowFunc(filterMap)),
-                        readProperty(map, "enabled", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "filter", JsonNode::asText, filterMap::get),
+                        readProperty(map, "enabled", JsonNode::asText, toggleMap::get),
                         readProperty(map, "intensity", JsonNode::asLong),
-                        readProperty(map, "disableOthers", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "disableOthers", JsonNode::asText, toggleMap::get),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case HALL_OF_MIRRORS: {
                 action = new HallOfMirrors(
-                        readProperty(map, "enabled", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "enabled", JsonNode::asText, toggleMap::get),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
@@ -252,14 +253,14 @@ public class ActionFactory {
                         readProperty(map, "duration", JsonNode::asDouble),
                         readProperty(map, "strength", JsonNode::asLong),
                         readProperty(map, "intensity", JsonNode::asLong),
-                        readProperty(map, "fadeOut", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "fadeOut", JsonNode::asText, toggleMap::get),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case SET_PLANET_ROTATION: {
                 action = new SetPlanetRotation(
-                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
                         readProperty(map, "easeParts", JsonNode::asLong));
                 break;
             }
@@ -273,14 +274,14 @@ public class ActionFactory {
                         readProperty(map, "color", JsonNode::asText),
                         readProperty(map, "opacity", JsonNode::asLong),
                         readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, getOrThrowFunc(easeMap)),
+                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
                         readProperty(map, "eventTag", JsonNode::asText));
                 break;
             }
             case POSITION_TRACK: {
                 action = new PositionTrack(
                         readProperty(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "editorOnly", JsonNode::asText, getOrThrowFunc(toggleMap)));
+                        readProperty(map, "editorOnly", JsonNode::asText, toggleMap::get));
                 break;
             }
             case REPEAT_EVENTS: {
@@ -292,7 +293,7 @@ public class ActionFactory {
             }
             case BLOOM: {
                 action = new Bloom(
-                        readProperty(map, "enabled", JsonNode::asText, getOrThrowFunc(toggleMap)),
+                        readProperty(map, "enabled", JsonNode::asText, toggleMap::get),
                         readProperty(map, "threshold", JsonNode::asLong),
                         readProperty(map, "intensity", JsonNode::asLong),
                         readProperty(map, "color", JsonNode::asText),
@@ -326,9 +327,9 @@ public class ActionFactory {
             case ADD_TEXT: {
                 action = new AddText(
                         readProperty(map, "decText", JsonNode::asText),
-                        readProperty(map, "font", JsonNode::asText, getOrThrowFunc(fontMap)),
+                        readProperty(map, "font", JsonNode::asText, fontMap::get),
                         readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(decorationRelativeToMap)),
+                        readProperty(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
                         readProperty(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)),
                         readProperty(map, "rotation", JsonNode::asDouble),
                         readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
@@ -349,16 +350,16 @@ public class ActionFactory {
             }
             case CHANGE_TRACK: {
                 action = new ChangeTrack(
-                        readProperty(map, "trackColorType", JsonNode::asText, getOrThrowFunc(trackColorTypeMap)),
+                        readProperty(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
                         readProperty(map, "trackColor", JsonNode::asText),
                         readProperty(map, "secondaryTrackColor", JsonNode::asText),
                         readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readProperty(map, "trackColorPulse", JsonNode::asText, getOrThrowFunc(trackColorPulseMap)),
+                        readProperty(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
                         readProperty(map, "trackPulseLength", JsonNode::asLong),
-                        readProperty(map, "trackStyle", JsonNode::asText, getOrThrowFunc(trackStyleMap)),
-                        readProperty(map, "trackAnimation", JsonNode::asText, getOrThrowFunc(trackAnimationMap)),
+                        readProperty(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
+                        readProperty(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
                         readProperty(map, "beatsAhead", JsonNode::asDouble),
-                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, getOrThrowFunc(trackDisappearAnimationMap)),
+                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
                         readProperty(map, "beatsBehind", JsonNode::asDouble));
                 break;
             }
