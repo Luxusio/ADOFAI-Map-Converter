@@ -16,12 +16,12 @@ class NoSpeedChangeMapConverterTest {
     @Test
     void testConvert() throws Exception {
         // given
-        String path = "./src/test/resources/convertTest/level.adofai";
+        String path = "./src/test/resources/convertTest/Scattered Faith (Nerfed).adofai";
         String jsonStr = StringJsonUtil.fixJsonString(CustomLevelParser.readString(new File(path)));
         JsonNode node = new ObjectMapper().readTree(jsonStr);
         CustomLevel original = CustomLevelParser.read(node);
 
-        double targetBpm = 31.25;
+        double targetBpm = 160;
 
         // when
         CustomLevel result = NoSpeedChangeMapConverter.convert(path, targetBpm);

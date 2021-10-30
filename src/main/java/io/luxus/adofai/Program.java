@@ -41,7 +41,10 @@ public class Program {
         System.out.println("5. 이펙트 제거");
         System.out.println("6. 투명도 변환");
         System.out.println("7. Bpm 승수->Bpm 변환");
-        System.out.println("8. 종료");
+        System.out.println("8. 무변속 맵 변환");
+        System.out.println("9. 맵 전체 bpm *배수 변환");
+        System.out.println("10. 모든 타일 무작위 bpm 변환");
+        System.out.println("11. 종료");
         System.out.print("입력 : ");
 
         int mode = scanner.nextInt();
@@ -60,6 +63,11 @@ public class Program {
         boolean removeFlash = false;
         // 7
         int opacity = 0;
+        // 8
+        double destBpm = 0.0;
+        // 9
+        double multiplier = 0.0;
+
 
         if (mode == 3) {
             System.out.println("*.adofai 파일 내의 pathData 혹은 angleData 형식으로 입력하여야 합니다*");
@@ -111,15 +119,16 @@ public class Program {
             }
 
         }
-//		if(mode == 2 || mode == 3 || mode == 4 || mode == 5) {
+//		else if(mode == 2 || mode == 3 || mode == 4 || mode == 5) {
 //			System.out.print("카메라 최적화 사용(y, n):");
 //			useCameraOptimization = scanner.nextLine().trim().equalsIgnoreCase("y");
 //		}
-        if (mode == 4) {
+        else if (mode == 4) {
             System.out.print("회전 넣을 비율(0.0~1.0):");
             twirlRate = scanner.nextDouble();
+            scanner.nextLine();
         }
-        if (mode == 5) {
+        else if (mode == 5) {
             System.out.print("장식 제거(y, n):");
             removeDecoration = scanner.nextLine().trim().equalsIgnoreCase("y");
             System.out.print("타일이동 제거(y, n):");
@@ -129,16 +138,26 @@ public class Program {
             System.out.print("플래시 제거(y, n):");
             removeFlash = scanner.nextLine().trim().equalsIgnoreCase("y");
         }
-        if (mode == 6) {
+        else if (mode == 6) {
             System.out.print("투명도(0~100):");
             opacity = scanner.nextInt();
             scanner.nextLine();
         }
-        if (mode == 8) {
+        else if (mode == 8) {
+            System.out.print("목표 BPM:");
+            destBpm = scanner.nextDouble();
+            scanner.nextLine();
+        }
+        else if (mode == 9) {
+            System.out.print("배수:");
+            multiplier = scanner.nextDouble();
+            scanner.nextLine();
+        }
+        else if (mode == 11) {
             System.out.println("프로그램을 종료합니다.");
             return;
         }
-        if (mode < 0 || mode > 9) {
+        else if (mode <= 0 || mode > 11) {
             System.out.println("잘못된 모드입니다. 프로그램을 종료합니다.");
             return;
         }
@@ -173,17 +192,20 @@ public class Program {
                 if (mode == 1) {
                     result = OuterMapConverter.convert(path);
                     outPath += " Outer.adofai";
-                } else if (mode == 2) {
+                }
+                else if (mode == 2) {
                     result = LinearMapConverter.convert(path, useCameraOptimization);
                     outPath += " Linear.adofai";
-                } else if (mode == 3) {
+                }
+                else if (mode == 3) {
                     if (patternLevel == null) {
                         result = ShapedMapConverter.convert(path, angleData, useCameraOptimization);
                     } else {
                         result = MapShapedMapConverter.convert(path, patternLevel, useCameraOptimization);
                     }
                     outPath += " Shape.adofai";
-                } else if (mode == 4) {
+                }
+                else if (mode == 4) {
 
                     result = TwirlConverter.convert(path, twirlRate, useCameraOptimization);
 
@@ -197,16 +219,32 @@ public class Program {
                         outPath += " Twirl rate " + twirlRate + ".adofai";
                     }
 
-                } else if (mode == 5) {
+                }
+                else if (mode == 5) {
                     result = NonEffectConverter.convert(path, removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
                     outPath +=  "Non-Effect.adofai";
-                } else if (mode == 6) {
+                }
+                else if (mode == 6) {
                     result = TransposeMapConverter.convert(path, opacity);
                     outPath += " Transpose.adofai";
-                } else if (mode == 7) {
+                }
+                else if (mode == 7) {
                     result = OnlyBpmSetSpeedConverter.convert(path);
                     outPath += " OnlyBpm.adofai";
-                } else {
+                }
+                else if (mode == 8) {
+                    result = NoSpeedChangeMapConverter.convert(path, destBpm);
+                    outPath += " NoSpeedChange " + destBpm + "BPM.adofai";
+                }
+                else if (mode == 9) {
+                    result = BpmMultiplyMapConverter.convert(path, multiplier);
+                    outPath += " BpmMultiply x" + multiplier + ".adofai";
+                }
+                else if (mode == 10) {
+                    result = ChaosBpmMapConverter.convert(path);
+                    outPath += " Chaos Bpm.adofai";
+                }
+                else {
                     System.err.println("잘못된 변환 모드.(" + mode + ")");
                     return;
                 }
