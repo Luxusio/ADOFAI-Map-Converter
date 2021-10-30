@@ -112,7 +112,11 @@ public class StringJsonUtil {
         JsonNode node = map.remove(name);
         Optional<JsonNode> optional = Optional.ofNullable(node);
         try {
-            return mapper.apply(optional);
+            Optional<T> o = mapper.apply(optional);
+            if (node != null && !o.isPresent()) {
+                map.put(name, node);
+            }
+            return o;
         } catch (Throwable t) {
             map.put(name, node);
             throw t;
