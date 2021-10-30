@@ -10,7 +10,7 @@ public class StringJsonUtil {
     public static String fixJsonString(String jsonStr) {
         StringBuilder sb = new StringBuilder(jsonStr.length());
 
-
+        Stack<Boolean> isListStack = new Stack<>();
         boolean hasPrevObject = false;
         boolean keyMode = true;
 
@@ -22,21 +22,26 @@ public class StringJsonUtil {
                 if (hasPrevObject && keyMode) {
                     sb.append(',');
                 }
+                isListStack.push(c == '[');
+
                 sb.append(c);
                 hasPrevObject = false;
+                keyMode = true;
             }
             else if (c == ':') {
                 keyMode = false;
                 sb.append(c);
             }
             else if (c == '}' || c == ']') {
+                isListStack.pop();
                 hasPrevObject = true;
+                keyMode = true;
                 sb.append(c);
             }
             else if (c == '"') {
                 // write a string value
 
-                if (hasPrevObject && keyMode) {
+                if (hasPrevObject && (keyMode || isListStack.peek())) {
                     sb.append(',');
                 }
 
@@ -56,19 +61,30 @@ public class StringJsonUtil {
                         escape = false;
                     }
                 }
+
+                hasPrevObject = true;
                 keyMode = !keyMode;
             }
             else if (c != ',' && c != ' ' && c != '\t' && c != '\n') {
                 // write a value
+
+                if (hasPrevObject && (keyMode || isListStack.peek())) {
+                    sb.append(',');
+                }
+
                 sb.append(c);
 
                 for (idx++; idx < chars.length; idx++) {
                     char valC = chars[idx];
-                    if (valC == '}' || valC == ']' || valC == ',' || valC == ' ' || valC == '\t' || valC == '\n') {
+                    if (valC == '{' || valC == '[' || valC == '}' || valC == ']' ||
+                            valC == ',' || valC == ' ' || valC == '\t' || valC == '\n') {
+                        idx--;
                         break;
                     }
                     sb.append(valC);
                 }
+
+                hasPrevObject = true;
                 keyMode = !keyMode;
             }
         }
