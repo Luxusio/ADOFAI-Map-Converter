@@ -129,7 +129,8 @@ public class ActionFactory {
             }
             case ADD_DECORATION: {
                 action = new AddDecoration(
-                        readProperty(map, "decorationImage", JsonNode::asText),
+                        readPropertyO(map, "decorationImage", o -> o.map(JsonNode::asText))
+                                .orElse(readProperty(map, "decText", JsonNode::asText)),
                         readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
                         readProperty(map, "relativeTo", JsonNode::asText, getOrThrowFunc(decorationRelativeToMap)),
                         readProperty(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)),
