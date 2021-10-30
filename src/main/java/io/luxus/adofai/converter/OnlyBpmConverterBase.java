@@ -61,7 +61,6 @@ public class OnlyBpmConverterBase {
                                 new Tile(prevStaticAngle, new HashMap<>(tile.getActionMap()));
                         applyEach.getNewTileList().add(newTile);
 
-                        System.out.println(prevStaticAngle + ", " + newTravelAngle + ", " + tileMeta.getBpm() + ", " + tileMeta.getTravelAngle());
                         prevStaticAngle = AngleConverter.getNextStaticAngle(prevStaticAngle, newTravelAngle, tileMeta.isReversed());
 
                         return new MapSpeedConverterBase.ApplyEachReturnValue(
