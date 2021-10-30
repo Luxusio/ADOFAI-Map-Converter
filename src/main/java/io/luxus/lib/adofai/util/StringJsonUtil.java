@@ -8,59 +8,68 @@ import java.util.function.Function;
 public class StringJsonUtil {
 
     public static String fixJsonString(String jsonStr) {
-
         StringBuilder sb = new StringBuilder(jsonStr.length());
 
-        boolean isString = false;
-        boolean escape = false;
-        boolean comma = false;
 
-        for (char c : jsonStr.toCharArray()) {
-            if (c == '\\') {
-                escape = true;
+        boolean hasPrevObject = false;
+        boolean keyMode = true;
+
+        char[] chars = jsonStr.toCharArray();
+        for (int idx = 0;idx < chars.length; idx++) {
+            char c = chars[idx];
+
+            if (c == '{' || c == '[') {
+                if (hasPrevObject && keyMode) {
+                    sb.append(',');
+                }
+                sb.append(c);
+                hasPrevObject = false;
+            }
+            else if (c == ':') {
+                keyMode = false;
                 sb.append(c);
             }
-            else {
-                if (isString) {
-                    if (c == '"') {
-                        if (escape) {
-                            sb.append(c);
-                        }
-                        else { // string end
-                            isString = false;
-                            sb.append(c);
-                        }
+            else if (c == '}' || c == ']') {
+                hasPrevObject = true;
+                sb.append(c);
+            }
+            else if (c == '"') {
+                // write a string value
+
+                if (hasPrevObject && keyMode) {
+                    sb.append(',');
+                }
+
+                boolean escape = false;
+                sb.append(c);
+
+                for (idx++; idx < chars.length; idx++) {
+                    char strC = chars[idx];
+                    sb.append(strC);
+                    if (strC == '\\') {
+                        escape = true;
+                    }
+                    else if (!escape && strC == '"') {
+                        break; // string end
                     }
                     else {
-                        // string content. just add
-                        sb.append(c);
+                        escape = false;
                     }
                 }
-                else {
-                    if (c == '"') {
-                        isString = true;
-                        if (comma) {
-                            comma = false;
-                            sb.append(',');
-                        }
-                        sb.append(c);
+                keyMode = !keyMode;
+            }
+            else if (c != ',' && c != ' ' && c != '\t' && c != '\n') {
+                // write a value
+                sb.append(c);
+
+                for (idx++; idx < chars.length; idx++) {
+                    char valC = chars[idx];
+                    if (valC == '}' || valC == ']' || valC == ',' || valC == ' ' || valC == '\t' || valC == '\n') {
+                        break;
                     }
-                    else if (c == '}' || c == ']') {
-                        sb.append(c);
-                        comma = false;
-                    }
-                    else if (c == ',') {
-                        comma = true;
-                    }
-                    else if (c != ' ' && c != '\t' && c != '\n') {
-                        if (comma) {
-                            comma = false;
-                            sb.append(',');
-                        }
-                        sb.append(c);
-                    }
+                    sb.append(valC);
                 }
-                escape = false;
+                keyMode = !keyMode;
             }
         }
 
