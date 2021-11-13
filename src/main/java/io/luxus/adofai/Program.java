@@ -2,6 +2,10 @@ package io.luxus.adofai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.luxus.adofai.converter.*;
+import io.luxus.adofai.converterv2.MapEffectConverter;
+import io.luxus.adofai.converterv2.OuterMapConverterV2;
+import io.luxus.adofai.converterv2.ShapedMapConverterV2;
+import io.luxus.adofai.converterv2.TwirlConverterV2;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
@@ -190,24 +194,24 @@ public class Program {
                 String outPath = path.replace(".adofai", "");
 
                 if (mode == 1) {
-                    result = OuterMapConverter.convert(path);
+                    result = OuterMapConverterV2.convert(path);
                     outPath += " Outer.adofai";
                 }
                 else if (mode == 2) {
-                    result = LinearMapConverter.convert(path, useCameraOptimization);
+                    result = ShapedMapConverterV2.linearConvert(path, useCameraOptimization);
                     outPath += " Linear.adofai";
                 }
                 else if (mode == 3) {
                     if (patternLevel == null) {
-                        result = ShapedMapConverter.convert(path, angleData, useCameraOptimization);
+                        result = ShapedMapConverterV2.convert(path, angleData, useCameraOptimization);
                     } else {
-                        result = MapShapedMapConverter.convert(path, patternLevel, useCameraOptimization);
+                        result = ShapedMapConverterV2.convert(path, patternLevel, useCameraOptimization);
                     }
                     outPath += " Shape.adofai";
                 }
                 else if (mode == 4) {
 
-                    result = TwirlConverter.convert(path, twirlRate, useCameraOptimization);
+                    result = TwirlConverterV2.convert(path, twirlRate, useCameraOptimization);
 
                     if (NumberUtil.fuzzyEquals(twirlRate, 0.0)) {
                         outPath += " No Twirl.adofai";
@@ -221,15 +225,15 @@ public class Program {
 
                 }
                 else if (mode == 5) {
-                    result = NonEffectConverter.convert(path, removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
+                    result = MapEffectConverter.removeEffectConvert(path, removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
                     outPath +=  "Non-Effect.adofai";
                 }
                 else if (mode == 6) {
-                    result = TransposeMapConverter.convert(path, opacity);
+                    result = MapEffectConverter.transparentConvert(path, opacity);
                     outPath += " Transpose.adofai";
                 }
                 else if (mode == 7) {
-                    result = OnlyBpmSetSpeedConverter.convert(path);
+                    result = MapEffectConverter.onlyBpmSetConvert(path);
                     outPath += " OnlyBpm.adofai";
                 }
                 else if (mode == 8) {

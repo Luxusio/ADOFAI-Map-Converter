@@ -51,7 +51,7 @@ public class MapSpeedConverterBase {
 
 		Tile tile;
 		List<Action> actionList;
-		double prevTempBPM = tiles.get(0).getTileMeta().getTempBPM();
+		double prevTempBPM = tiles.get(0).getTileMeta().getPerceivedBpm();
 
 		for (int i = 1; i < tiles.size(); i++) {
 			tile = tiles.get(i);

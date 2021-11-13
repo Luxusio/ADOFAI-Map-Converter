@@ -12,6 +12,7 @@ import lombok.ToString;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @ToString
@@ -85,7 +86,6 @@ public class TileMeta {
         this.realY += y;
         this.editorX += x;
         this.editorY += y;
-
     }
 
     private void update(Map<EventType, List<Action>> actionMap) {
@@ -121,9 +121,35 @@ public class TileMeta {
         }
     }
 
+    public static double calculateTotalPerceivedBpm(List<Tile> tiles) {
+        return calculatePerceivedBpmFromDurationMs(
+                calculateTotalDurationMs(tiles));
+    }
 
-    public double getTempBPM() {
-        return 180.0 * bpm / travelAngle;
+    public static double calculatePerceivedBpmFromDurationMs(double durationMs) {
+        return 60000.0 / durationMs;
+    }
+
+    public static double calculateTotalDurationMs(List<Tile> tiles) {
+        return tiles.stream()
+                .map(Tile::getTileMeta)
+                .map(TileMeta::getDurationMs)
+                .reduce(0.0, Double::sum);
+    }
+
+    public static double calculateTotalTravelAngle(List<Tile> tiles) {
+        return tiles.stream()
+                .map(Tile::getTileMeta)
+                .map(TileMeta::getTravelAngle)
+                .reduce(0.0, Double::sum);
+    }
+
+    public static double calculatePerceivedBpm(double bpm, double travelAngle) {
+        return (180.0 * bpm) / travelAngle;
+    }
+
+    public double getPerceivedBpm() {
+        return calculatePerceivedBpm(bpm, travelAngle);
     }
 
     public double getReversedTempBPM() {
@@ -134,8 +160,8 @@ public class TileMeta {
         return getTravelAngle() == 360.0 ? 360.0 : 360.0 - getTravelAngle();
     }
 
-    public double getTileDurationMS() {
-        return 60000.0 / (180.0 * bpm) * travelAngle;
+    public double getDurationMs() {
+        return 60000.0 / getPerceivedBpm();
     }
 
 }

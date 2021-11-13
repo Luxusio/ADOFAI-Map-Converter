@@ -4,6 +4,7 @@ import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
+import io.luxus.lib.adofai.util.NumberUtil;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class ChaosBpmMapConverter {
 
     private static double getPossibleRandomBpm(Tile tile) {
         TileMeta tileMeta = tile.getTileMeta();
-        return OnlyBpmConverterBase.getPossibleMaxBpm(tileMeta) * (1.0 - Math.random());
+        return OnlyBpmConverterBase.getPossibleMaxBpm(tileMeta) * NumberUtil.randomMinMax(0.000001, 1.0);
     }
 
 }
