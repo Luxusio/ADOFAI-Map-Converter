@@ -25,4 +25,29 @@ public class NumberUtil {
                         angle;
     }
 
+    /**
+     * returns ranged random number
+     *
+     * @param min minimum return value
+     * @param range range of return number
+     * @return returns random value min <= value < min + range to positive range.
+     */
+    public static double random(double min, double range) {
+        return ((Math.random() - 0.5) * range) + min + 0.5 * range;
+    }
+
+    /**
+     * returns ranged random number
+     *
+     * @param min minimum possible return value
+     * @param max maximum limit of return value
+     * @return random value min <= value < max
+     */
+    public static double randomMinMax(double min, double max) {
+        if (min > max) {
+            throw new IllegalArgumentException("Max should be bigger than min! (" + min + ", " + max + ")");
+        }
+        return random(min, max - min);
+    }
+
 }
