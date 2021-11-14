@@ -226,7 +226,7 @@ public class Program {
                 }
                 else if (mode == 6) {
                     result = MapEffectConverter.transparentConvert(path, opacity);
-                    outPath += " Transpose.adofai";
+                    outPath += " Transparent.adofai";
                 }
                 else if (mode == 7) {
                     result = MapEffectConverter.onlyBpmSetConvert(path);
