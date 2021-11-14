@@ -108,26 +108,31 @@ public class MapConverterBase {
             List<Tile> timingTiles = getSameTimingTiles(oldTiles, oldTileIdx);
             List<Tile> newTimingTiles = newTiles.subList(newTileIdx, newTileIdx + newTileAmount);
 
-            double timingBpm = timingTiles.get(timingTiles.size() - 1).getTileMeta().getBpm();
-
             double timingTravelAngle = TileMeta.calculateTotalTravelAngle(timingTiles);
             double newTravelAngle = TileMeta.calculateTotalTravelAngle(newTimingTiles);
 
-            double multiplyValue = newTravelAngle / timingTravelAngle;
-            double currBpm = timingBpm * multiplyValue;
 
             List<Action> actionList = newTimingTiles.get(0).getActions(EventType.SET_SPEED);
             actionList.clear();
 
             if (oldTileIdx == 0) {
-                long originalFirstTileAdditionalTimingMs = (long) (60000.0 / oldCustomLevel.getLevelSetting().getBpm() * (180 / (timingTravelAngle - 180.0)));
-                long newFirstTileAdditionalTimingMs = (long) (60000.0 / newCustomLevel.getLevelSetting().getBpm() * (180 / (newTravelAngle - 180.0)));
 
-                long additionalOffset = originalFirstTileAdditionalTimingMs - newFirstTileAdditionalTimingMs;
+                long originalZeroAngleOffset = oldCustomLevel.getLevelSetting().getOffset();
 
-                newCustomLevel.getLevelSetting().setOffset(newCustomLevel.getLevelSetting().getOffset() + additionalOffset);
+                long originalAdditionalOffset = (long) (60000.0 / (oldCustomLevel.getLevelSetting().getBpm() * (180 / (timingTravelAngle - 180.0))));
+                long newAdditionalOffset =  (long) (60000.0 / (newCustomLevel.getLevelSetting().getBpm() * (180 / (newTravelAngle - 180.0))));
+
+                long additionalOffset = originalAdditionalOffset - newAdditionalOffset;
+
+                newCustomLevel.getLevelSetting().setOffset(originalZeroAngleOffset + additionalOffset);
             }
             else if (newTileIdx + newTileAmount < newTiles.size()) {
+
+                double timingBpm = timingTiles.get(timingTiles.size() - 1).getTileMeta().getBpm();
+
+                double multiplyValue = newTravelAngle / timingTravelAngle;
+                double currBpm = timingBpm * multiplyValue;
+
                 // SetSpeed
                 if (currBpm != prevBpm) {
                     if (!Double.isFinite(currBpm) || NumberUtil.fuzzyEquals(currBpm, 0.0)) {
@@ -135,12 +140,14 @@ public class MapConverterBase {
                     }
                     actionList.add(new SetSpeed(SpeedType.BPM, currBpm, 1.0));
                 }
+
+                for (Tile newTile : newTimingTiles) {
+                    fixAction(newTile, multiplyValue);
+                }
+
                 prevBpm = currBpm;
             }
 
-            for (Tile newTile : newTimingTiles) {
-                fixAction(newTile, multiplyValue);
-            }
 
             newTileIdx += newTileAmount;
         }
