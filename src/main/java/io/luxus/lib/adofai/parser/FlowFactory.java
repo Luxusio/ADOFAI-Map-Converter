@@ -41,7 +41,6 @@ public class FlowFactory {
     public static List<Double> pathDataToAngleData(List<TileAngle> pathData) {
         double staticAngle = 0;
         List<Double> angleData = new ArrayList<>(pathData.size() + 1);
-        angleData.add(0.0);
 
         for (TileAngle angle : pathData) {
             if (angle == TileAngle.NONE) {
@@ -60,7 +59,6 @@ public class FlowFactory {
 
     public static List<Double> readAngleData(JsonNode node) {
         List<Double> angleData = new ArrayList<>(node.size() + 1);
-        angleData.add(0.0);
         Iterator<JsonNode> it = node.elements();
         while (it.hasNext()) {
             JsonNode next = it.next();

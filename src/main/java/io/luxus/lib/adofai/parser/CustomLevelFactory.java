@@ -34,6 +34,7 @@ public class CustomLevelFactory {
         List<Double> angleData = pathDataNode != null ?
                 FlowFactory.readPathData(pathDataNode) :
                 FlowFactory.readAngleData(angleDataNode);
+        angleData.add(0, 0.0);
 
         List<Tile> tiles = angleData.stream()
                 .map(Tile::new)
