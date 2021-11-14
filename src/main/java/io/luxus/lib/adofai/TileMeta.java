@@ -164,4 +164,8 @@ public class TileMeta {
         return 60000.0 / getPerceivedBpm();
     }
 
+    public double getPossibleMaxBpm() {
+        return bpm * 360 / getTravelAngle();
+    }
+
 }

@@ -1,6 +1,5 @@
-package io.luxus.adofai.converterv2;
+package io.luxus.adofai.converter;
 
-import io.luxus.adofai.converter.MapSpeedConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.Action;
@@ -12,24 +11,23 @@ import io.luxus.lib.adofai.parser.CustomLevelParser;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.luxus.adofai.converterv2.MapConverterBaseV2.copyTiles;
+import static io.luxus.adofai.converter.MapConverterBase.copyTiles;
 
 public class MapEffectConverter {
 
     public static CustomLevel onlyBpmSetConvert(String path) throws IOException {
         CustomLevel customLevel = CustomLevelParser.readPath(path);
-        return MapConverterBaseV2.convert(customLevel, false,
+        return MapConverterBase.convert(customLevel, false,
                 applyEach -> copyTiles(applyEach.getOneTimingTiles()));
     }
 
     public static CustomLevel removeEffectConvert(String path, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents, boolean removeFlash) throws IOException {
         CustomLevel customLevel = CustomLevelParser.readPath(path);
         removeActions(customLevel.getTiles().get(0), removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
-        return MapConverterBaseV2.convert(customLevel, false,
+        return MapConverterBase.convert(customLevel, false,
                 applyEach -> {
                     List<Tile> newTiles = copyTiles(applyEach.getOneTimingTiles());
                     newTiles.forEach(newTile -> removeActions(newTile, removeDecoration, removeTileMove, removeCameraEvents, removeFlash));
@@ -45,7 +43,7 @@ public class MapEffectConverter {
 
         zeroTile.getActions(EventType.MOVE_TRACK).add(getTransparentMoveTrack(opacity));
 
-        return MapConverterBaseV2.convert(customLevel, false,
+        return MapConverterBase.convert(customLevel, false,
                 applyEach -> {
                     List<Tile> newTiles = copyTiles(applyEach.getOneTimingTiles());
                     newTiles.forEach(newTile -> editOpacityEvents(newTile, opacity));

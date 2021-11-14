@@ -1,10 +1,7 @@
 package io.luxus.adofai.converter;
 
-import io.luxus.adofai.converterv2.TwirlConverterV2;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.action.Action;
-import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.junit.jupiter.api.Test;
 
@@ -21,8 +18,8 @@ public class TwirlConverterTest {
         String path = "./src/test/resources/test/sb.adofai";
 
         // when
-        CustomLevel resultAllTwirl = TwirlConverterV2.convert(path, 1.0, false);
-        CustomLevel resultNoTwirl = TwirlConverterV2.convert(path, 0.0, false);
+        CustomLevel resultAllTwirl = TwirlConverter.convert(path, 1.0, false);
+        CustomLevel resultNoTwirl = TwirlConverter.convert(path, 0.0, false);
 
         // then
         CustomLevel original = CustomLevelParser.readPath(path);

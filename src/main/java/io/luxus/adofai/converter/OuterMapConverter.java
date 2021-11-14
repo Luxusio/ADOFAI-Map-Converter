@@ -1,4 +1,4 @@
-package io.luxus.adofai.converterv2;
+package io.luxus.adofai.converter;
 
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OuterMapConverterV2 {
+public class OuterMapConverter {
 
 	public static CustomLevel convert(String path) throws IOException {
 		CustomLevel customLevel = CustomLevelParser.readPath(path);
@@ -23,7 +23,7 @@ public class OuterMapConverterV2 {
 			return null;
 		}
 
-		return MapConverterBaseV2.convert(customLevel, false,
+		return MapConverterBase.convert(customLevel, false,
 				applyEach -> {
 					List<Tile> oneTimingTiles = applyEach.getOneTimingTiles();
 

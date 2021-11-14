@@ -24,9 +24,7 @@ public class BpmMultiplyMapConverter {
             return null;
         }
 
-
-        return OnlyBpmConverterBase.convert(customLevel, 0,
-                customLevel.getLevelSetting().getBpm() * multiplier,
-                applyEach -> applyEach.getTile().getTileMeta().getBpm() * multiplier);
+        return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
+                tile -> tile.getTileMeta().getTravelAngle() * multiplier);
     }
 }

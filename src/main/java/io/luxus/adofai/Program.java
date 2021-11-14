@@ -2,10 +2,6 @@ package io.luxus.adofai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.luxus.adofai.converter.*;
-import io.luxus.adofai.converterv2.MapEffectConverter;
-import io.luxus.adofai.converterv2.OuterMapConverterV2;
-import io.luxus.adofai.converterv2.ShapedMapConverterV2;
-import io.luxus.adofai.converterv2.TwirlConverterV2;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
@@ -194,24 +190,24 @@ public class Program {
                 String outPath = path.replace(".adofai", "");
 
                 if (mode == 1) {
-                    result = OuterMapConverterV2.convert(path);
+                    result = OuterMapConverter.convert(path);
                     outPath += " Outer.adofai";
                 }
                 else if (mode == 2) {
-                    result = ShapedMapConverterV2.linearConvert(path, useCameraOptimization);
+                    result = ShapedMapConverter.linearConvert(path, useCameraOptimization);
                     outPath += " Linear.adofai";
                 }
                 else if (mode == 3) {
                     if (patternLevel == null) {
-                        result = ShapedMapConverterV2.convert(path, angleData, useCameraOptimization);
+                        result = ShapedMapConverter.convert(path, angleData, useCameraOptimization);
                     } else {
-                        result = ShapedMapConverterV2.convert(path, patternLevel, useCameraOptimization);
+                        result = ShapedMapConverter.convert(path, patternLevel, useCameraOptimization);
                     }
                     outPath += " Shape.adofai";
                 }
                 else if (mode == 4) {
 
-                    result = TwirlConverterV2.convert(path, twirlRate, useCameraOptimization);
+                    result = TwirlConverter.convert(path, twirlRate, useCameraOptimization);
 
                     if (NumberUtil.fuzzyEquals(twirlRate, 0.0)) {
                         outPath += " No Twirl.adofai";

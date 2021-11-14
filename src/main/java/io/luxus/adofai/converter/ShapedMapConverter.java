@@ -1,4 +1,4 @@
-package io.luxus.adofai.converterv2;
+package io.luxus.adofai.converter;
 
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
@@ -10,7 +10,6 @@ import io.luxus.lib.adofai.helper.TileHelper;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 
-public class ShapedMapConverterV2 {
+public class ShapedMapConverter {
 
 	public static CustomLevel linearConvert(String path, boolean useCameraOptimization) throws IOException {
 		return convert(path, Collections.singletonList(0.0), useCameraOptimization);
@@ -42,16 +41,16 @@ public class ShapedMapConverterV2 {
 		final List<Tile> shapeTiles = shapeLevel.getTiles();
 		shapeTiles.remove(0);
 
-		return MapConverterBaseV2.convert(customLevel, useCameraOptimization,
-				new Function<MapConverterBaseV2.ApplyEach, List<Tile>>() {
+		return MapConverterBase.convert(customLevel, useCameraOptimization,
+				new Function<MapConverterBase.ApplyEach, List<Tile>>() {
 
 					private int index = 0;
 
 					@Override
-					public List<Tile> apply(MapConverterBaseV2.ApplyEach applyEach) {
+					public List<Tile> apply(MapConverterBase.ApplyEach applyEach) {
 
 						List<Tile> nowTimingTiles = applyEach.getOneTimingTiles();
-						List<Tile> nowShapeTiles = MapConverterBaseV2.getSameTimingTiles(shapeTiles, index);
+						List<Tile> nowShapeTiles = MapConverterBase.getSameTimingTiles(shapeTiles, index);
 
 						List<Tile> newTiles = nowShapeTiles.stream()
 								.map(tile -> {

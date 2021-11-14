@@ -1,4 +1,4 @@
-package io.luxus.adofai.converterv2;
+package io.luxus.adofai.converter;
 
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
@@ -8,19 +8,19 @@ import io.luxus.lib.adofai.action.*;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.SpeedType;
 import io.luxus.lib.adofai.action.type.Toggle;
+import io.luxus.lib.adofai.converter.AngleConverter;
 import io.luxus.lib.adofai.helper.TileHelper;
 import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
-public class MapConverterBaseV2 {
+public class MapConverterBase {
 
     @Getter
     @RequiredArgsConstructor
@@ -28,6 +28,35 @@ public class MapConverterBaseV2 {
         private final int floor;
         private final List<Tile> oneTimingTiles;
         private final List<Tile> tileList;
+    }
+
+    public static CustomLevel convertBasedOnTravelAngle(CustomLevel customLevel, boolean useCameraOptimization, Function<Tile, Double> travelAngleMapper) {
+        return convert(customLevel, useCameraOptimization, new Function<ApplyEach, List<Tile>>() {
+
+            private double currStaticAngle = AngleConverter.getNextStaticAngle(0.0, customLevel.getTiles().get(0).getTileMeta().getTravelAngle(), false);
+            private boolean reversed = false;
+
+            @Override
+            public List<Tile> apply(ApplyEach applyEach) {
+                return applyEach.getOneTimingTiles()
+                        .stream()
+                        .map(tile -> {
+                            Double travelAngle = travelAngleMapper.apply(tile);
+
+                            if (tile.getAngle() != ANGLE_MID_TILE) {
+                                tile.setAngle(currStaticAngle);
+                            }
+
+                            if (tile.getActions(EventType.TWIRL).size() % 2 == 1) {
+                                reversed = !reversed;
+                            }
+
+                            currStaticAngle = AngleConverter.getNextStaticAngle(currStaticAngle, travelAngle, reversed);
+                            return new Tile(tile.getAngle(), new HashMap<>(tile.getActionMap()));
+                        })
+                        .collect(Collectors.toList());
+            }
+        });
     }
 
     public static CustomLevel convert(CustomLevel customLevel, boolean useCameraOptimization,
@@ -90,19 +119,29 @@ public class MapConverterBaseV2 {
             List<Action> actionList = newTimingTiles.get(0).getActions(EventType.SET_SPEED);
             actionList.clear();
 
-            // SetSpeed
-            if (currBpm != prevBpm) {
-                if (!Double.isFinite(currBpm) || NumberUtil.fuzzyEquals(currBpm, 0.0)) {
-                    System.err.println("Wrong TempBpm value (" + currBpm + ")");
+            if (oldTileIdx == 0) {
+                long originalFirstTileAdditionalTimingMs = (long) (60000.0 / oldCustomLevel.getLevelSetting().getBpm() * (180 / (timingTravelAngle - 180.0)));
+                long newFirstTileAdditionalTimingMs = (long) (60000.0 / newCustomLevel.getLevelSetting().getBpm() * (180 / (newTravelAngle - 180.0)));
+
+                long additionalOffset = originalFirstTileAdditionalTimingMs - newFirstTileAdditionalTimingMs;
+
+                newCustomLevel.getLevelSetting().setOffset(newCustomLevel.getLevelSetting().getOffset() + additionalOffset);
+            }
+            else if (newTileIdx + newTileAmount < newTiles.size()) {
+                // SetSpeed
+                if (currBpm != prevBpm) {
+                    if (!Double.isFinite(currBpm) || NumberUtil.fuzzyEquals(currBpm, 0.0)) {
+                        System.err.println("Wrong TempBpm value (" + currBpm + ")");
+                    }
+                    actionList.add(new SetSpeed(SpeedType.BPM, currBpm, 1.0));
                 }
-                actionList.add(new SetSpeed(SpeedType.BPM, currBpm, 1.0));
+                prevBpm = currBpm;
             }
 
             for (Tile newTile : newTimingTiles) {
                 fixAction(newTile, multiplyValue);
             }
 
-            prevBpm = currBpm;
             newTileIdx += newTileAmount;
         }
 
