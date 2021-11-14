@@ -32,18 +32,6 @@ public class TileMeta {
     public TileMeta() {
     }
 
-    public void forceInit(TileMeta tileMeta) {
-        this.bpm = tileMeta.bpm;
-        this.travelAngle = tileMeta.travelAngle;
-        this.staticAngle = tileMeta.staticAngle;
-        this.reversed = tileMeta.reversed;
-
-        this.realX = tileMeta.realX;
-        this.realY = tileMeta.realY;
-        this.editorX = tileMeta.editorX;
-        this.editorY = tileMeta.editorY;
-    }
-
     public void update(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, Double nextAngle) {
         this.bpm = levelSetting.getBpm();
         this.travelAngle = 360.0;

@@ -3,6 +3,7 @@ package io.luxus.adofai.converter;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
+import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 
 import java.io.IOException;
@@ -20,8 +21,11 @@ public class NoSpeedChangeMapConverter {
         }
 
         customLevel.getLevelSetting().setBpm(destBpm);
-        return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
+        CustomLevel result = MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
                 tile -> tile.getTileMeta().getTravelAngle() * destBpm /  tile.getTileMeta().getBpm());
+
+        result.getTiles().forEach(tile -> tile.getActions(EventType.SET_SPEED).clear());
+        return result;
     }
 
     public static double getPossibleMaxBpm(List<Tile> tiles) {

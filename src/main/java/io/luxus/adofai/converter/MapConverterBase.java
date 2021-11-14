@@ -27,7 +27,6 @@ public class MapConverterBase {
     public static class ApplyEach {
         private final int floor;
         private final List<Tile> oneTimingTiles;
-        private final List<Tile> tileList;
     }
 
     public static CustomLevel convertBasedOnTravelAngle(CustomLevel customLevel, boolean useCameraOptimization, Function<Tile, Double> travelAngleMapper) {
@@ -73,7 +72,7 @@ public class MapConverterBase {
         for (int i = 1; i < tiles.size();) {
             List<Tile> oneTimingTiles = getSameTimingTiles(tiles, i);
 
-            List<Tile> newTilesResult = applyEachFunction.apply(new ApplyEach(i, oneTimingTiles, tiles));
+            List<Tile> newTilesResult = applyEachFunction.apply(new ApplyEach(i, oneTimingTiles));
             newTileAmounts.add(Arrays.asList(i, newTilesResult.size()));
             newTiles.addAll(newTilesResult);
 
@@ -134,7 +133,7 @@ public class MapConverterBase {
                 double currBpm = timingBpm * multiplyValue;
 
                 // SetSpeed
-                if (currBpm != prevBpm) {
+                if (!NumberUtil.fuzzyEquals(currBpm, prevBpm)) {
                     if (!Double.isFinite(currBpm) || NumberUtil.fuzzyEquals(currBpm, 0.0)) {
                         System.err.println("Wrong TempBpm value (" + currBpm + ")");
                     }
@@ -290,28 +289,6 @@ public class MapConverterBase {
 
         actions.clear();
         actions.addAll(newActionList);
-    }
-
-    public static void removeNoneTile(CustomLevel customLevel) {
-
-        List<Tile> tileList = customLevel.getTiles();
-        Iterator<Tile> tileIt = tileList.iterator();
-
-        Tile prevTile = tileIt.next();
-        while (tileIt.hasNext()) {
-            Tile currTile = tileIt.next();
-
-            if (currTile.getAngle() == ANGLE_MID_TILE) {
-                tileIt.remove();
-
-                prevTile.getTileMeta().forceInit(currTile.getTileMeta());
-
-                TileHelper.combineTile(prevTile, currTile);
-            }
-
-            prevTile = currTile;
-        }
-
     }
 
     public static void fixFilterTiming(CustomLevel customLevel) {
