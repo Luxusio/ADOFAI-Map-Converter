@@ -1,6 +1,5 @@
-package io.luxus.lib.adofai.converter;
+package io.luxus.lib.adofai.helper;
 
-import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -8,7 +7,7 @@ import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleExclude360;
 import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleInclude360;
 
-public class AngleConverter {
+public class AngleHelper {
 
     @Getter
     @RequiredArgsConstructor
@@ -43,27 +42,6 @@ public class AngleConverter {
         }
 
         return new Result(currStaticAngle, currTravelAngle);
-    }
-
-    public static Double getNextAngle(double currStaticAngle, double currTravelAngle, boolean reversed, boolean currNotNone) {
-
-        if (NumberUtil.fuzzyEquals(currTravelAngle, 0.0)) {
-            System.out.println(currStaticAngle + ", " + currTravelAngle + ", " + reversed + " : " + null);
-            return ANGLE_MID_TILE;
-        }
-
-        double nextAngle;
-        if (reversed) {
-            nextAngle = currStaticAngle + currTravelAngle;
-        } else {
-            nextAngle = currStaticAngle - currTravelAngle;
-        }
-
-        if (currNotNone) {
-            nextAngle += 180;
-        }
-
-        return generalizeAngleExclude360(nextAngle);
     }
 
     public static double getNextStaticAngle(double staticAngle, double relativeAngle, boolean reversed) {

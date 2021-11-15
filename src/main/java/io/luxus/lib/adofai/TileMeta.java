@@ -6,13 +6,12 @@ import io.luxus.lib.adofai.action.SetSpeed;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.SpeedType;
 import io.luxus.lib.adofai.action.type.Toggle;
-import io.luxus.lib.adofai.converter.AngleConverter;
+import io.luxus.lib.adofai.helper.AngleHelper;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Getter
 @ToString
@@ -45,7 +44,7 @@ public class TileMeta {
 
         update(actionMap);
 
-        AngleConverter.Result result = AngleConverter.convert(0.0, 0.0, nextAngle, reversed);
+        AngleHelper.Result result = AngleHelper.convert(0.0, 0.0, nextAngle, reversed);
         this.staticAngle = result.getCurrStaticAngle();
         this.travelAngle = result.getCurrTravelAngle();
     }
@@ -62,7 +61,7 @@ public class TileMeta {
 
         update(actionMap);
 
-        AngleConverter.Result result = AngleConverter.convert(prevTileMeta.staticAngle, currAngle, nextAngle, reversed);
+        AngleHelper.Result result = AngleHelper.convert(prevTileMeta.staticAngle, currAngle, nextAngle, reversed);
         this.staticAngle = result.getCurrStaticAngle();
         this.travelAngle = result.getCurrTravelAngle();
 

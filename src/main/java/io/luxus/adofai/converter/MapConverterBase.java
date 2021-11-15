@@ -8,8 +8,7 @@ import io.luxus.lib.adofai.action.*;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.SpeedType;
 import io.luxus.lib.adofai.action.type.Toggle;
-import io.luxus.lib.adofai.converter.AngleConverter;
-import io.luxus.lib.adofai.helper.TileHelper;
+import io.luxus.lib.adofai.helper.AngleHelper;
 import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class MapConverterBase {
     public static CustomLevel convertBasedOnTravelAngle(CustomLevel customLevel, boolean useCameraOptimization, Function<Tile, Double> travelAngleMapper) {
         return convert(customLevel, useCameraOptimization, new Function<ApplyEach, List<Tile>>() {
 
-            private double currStaticAngle = AngleConverter.getNextStaticAngle(0.0, customLevel.getTiles().get(0).getTileMeta().getTravelAngle(), false);
+            private double currStaticAngle = AngleHelper.getNextStaticAngle(0.0, customLevel.getTiles().get(0).getTileMeta().getTravelAngle(), false);
             private boolean reversed = false;
 
             @Override
@@ -50,7 +49,7 @@ public class MapConverterBase {
                                 reversed = !reversed;
                             }
 
-                            currStaticAngle = AngleConverter.getNextStaticAngle(currStaticAngle, travelAngle, reversed);
+                            currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, travelAngle, reversed);
                             return new Tile(tile.getAngle(), new HashMap<>(tile.getActionMap()));
                         })
                         .collect(Collectors.toList());
