@@ -21,7 +21,7 @@ class NumberUtilTest {
                 .isLessThan(min + range);
     }
 
-    @RepeatedTest(100000)
+    @RepeatedTest(100)
     void randomMinMaxTest() {
         // given
         double min = 0.000001;

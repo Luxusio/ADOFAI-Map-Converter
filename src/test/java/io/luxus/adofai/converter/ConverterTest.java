@@ -10,7 +10,7 @@ public class ConverterTest {
     @Test
     void testLinearConvert() throws Exception {
         // given
-        String path = "./src/test/resources/test/sb.adofai";
+        String path = "./src/test/resources/test/f777 - Hydra.adofai";
         String outPath = path.substring(0, path.length() - 7);
 
         // when
@@ -25,6 +25,7 @@ public class ConverterTest {
         CustomLevelParser.write(TwirlConverter.convert(path, 0.1, false), outPath + " Twirl rate 0.1.adofai");
         CustomLevelParser.write(MapEffectConverter.removeEffectConvert(path, true, true, true, true), outPath + " Non-Effect.adofai");
         CustomLevelParser.write(MapEffectConverter.transparentConvert(path, 30), outPath + " Transpose.adofai");
+        CustomLevelParser.write(PseudoMapConverter.convert(path, 15, 4, true), outPath + " 4 Pseudo.adofai");
 
         // then
 
