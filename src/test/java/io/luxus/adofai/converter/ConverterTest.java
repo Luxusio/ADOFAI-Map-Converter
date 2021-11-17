@@ -25,7 +25,8 @@ public class ConverterTest {
         CustomLevelParser.write(TwirlConverter.convert(path, 0.1, false), outPath + " Twirl rate 0.1.adofai");
         CustomLevelParser.write(MapEffectConverter.removeEffectConvert(path, true, true, true, true), outPath + " Non-Effect.adofai");
         CustomLevelParser.write(MapEffectConverter.transparentConvert(path, 30), outPath + " Transpose.adofai");
-        CustomLevelParser.write(PseudoMapConverter.convert(path, 15, 4, true), outPath + " 4 Pseudo.adofai");
+        CustomLevelParser.write(PseudoMapConverter.convert(path, 15, 2, true), outPath + " 2 Pseudo.adofai");
+        CustomLevelParser.write(AllMidspinMapConverter.convert(path, 2), outPath + " all 2 midspin.adofai");
 
         // then
 
