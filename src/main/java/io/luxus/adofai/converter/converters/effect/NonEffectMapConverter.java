@@ -5,50 +5,13 @@ import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.type.EventType;
-import io.luxus.lib.adofai.parser.CustomLevelParser;
-import sun.rmi.transport.ObjectTable;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.luxus.adofai.converter.MapConverterBase.copyTiles;
 
 public class NonEffectMapConverter implements MapConverter {
-    public CustomLevel removeEffectConvert(String path, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents, boolean removeFlash) throws IOException {
-        CustomLevel customLevel = CustomLevelParser.readPath(path);
-        removeActions(customLevel.getTiles().get(0), removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
-        return MapConverterBase.convert(customLevel, false,
-                applyEach -> {
-                    List<Tile> newTiles = copyTiles(applyEach.getOneTimingTiles());
-                    newTiles.forEach(newTile -> removeActions(newTile, removeDecoration, removeTileMove, removeCameraEvents, removeFlash));
-                    return newTiles;
-                });
-    }
-
-    private void removeActions(Tile tile, boolean removeDecoration, boolean removeTileMove, boolean removeCameraEvents, boolean removeFlash) {
-        tile.getActions(EventType.BLOOM).clear();
-        tile.getActions(EventType.ANIMATE_TRACK).clear();
-        tile.getActions(EventType.HALL_OF_MIRRORS).clear();
-        tile.getActions(EventType.SET_FILTER).clear();
-
-        if (removeDecoration) {
-            tile.getActions(EventType.ADD_DECORATION).clear();
-            tile.getActions(EventType.MOVE_DECORATIONS).clear();
-        }
-
-        if (removeTileMove) {
-            tile.getActions(EventType.MOVE_TRACK).clear();
-        }
-
-        if (removeCameraEvents) {
-            tile.getActions(EventType.MOVE_CAMERA).clear();
-        }
-
-        if (removeFlash) {
-            tile.getActions(EventType.FLASH).clear();
-        }
-    }
 
     @Override
     public Object[] prepareParameters(Scanner scanner) {

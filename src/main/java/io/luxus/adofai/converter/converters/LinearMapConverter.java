@@ -2,7 +2,8 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.lib.adofai.CustomLevel;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Scanner;
 
 public class LinearMapConverter extends ShapedMapConverter {
 

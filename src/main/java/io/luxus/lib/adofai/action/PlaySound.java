@@ -1,7 +1,6 @@
 package io.luxus.lib.adofai.action;
 
 import io.luxus.lib.adofai.action.type.EventType;
-import io.luxus.lib.adofai.action.type.GameSound;
 import io.luxus.lib.adofai.action.type.HitSound;
 import lombok.Getter;
 import lombok.Setter;

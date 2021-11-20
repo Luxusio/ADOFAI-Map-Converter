@@ -20,10 +20,10 @@ public class MapShapedMapConverterTest {
         String shapePath = "./src/test/resources/test/bmb.adofai";
 
         // when
-        CustomLevel result  = ShapedMapConverter.convert(path, CustomLevelParser.readPath(shapePath), false);
+        CustomLevel result  = new ShapedMapConverter().convert(CustomLevelParser.readPath(path), "bmb", CustomLevelParser.readPath(shapePath), null);
+
 
         // then
-
         CustomLevel shapeLevel = CustomLevelParser.readPath(shapePath);
 
         List<Tile> resultTiles = result.getTiles();

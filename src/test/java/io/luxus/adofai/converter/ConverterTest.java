@@ -1,7 +1,5 @@
 package io.luxus.adofai.converter;
 
-import io.luxus.adofai.converter.converters.*;
-import io.luxus.adofai.converter.converters.effect.MapEffectConverter;
 import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.junit.jupiter.api.Test;
@@ -14,8 +12,7 @@ public class ConverterTest {
     @Test
     void testLinearConvert() throws Exception {
         // given
-        String path = "./src/test/resources/test/f777 - Hydra.adofai";
-        String outPath = path.substring(0, path.length() - 7);
+        String path = "./src/test/resources/test/main.adofai";
         MapConverterDispatcher dispatcher = new MapConverterDispatcher();
 
         // when
@@ -31,12 +28,8 @@ public class ConverterTest {
         dispatcher.convertMapAndSave(path, ConverterType.TWIRL_RATIO, 0.1);
         dispatcher.convertMapAndSave(path, ConverterType.NO_EFFECT, new HashSet<>(Arrays.asList(EventType.MOVE_DECORATIONS, EventType.ADD_DECORATION)));
         dispatcher.convertMapAndSave(path, ConverterType.TRANSPARENCY, 30);
-        dispatcher.convertMapAndSave(path, ConverterType.PSEUDO, 2);
+        dispatcher.convertMapAndSave(path, ConverterType.PSEUDO, 2, 15.0, false);
         dispatcher.convertMapAndSave(path, ConverterType.MIDSPIN, 2);
-        CustomLevelParser.write(MapEffectConverter.removeEffectConvert(path, true, true, true, true), outPath + " Non-Effect.adofai");
-        CustomLevelParser.write(MapEffectConverter.transparentConvert(path, 30), outPath + " Transpose.adofai");
-        CustomLevelParser.write(PseudoMapConverter.convert(path, 15, 2, true), outPath + " 2 Pseudo.adofai");
-        CustomLevelParser.write(AllMidspinMapConverter.convert(path, 2), outPath + " all 2 midspin.adofai");
 
         // then
 

@@ -14,8 +14,6 @@ import io.luxus.lib.adofai.parser.CustomLevelParser;
 import io.luxus.lib.adofai.parser.FlowFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Function;
@@ -25,79 +23,6 @@ import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 
 public class ShapedMapConverter implements MapConverter {
-
-	public static CustomLevel linearConvert(String path, boolean useCameraOptimization) throws IOException {
-		return convert(path, Collections.singletonList(0.0), useCameraOptimization);
-	}
-
-	public static CustomLevel convert(String path, List<Double> rawAngles, boolean useCameraOptimization) throws IOException {
-		final List<Tile> tiles = rawAngles.stream()
-				.map(angle -> angle == 999.0 ? ANGLE_MID_TILE : angle)
-				.map(Tile::new)
-				.collect(Collectors.toList());
-		tiles.add(0, new Tile(0.0));
-		final CustomLevel shapeLevel = new CustomLevel(new LevelSetting(), tiles);
-		return convert(path, shapeLevel, useCameraOptimization);
-	}
-
-	public static CustomLevel convert(String path, CustomLevel shapeLevel, boolean useCameraOptimization) throws IOException {
-
-		CustomLevel customLevel = CustomLevelParser.readPath(path);
-
-		final List<Tile> shapeTiles = shapeLevel.getTiles();
-		shapeTiles.remove(0);
-
-		return MapConverterBase.convert(customLevel, useCameraOptimization,
-				new Function<MapConverterBase.ApplyEach, List<Tile>>() {
-
-					private int index = 0;
-
-					@Override
-					public List<Tile> apply(MapConverterBase.ApplyEach applyEach) {
-
-						List<Tile> nowTimingTiles = applyEach.getOneTimingTiles();
-						List<Tile> nowShapeTiles = MapConverterBase.getSameTimingTiles(shapeTiles, index);
-
-						List<Tile> newTiles = nowShapeTiles.stream()
-								.map(tile -> {
-									Tile newTile = new Tile(tile.getAngle());
-
-									tile.getActions(EventType.TWIRL)
-											.forEach(newTile::addAction);
-
-									return newTile;
-								}).collect(Collectors.toList());
-
-						int newTileIdx = 0;
-						for (Tile timingTile : nowTimingTiles) {
-							Tile newTile = newTiles.get(newTileIdx);
-
-							timingTile.getActions(EventType.TWIRL).clear();
-
-							TileHelper.combineTile(newTile, timingTile);
-							if (++newTileIdx >= newTiles.size()) {
-								newTileIdx--;
-							}
-						}
-
-						index = index + nowShapeTiles.size();
-						if (index >= shapeTiles.size()) {
-							index = 0;
-							if (shapeTiles.get(shapeTiles.size() - 1).getTileMeta().isReversed()) {
-								List<Action> twirls = newTiles.get(newTiles.size() - 1).getActions(EventType.TWIRL);
-								if (twirls.isEmpty()) {
-									twirls.add(new Twirl());
-								}
-								else {
-									twirls.clear();
-								}
-							}
-						}
-
-						return newTiles;
-					}
-				});
-	}
 
 	@Override
 	public Object[] prepareParameters(Scanner scanner) {

@@ -68,7 +68,7 @@ public class MapConverterDispatcher {
     public CustomLevel convertCustomLevel(String path, MapConverter mapConverter, Object... args) {
         CustomLevel customLevel;
         try {
-            customLevel = CustomLevelParser.read(path);
+            customLevel = CustomLevelParser.readPath(path);
         } catch (IOException exception) {
             System.err.println("customLevel을 읽을 수 없습니다. (path=" + path + ")");
             exception.printStackTrace();

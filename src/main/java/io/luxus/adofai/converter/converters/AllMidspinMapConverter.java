@@ -7,9 +7,7 @@ import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.helper.AngleHelper;
 import io.luxus.lib.adofai.helper.TileHelper;
-import io.luxus.lib.adofai.parser.CustomLevelParser;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,18 +17,6 @@ import static io.luxus.adofai.converter.MapConverterBase.getSameTimingTiles;
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 public class AllMidspinMapConverter implements MapConverter {
-
-    public static CustomLevel convert(String path, int midspinAmount) throws IOException {
-
-        if (midspinAmount < 0) {
-            System.err.println("midspinAmount 가 너무 작습니다! 0 이상의 값을 입력해주세요!");
-            return null;
-        }
-
-        CustomLevel customLevel = CustomLevelParser.readPath(path);
-
-        return null;
-    }
 
     @Override
     public Object[] prepareParameters(Scanner scanner) {
