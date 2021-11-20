@@ -1,5 +1,6 @@
 package io.luxus.adofai.converter;
 
+import io.luxus.adofai.converter.converters.ShapedMapConverter;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.type.EventType;

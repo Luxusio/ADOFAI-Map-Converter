@@ -1,5 +1,6 @@
-package io.luxus.adofai.converter;
+package io.luxus.adofai.converter.converters.effect;
 
+import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.action.Action;

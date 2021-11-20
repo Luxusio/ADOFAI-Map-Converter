@@ -1,5 +1,7 @@
-package io.luxus.adofai.converter;
+package io.luxus.adofai.converter.converters;
 
+import io.luxus.adofai.converter.MapConverter;
+import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
@@ -10,12 +12,14 @@ import io.luxus.lib.adofai.parser.CustomLevelParser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.function.Function;
 
 import static io.luxus.adofai.converter.MapConverterBase.getSameTimingTiles;
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
-public class AllMidspinMapConverter {
+public class AllMidspinMapConverter implements MapConverter {
+
     public static CustomLevel convert(String path, int midspinAmount) throws IOException {
 
         if (midspinAmount < 0) {
@@ -23,8 +27,44 @@ public class AllMidspinMapConverter {
             return null;
         }
 
-        // TODO : 집가서 test 하기
         CustomLevel customLevel = CustomLevelParser.readPath(path);
+
+        return null;
+    }
+
+    @Override
+    public Object[] prepareParameters(Scanner scanner) {
+
+        System.out.print("미드스핀 개수:");
+        int midspinAmount = scanner.nextInt();
+        scanner.nextLine();
+
+        return new Object[] { midspinAmount };
+    }
+
+    @Override
+    public boolean impossible(CustomLevel customLevel, Object... args) {
+
+        if ((int) args[0] < 0) {
+            System.err.println("midspinAmount 가 너무 작습니다! 0 이상의 값을 입력해주세요!");
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public String getLevelPostfix(CustomLevel result, Object... args) {
+        return "all " + args[0] + " midspin";
+    }
+
+    @Override
+    public CustomLevel convert(CustomLevel customLevel, Object... args) {
+        if (impossible(customLevel, args)) {
+            return null;
+        }
+
+        int midspinAmount = (int) args[0];
 
         return MapConverterBase.convert(customLevel, false,
                 new Function<MapConverterBase.ApplyEach, List<Tile>>() {
