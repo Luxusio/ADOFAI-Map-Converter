@@ -1,10 +1,13 @@
 package io.luxus.lib.adofai.helper;
 
+import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.action.Action;
 import io.luxus.lib.adofai.action.Twirl;
 import io.luxus.lib.adofai.action.type.EventType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TileHelper {
@@ -38,6 +41,37 @@ public class TileHelper {
             }
         });
 
+    }
+
+    /**
+     * get same timing tiles as list(normal tile + n midspin tile)
+     *
+     * @param tiles all tiles of level
+     * @param fromIndex get tile index.
+     * @return same tile list including midspin
+     */
+    public static List<Tile> getSameTimingTiles(List<Tile> tiles, int fromIndex) {
+        List<Tile> sameTimingTiles = new ArrayList<>();
+
+        Tile tile = tiles.get(fromIndex);
+        sameTimingTiles.add(tile);
+
+        for (int i = fromIndex + 1; i < tiles.size() && tile.getTileMeta().getTravelAngle() == 0.0; i++) {
+            tile = tiles.get(i);
+            sameTimingTiles.add(tile);
+        }
+
+        return sameTimingTiles;
+    }
+
+    public static double calculateZeroTileTravelMs(CustomLevel customLevel) {
+        double zeroTileTravelAngle = TileMeta.calculateTotalTravelAngle(
+                getSameTimingTiles(customLevel.getTiles(), 0));
+
+        long straightAngleOffset = customLevel.getLevelSetting().getOffset();
+        double additionalOffset = (60000.0 / (customLevel.getLevelSetting().getBpm() * (180 / (zeroTileTravelAngle - 180.0))));
+
+        return straightAngleOffset + additionalOffset;
     }
 
 }

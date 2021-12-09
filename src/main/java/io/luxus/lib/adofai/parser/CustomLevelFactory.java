@@ -64,7 +64,8 @@ public class CustomLevelFactory {
             FlowFactory.writeAngleData(sb, angleData);
         }
         else {
-            boolean success = FlowFactory.writePathData(sb, angleData);
+            //boolean success = FlowFactory.writePathData(sb, angleData);
+            boolean success = false;
             if (!success) {
                 customLevel.getLevelSetting().setVersion(5L);
                 FlowFactory.writeAngleData(sb, angleData);

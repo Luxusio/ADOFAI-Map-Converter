@@ -12,7 +12,7 @@ public class ConverterTest {
     @Test
     void testLinearConvert() throws Exception {
         // given
-        String path = "./src/test/resources/test/main.adofai";
+        String path = "./src/test/resources/test/wizdomiot.adofai";
         MapConverterDispatcher dispatcher = new MapConverterDispatcher();
 
         // when
@@ -28,7 +28,7 @@ public class ConverterTest {
         dispatcher.convertMapAndSave(path, ConverterType.TWIRL_RATIO, 0.1);
         dispatcher.convertMapAndSave(path, ConverterType.NO_EFFECT, new HashSet<>(Arrays.asList(EventType.MOVE_DECORATIONS, EventType.ADD_DECORATION)));
         dispatcher.convertMapAndSave(path, ConverterType.TRANSPARENCY, 30);
-        dispatcher.convertMapAndSave(path, ConverterType.PSEUDO, 2, 15.0, false);
+        dispatcher.convertMapAndSave(path, ConverterType.PSEUDO, 4, 15.0, false);
         dispatcher.convertMapAndSave(path, ConverterType.MIDSPIN, 2);
 
         // then

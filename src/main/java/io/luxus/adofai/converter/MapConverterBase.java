@@ -9,6 +9,7 @@ import io.luxus.lib.adofai.action.type.EventType;
 import io.luxus.lib.adofai.action.type.SpeedType;
 import io.luxus.lib.adofai.action.type.Toggle;
 import io.luxus.lib.adofai.helper.AngleHelper;
+import io.luxus.lib.adofai.helper.TileHelper;
 import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -117,15 +118,14 @@ public class MapConverterBase {
             actionList.clear();
 
             if (oldTileIdx == 0) {
+                double originalZeroTileTravelMs = TileHelper.calculateZeroTileTravelMs(oldCustomLevel);
+                double newZeroTileTravelMs = TileHelper.calculateZeroTileTravelMs(newCustomLevel);
 
-                long originalZeroAngleOffset = oldCustomLevel.getLevelSetting().getOffset();
+                long originalStraightTravelMs = oldCustomLevel.getLevelSetting().getOffset();
 
-                long originalAdditionalOffset = (long) (60000.0 / (oldCustomLevel.getLevelSetting().getBpm() * (180 / (timingTravelAngle - 180.0))));
-                long newAdditionalOffset =  (long) (60000.0 / (newCustomLevel.getLevelSetting().getBpm() * (180 / (newTravelAngle - 180.0))));
+                double additionalTravelMs = originalZeroTileTravelMs- newZeroTileTravelMs;
 
-                long additionalOffset = originalAdditionalOffset - newAdditionalOffset;
-
-                newCustomLevel.getLevelSetting().setOffset(originalZeroAngleOffset + additionalOffset);
+                newCustomLevel.getLevelSetting().setOffset(originalStraightTravelMs + (long) additionalTravelMs);
             }
             else if (newTileIdx + newTileAmount < newTiles.size()) {
 

@@ -74,22 +74,25 @@ public class ShapedMapConverter implements MapConverter {
 
 	@Override
 	public boolean impossible(CustomLevel customLevel, Object... args) {
-		String sourceStr = (String) args[0];
 		CustomLevel shapeLevel = (CustomLevel) args[1];
+		@SuppressWarnings("unchecked")
+		List<Double> shapeAngles = (List<Double>) args[2];
 
-		if (sourceStr == null) {
-			System.err.println("sourceStr이 null입니다.");
-			return true;
+		if (shapeLevel != null) {
+			if (shapeLevel.getTiles().size() <= 1) {
+				System.err.println("패턴의 타일 수가 너무 적습니다.");
+				return true;
+			}
 		}
-
-		if (shapeLevel == null) {
-			System.err.println("ShapeLevel이 null입니다.");
-			return true;
-		}
-
-		if (shapeLevel.getTiles().size() <= 1) {
-			System.err.println("패턴의 타일 수가 너무 적습니다.");
-			return true;
+		else {
+			if (shapeAngles == null) {
+				System.err.println("shapeAngles가 null입니다.");
+				return true;
+			}
+			else if (shapeAngles.isEmpty()) {
+				System.err.println("패턴의 각도 수가 너무 적습니다.");
+				return true;
+			}
 		}
 
 		return false;

@@ -4,6 +4,7 @@ import io.luxus.adofai.converter.ConverterType;
 import io.luxus.adofai.converter.MapConverterDispatcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -13,16 +14,19 @@ public class Program {
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             Program.program(scanner);
-            System.out.println("계속하시려면 엔터키를 눌러주세요.");
-            int read = System.in.read();
         } catch (Throwable t) {
             t.printStackTrace();
         }
+
+        try {
+            System.out.println("계속하시려면 엔터키를 눌러주세요.");
+            int read = System.in.read();
+        } catch (IOException ignored) { }
     }
 
     private static void program(Scanner scanner) {
         System.out.println("A Dance of Fire and Ice 맵 변환기");
-        System.out.println("ver 1.3.2");
+        System.out.println("ver 1.4.0");
         System.out.println("개발자 : Luxus io");
         System.out.println("YouTube : https://www.youtube.com/c/Luxusio");
         System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");

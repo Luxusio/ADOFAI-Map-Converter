@@ -120,7 +120,7 @@ public class TileMeta {
     public static double calculateTotalDurationMs(List<Tile> tiles) {
         return tiles.stream()
                 .map(Tile::getTileMeta)
-                .map(TileMeta::getDurationMs)
+                .map(TileMeta::getTravelMs)
                 .reduce(0.0, Double::sum);
     }
 
@@ -135,6 +135,10 @@ public class TileMeta {
         return (180.0 * bpm) / travelAngle;
     }
 
+    public static double calculateTravelMs(double bpm, double travelAngle) {
+        return 60000.0 / calculatePerceivedBpm(bpm, travelAngle);
+    }
+
     public double getPerceivedBpm() {
         return calculatePerceivedBpm(bpm, travelAngle);
     }
@@ -147,8 +151,8 @@ public class TileMeta {
         return getTravelAngle() == 360.0 ? 360.0 : 360.0 - getTravelAngle();
     }
 
-    public double getDurationMs() {
-        return 60000.0 / getPerceivedBpm();
+    public double getTravelMs() {
+        return calculateTravelMs(bpm, travelAngle);
     }
 
     public double getPossibleMaxBpm() {
