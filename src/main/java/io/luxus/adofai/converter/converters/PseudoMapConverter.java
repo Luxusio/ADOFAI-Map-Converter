@@ -5,7 +5,7 @@ import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.helper.AngleHelper;
 
 import java.util.List;

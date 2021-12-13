@@ -1,6 +1,6 @@
 package io.luxus.adofai.converter;
 
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.junit.jupiter.api.Test;
 

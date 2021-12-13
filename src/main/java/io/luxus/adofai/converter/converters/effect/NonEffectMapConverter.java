@@ -4,7 +4,7 @@ import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.EventType;
 
 import java.util.*;
 import java.util.stream.Collectors;

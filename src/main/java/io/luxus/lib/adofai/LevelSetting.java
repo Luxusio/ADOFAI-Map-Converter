@@ -1,6 +1,6 @@
 package io.luxus.lib.adofai;
 
-import io.luxus.lib.adofai.action.type.*;
+import io.luxus.lib.adofai.type.*;
 import lombok.*;
 
 import java.util.*;

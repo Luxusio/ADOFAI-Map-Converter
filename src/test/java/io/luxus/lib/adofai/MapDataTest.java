@@ -2,11 +2,8 @@ package io.luxus.lib.adofai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.action.Action;
-import io.luxus.lib.adofai.action.UnknownAction;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.action.Action;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.ActionFactory;
 import io.luxus.lib.adofai.parser.CustomLevelFactory;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
@@ -16,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 

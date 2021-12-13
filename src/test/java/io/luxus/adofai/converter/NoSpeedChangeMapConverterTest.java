@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.luxus.adofai.converter.converters.NoSpeedChangeMapConverter;
 import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import org.junit.jupiter.api.Test;

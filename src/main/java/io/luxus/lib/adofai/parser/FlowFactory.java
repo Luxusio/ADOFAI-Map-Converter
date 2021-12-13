@@ -1,7 +1,7 @@
 package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.luxus.lib.adofai.action.type.TileAngle;
+import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.util.NumberUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 

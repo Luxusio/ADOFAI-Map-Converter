@@ -3,9 +3,9 @@ package io.luxus.lib.adofai.helper;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
-import io.luxus.lib.adofai.action.Action;
-import io.luxus.lib.adofai.action.Twirl;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.action.Action;
+import io.luxus.lib.adofai.type.action.Twirl;
+import io.luxus.lib.adofai.type.EventType;
 
 import java.util.ArrayList;
 import java.util.List;

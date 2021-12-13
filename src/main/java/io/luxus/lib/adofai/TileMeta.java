@@ -1,11 +1,11 @@
 package io.luxus.lib.adofai;
 
-import io.luxus.lib.adofai.action.Action;
-import io.luxus.lib.adofai.action.PositionTrack;
-import io.luxus.lib.adofai.action.SetSpeed;
-import io.luxus.lib.adofai.action.type.EventType;
-import io.luxus.lib.adofai.action.type.SpeedType;
-import io.luxus.lib.adofai.action.type.Toggle;
+import io.luxus.lib.adofai.type.action.Action;
+import io.luxus.lib.adofai.type.action.PositionTrack;
+import io.luxus.lib.adofai.type.action.SetSpeed;
+import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.SpeedType;
+import io.luxus.lib.adofai.type.Toggle;
 import io.luxus.lib.adofai.helper.AngleHelper;
 import lombok.Getter;
 import lombok.ToString;

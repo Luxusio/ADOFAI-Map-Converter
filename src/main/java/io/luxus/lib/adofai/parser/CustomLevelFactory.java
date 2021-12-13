@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.action.Action;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.action.Action;
+import io.luxus.lib.adofai.type.EventType;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -3,9 +3,9 @@ package io.luxus.adofai.converter.converters;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.action.Action;
-import io.luxus.lib.adofai.action.Twirl;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.action.Action;
+import io.luxus.lib.adofai.type.action.Twirl;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import io.luxus.lib.adofai.util.NumberUtil;
 

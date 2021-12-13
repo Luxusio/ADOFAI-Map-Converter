@@ -1,8 +1,8 @@
 package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.luxus.lib.adofai.action.*;
-import io.luxus.lib.adofai.action.type.*;
+import io.luxus.lib.adofai.type.action.*;
+import io.luxus.lib.adofai.type.*;
 
 import java.util.*;
 import java.util.function.Function;

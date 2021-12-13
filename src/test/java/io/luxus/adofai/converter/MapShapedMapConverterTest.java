@@ -3,7 +3,7 @@ package io.luxus.adofai.converter;
 import io.luxus.adofai.converter.converters.ShapedMapConverter;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

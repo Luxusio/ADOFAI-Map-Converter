@@ -2,7 +2,7 @@ package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.LevelSetting;
-import io.luxus.lib.adofai.action.type.*;
+import io.luxus.lib.adofai.type.*;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 
 import java.util.HashMap;
