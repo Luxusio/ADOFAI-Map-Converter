@@ -1,19 +1,17 @@
 package io.luxus.lib.adofai.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum TrackStyle {
+@RequiredArgsConstructor
+public enum TrackStyle implements JsonParsable {
     STANDARD("Standard"),
     NEON("Neon"),
     NEON_LIGHT("NeonLight"),
     BASIC("Basic"),
     GEMS("Gems"),
     ;
-
-    TrackStyle(String jsonName) {
-        this.jsonName = jsonName;
-    }
 
     private final String jsonName;
 

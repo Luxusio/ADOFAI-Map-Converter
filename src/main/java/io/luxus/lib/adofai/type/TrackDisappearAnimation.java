@@ -1,9 +1,11 @@
 package io.luxus.lib.adofai.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum TrackDisappearAnimation {
+@RequiredArgsConstructor
+public enum TrackDisappearAnimation implements JsonParsable {
     NONE("None"),
     SCATTER("Scatter"),
     SCATTER_FAR("Scatter_Far"),
@@ -12,10 +14,6 @@ public enum TrackDisappearAnimation {
     SHRINK_SPIN("Shrink_Spin"),
     FADE("Fade"),
     ;
-
-    TrackDisappearAnimation(String jsonName) {
-        this.jsonName = jsonName;
-    }
 
     private final String jsonName;
 

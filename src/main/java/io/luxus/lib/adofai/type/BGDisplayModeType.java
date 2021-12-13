@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum BGDisplayModeType {
+public enum BGDisplayModeType implements JsonParsable {
     FIT_TO_SCREEN("FitToScreen"),
     UNSCALED("Unscaled"),
     TILED("Tiled"),

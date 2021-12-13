@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum GameSound {
+public enum GameSound implements JsonParsable {
     HITSOUND("Hitsound"),
     MIDSPIN("Midspin"),
     ;

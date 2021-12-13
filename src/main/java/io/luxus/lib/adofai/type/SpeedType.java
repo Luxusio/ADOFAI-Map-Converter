@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum SpeedType {
+public enum SpeedType implements JsonParsable {
     BPM("Bpm"),
     MULTIPLIER("Multiplier"),
     ;

@@ -1,9 +1,11 @@
 package io.luxus.lib.adofai.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum TrackColorType {
+@RequiredArgsConstructor
+public enum TrackColorType implements JsonParsable {
     SINGLE("Single"),
     STRIPES("Stripes"),
     GLOW("Glow"),
@@ -12,10 +14,6 @@ public enum TrackColorType {
     RAINBOW("Rainbow"),
     VOLUME("Volume"),
     ;
-
-    TrackColorType(String jsonName) {
-        this.jsonName = jsonName;
-    }
 
     private final String jsonName;
 

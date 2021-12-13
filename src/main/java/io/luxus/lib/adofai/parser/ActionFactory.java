@@ -5,35 +5,39 @@ import io.luxus.lib.adofai.type.action.*;
 import io.luxus.lib.adofai.type.*;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static io.luxus.lib.adofai.util.StringJsonUtil.*;
 
 public class ActionFactory {
 
-    public static final Map<String, EventType> eventTypeMap = getMap(EventType.values(), EventType::getJsonName);
-    public static final Map<String, BGDisplayModeType> bgDisplayModeTypeMap = getMap(BGDisplayModeType.values(), BGDisplayModeType::getJsonName);
-    public static final Map<String, CameraRelativeTo> cameraRelativeToMap = getMap(CameraRelativeTo.values(), CameraRelativeTo::getJsonName);
-    public static final Map<String, DecorationRelativeTo> decorationRelativeToMap = getMap(DecorationRelativeTo.values(), DecorationRelativeTo::getJsonName);
-    public static final Map<String, Ease> easeMap = getMap(Ease.values(), Ease::getJsonName);
-    public static final Map<String, Filter> filterMap = getMap(Filter.values(), Filter::getJsonName);
-    public static final Map<String, Font> fontMap = getMap(Font.values(), Font::getJsonName);
-    public static final Map<String, GameSound> gameSoundMap = getMap(GameSound.values(), GameSound::getJsonName);
-    public static final Map<String, HitSound> hitSoundMap = getMap(HitSound.values(), HitSound::getJsonName);
-    public static final Map<String, Plane> planeMap = getMap(Plane.values(), Plane::getJsonName);
-    public static final Map<String, SpeedType> speedTypeMap = getMap(SpeedType.values(), SpeedType::getJsonName);
-    public static final Map<String, TilePosition> tilePositionMap = getMap(TilePosition.values(), TilePosition::getJsonName);
-    public static final Map<String, Toggle> toggleMap = getMap(Toggle.values(), Toggle::getJsonName);
-    public static final Map<String, TrackAnimation> trackAnimationMap = getMap(TrackAnimation.values(), TrackAnimation::getJsonName);
-    public static final Map<String, TrackColorPulse> trackColorPulseMap = getMap(TrackColorPulse.values(), TrackColorPulse::getJsonName);
-    public static final Map<String, TrackColorType> trackColorTypeMap = getMap(TrackColorType.values(), TrackColorType::getJsonName);
-    public static final Map<String, TrackDisappearAnimation> trackDisappearAnimationMap = getMap(TrackDisappearAnimation.values(), TrackDisappearAnimation::getJsonName);
-    public static final Map<String, TrackStyle> trackStyleMap = getMap(TrackStyle.values(), TrackStyle::getJsonName);
+    public static final Map<String, EventType> eventTypeMap = getMap(EventType.class);
+    public static final Map<String, BGDisplayModeType> bgDisplayModeTypeMap = getMap(BGDisplayModeType.class);
+    public static final Map<String, CameraRelativeTo> cameraRelativeToMap = getMap(CameraRelativeTo.class);
+    public static final Map<String, DecorationRelativeTo> decorationRelativeToMap = getMap(DecorationRelativeTo.class);
+    public static final Map<String, Ease> easeMap = getMap(Ease.class);
+    public static final Map<String, Filter> filterMap = getMap(Filter.class);
+    public static final Map<String, Font> fontMap = getMap(Font.class);
+    public static final Map<String, GameSound> gameSoundMap = getMap(GameSound.class);
+    public static final Map<String, HitSound> hitSoundMap = getMap(HitSound.class);
+    public static final Map<String, Plane> planeMap = getMap(Plane.class);
+    public static final Map<String, SpeedType> speedTypeMap = getMap(SpeedType.class);
+    public static final Map<String, TilePosition> tilePositionMap = getMap(TilePosition.class);
+    public static final Map<String, Toggle> toggleMap = getMap(Toggle.class);
+    public static final Map<String, TrackAnimation> trackAnimationMap = getMap(TrackAnimation.class);
+    public static final Map<String, TrackColorPulse> trackColorPulseMap = getMap(TrackColorPulse.class);
+    public static final Map<String, TrackColorType> trackColorTypeMap = getMap(TrackColorType.class);
+    public static final Map<String, TrackDisappearAnimation> trackDisappearAnimationMap = getMap(TrackDisappearAnimation.class);
+    public static final Map<String, TrackStyle> trackStyleMap = getMap(TrackStyle.class);
 
-    private static <T> Map<String, T> getMap(T[] values, Function<T, String> stringFunction) {
-        Map<String, T> map = new HashMap<>();
-        for (T value : values) map.put(stringFunction.apply(value), value);
-        return map;
+    private static <T extends Enum<T> & JsonParsable> Map<String, T> getMap(Class<T> klass) {
+        T[] values = klass.getEnumConstants();
+        Map<String, T> map = new HashMap<>(values.length);
+
+        for (T value : values) {
+            map.put(value.getJsonName(), value);
+        }
+
+        return Collections.unmodifiableMap(map);
     }
 
     public static Action read(JsonNode node) {

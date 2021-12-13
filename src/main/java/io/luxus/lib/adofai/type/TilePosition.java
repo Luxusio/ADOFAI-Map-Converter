@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum TilePosition {
+public enum TilePosition implements JsonParsable {
     THIS_TILE("ThisTile"),
     START("Start"),
     END("End"),

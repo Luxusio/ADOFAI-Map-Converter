@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Filter {
+public enum Filter implements JsonParsable {
     GRAYSCALE("Grayscale"),
     SEPIA("Sepia"),
     INVERT("Invert"),

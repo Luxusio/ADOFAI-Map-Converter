@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Ease {
+public enum Ease implements JsonParsable {
     LINEAR("Linear"),
     IN_SINE("InSine"),
     OUT_SINE("OutSine"),

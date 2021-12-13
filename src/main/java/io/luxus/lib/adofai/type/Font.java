@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Font {
+public enum Font implements JsonParsable {
     DEFAULT("Default"),
     ARIAL("Arial"),
     COMIC_SANS_MS("ComicSansMS"),

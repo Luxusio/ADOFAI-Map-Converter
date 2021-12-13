@@ -1,9 +1,11 @@
 package io.luxus.lib.adofai.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum EventType {
+@RequiredArgsConstructor
+public enum EventType implements JsonParsable {
     UNKNOWN(null, false),
     SET_SPEED("SetSpeed", true),
     TWIRL("Twirl", true),
@@ -35,11 +37,6 @@ public enum EventType {
     ADD_TEXT("AddText", false),
     SET_TEXT("SetText", false),
     ;
-
-    EventType(String jsonName, boolean singleOnly) {
-        this.jsonName = jsonName;
-        this.singleOnly = singleOnly;
-    }
 
     private final String jsonName;
     private final boolean singleOnly;

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum CameraRelativeTo {
+public enum CameraRelativeTo implements JsonParsable {
     PLAYER("Player"),
     TILE("Tile"),
     GLOBAL("Global"),

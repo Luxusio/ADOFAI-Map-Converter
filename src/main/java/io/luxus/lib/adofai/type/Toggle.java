@@ -1,16 +1,14 @@
 package io.luxus.lib.adofai.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum Toggle {
+@RequiredArgsConstructor
+public enum Toggle implements JsonParsable {
     ENABLED("Enabled"),
     DISABLED("Disabled"),
     ;
-
-    Toggle(String jsonName) {
-        this.jsonName = jsonName;
-    }
 
     private final String jsonName;
 

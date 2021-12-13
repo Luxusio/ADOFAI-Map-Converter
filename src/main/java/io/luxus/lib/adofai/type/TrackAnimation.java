@@ -1,9 +1,11 @@
 package io.luxus.lib.adofai.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum TrackAnimation {
+@RequiredArgsConstructor
+public enum TrackAnimation implements JsonParsable {
     NONE("None"),
     ASSEMBLE("Assemble"),
     ASSEMBLE_FAR("Assemble_Far"),
@@ -14,10 +16,6 @@ public enum TrackAnimation {
     DROP("Drop"),
     RISE("Rise"),
     ;
-
-    TrackAnimation(String jsonName) {
-        this.jsonName = jsonName;
-    }
 
     private final String jsonName;
 

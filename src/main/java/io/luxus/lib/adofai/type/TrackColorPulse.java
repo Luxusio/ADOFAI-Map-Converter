@@ -1,17 +1,15 @@
 package io.luxus.lib.adofai.type;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum TrackColorPulse {
+@RequiredArgsConstructor
+public enum TrackColorPulse implements JsonParsable {
     NONE("None"),
     FORWARD("Forward"),
     BACKWARD("Backward"),
     ;
-
-    TrackColorPulse(String jsonName) {
-        this.jsonName = jsonName;
-    }
 
     private final String jsonName;
 
