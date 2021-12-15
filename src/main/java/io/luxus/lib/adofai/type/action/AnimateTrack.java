@@ -2,11 +2,8 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.*;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter

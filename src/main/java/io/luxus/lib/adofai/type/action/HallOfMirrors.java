@@ -2,42 +2,33 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.Toggle;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class HallOfMirrors extends Action {
 
-	private Toggle enabled = Toggle.ENABLED;
-	private Double angleOffset = 0.0;
-	private String eventTag = "";
-	
-	public HallOfMirrors() {
-		super(EventType.HALL_OF_MIRRORS);
-	}
+	private final Toggle enabled;
+	private final Double angleOffset;
+	private final String eventTag;
 
-	public HallOfMirrors(Toggle enabled, Double angleOffset, String eventTag) {
-		this();
+	private HallOfMirrors(Toggle enabled, Double angleOffset, String eventTag) {
+		super(EventType.HALL_OF_MIRRORS);
 		this.enabled = enabled;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private Toggle enabled = Toggle.ENABLED;
+		private Double angleOffset = 0.0;
+		private String eventTag = "";
 
 		/**
 		 * set all parameter with given action
@@ -45,12 +36,11 @@ public class HallOfMirrors extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(HallOfMirrors src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.enabled(src.enabled)
+					.angleOffset(src.angleOffset)
+					.eventTag(src.eventTag);
 		}
 
 		/**
@@ -59,8 +49,8 @@ public class HallOfMirrors extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public HallOfMirrors build() {
+			return new HallOfMirrors(enabled, angleOffset, eventTag);
 		}
 
 		/**
@@ -69,20 +59,47 @@ public class HallOfMirrors extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
+
 		/**
-		 * setter of trackAnimation
+		 * setter of enabled
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param enabled enabled of HallOfMirrors Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when enabled is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder enabled(Toggle enabled) {
+			Objects.requireNonNull(enabled);
+			this.enabled = enabled;
+			return self();
+		}
+
+		/**
+		 * setter of angleOffset
+		 *
+		 * @param angleOffset angleOffset of HallOfMirrors Event
+		 * @return self
+		 * @throws NullPointerException when angleOffset is null
+		 */
+		public Builder angleOffset(Double angleOffset) {
+			Objects.requireNonNull(angleOffset);
+			this.angleOffset = angleOffset;
+			return self();
+		}
+
+		/**
+		 * setter of eventTag
+		 *
+		 * @param eventTag eventTag of HallOfMirrors Event
+		 * @return self
+		 * @throws NullPointerException when eventTag is null
+		 */
+		public Builder eventTag(String eventTag) {
+			Objects.requireNonNull(eventTag);
+			this.eventTag = eventTag;
 			return self();
 		}
 	}

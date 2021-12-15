@@ -2,10 +2,8 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.Toggle;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
+import io.luxus.lib.adofai.util.StringJsonUtil;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
@@ -50,10 +48,12 @@ public class Bloom extends Action {
 		 */
 		public Builder from(Bloom src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.enabled(src.enabled)
+					.threshold(src.threshold)
+					.intensity(src.intensity)
+					.color(src.color)
+					.angleOffset(src.angleOffset)
+					.eventTag(src.eventTag);
 		}
 
 		/**
@@ -77,88 +77,85 @@ public class Bloom extends Action {
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of enabled
 		 *
-		 * @param trackAnimation trackAnimation of Bloom Event
+		 * @param enabled enabled of Bloom Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when enabled is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder enabled(Toggle enabled) {
+			Objects.requireNonNull(enabled);
+			this.enabled = enabled;
 			return self();
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of threshold
 		 *
-		 * @param trackAnimation trackAnimation of Bloom Event
+		 * @param threshold threshold of Bloom Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when threshold is null
 		 */
-		public Builder setEnabled(Toggle enabled) {
-			this.enabled = enabled;
-			return this;
-		}
-
-		/**
-		 * setter of trackAnimation
-		 *
-		 * @param trackAnimation trackAnimation of Bloom Event
-		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
-		 */
-		public Builder setThreshold(Long threshold) {
+		public Builder threshold(Long threshold) {
+			Objects.requireNonNull(threshold);
 			this.threshold = threshold;
-			return this;
+			return self();
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of intensity
 		 *
-		 * @param trackAnimation trackAnimation of Bloom Event
+		 * @param intensity intensity of Bloom Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when intensity is null
 		 */
-		public Builder setIntensity(Long intensity) {
+		public Builder intensity(Long intensity) {
+			Objects.requireNonNull(intensity);
 			this.intensity = intensity;
-			return this;
+			return self();
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of color
 		 *
-		 * @param trackAnimation trackAnimation of Bloom Event
+		 * @param color color of Bloom Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when color is null
+		 * @throws IllegalArgumentException when color is not rgb code
 		 */
-		public Builder setColor(String color) {
+		public Builder color(String color) {
+			Objects.requireNonNull(color);
+			if (StringJsonUtil.isRGBCode(color)) {
+				throw new IllegalArgumentException("color is not rgb code");
+			}
 			this.color = color;
-			return this;
+			return self();
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of angleOffset
 		 *
-		 * @param trackAnimation trackAnimation of Bloom Event
+		 * @param angleOffset angleOffset of Bloom Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when angleOffset is null
 		 */
-		public Builder setAngleOffset(Double angleOffset) {
+		public Builder angleOffset(Double angleOffset) {
+			Objects.requireNonNull(angleOffset);
 			this.angleOffset = angleOffset;
-			return this;
+			return self();
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of eventTag
 		 *
-		 * @param trackAnimation trackAnimation of Bloom Event
+		 * @param eventTag eventTag of Bloom Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when eventTag is null
 		 */
-		public Builder setEventTag(String eventTag) {
+		public Builder eventTag(String eventTag) {
+			Objects.requireNonNull(eventTag);
 			this.eventTag = eventTag;
-			return this;
+			return self();
 		}
 
 	}

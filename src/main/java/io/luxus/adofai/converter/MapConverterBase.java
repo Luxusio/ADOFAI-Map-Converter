@@ -188,9 +188,9 @@ public class MapConverterBase {
         // CustomBackground
         editAction(tile, EventType.CUSTOM_BACKGROUND, (action) -> {
             CustomBackground a = (CustomBackground) action;
-            return new CustomBackground(a.getColor(), a.getBgImage(), a.getImageColor(), a.getParallax(),
-                    a.getBgDisplayMode(), a.getLockRot(), a.getLoopBG(), a.getUnscaledSize(),
-                    a.getAngleOffset() * multiplyValue, a.getEventTag());
+            return new CustomBackground.Builder().from(a)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // AnimateTrack
@@ -205,16 +205,19 @@ public class MapConverterBase {
         // Flash
         editAction(tile, EventType.FLASH, (action) -> {
             Flash a = (Flash) action;
-            return new Flash(a.getDuration() * multiplyValue, a.getPlane(), a.getStartColor(), a.getStartOpacity(),
-                    a.getEndColor(), a.getEndOpacity(), a.getAngleOffset() * multiplyValue, a.getEase(), a.getEventTag());
+            return new Flash.Builder().from(a)
+                    .duration(a.getDuration() * multiplyValue)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // MoveCamera
         editAction(tile, EventType.MOVE_CAMERA, (action) -> {
             MoveCamera a = (MoveCamera) action;
-            return new MoveCamera(a.getDuration() * multiplyValue, a.getRelativeTo(), a.getPosition(),
-                    a.getRotation(), a.getZoom(), a.getAngleOffset() * multiplyValue, a.getEase(),
-                    a.getEventTag());
+            return new MoveCamera.Builder().from(a)
+                    .duration(a.getDuration() * multiplyValue)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // RecolorTrack
@@ -229,9 +232,10 @@ public class MapConverterBase {
         // MoveTrack
         editAction(tile, EventType.MOVE_TRACK, (action) -> {
             MoveTrack a = (MoveTrack) action;
-            return new MoveTrack(a.getStartTileNum(), a.getStartTilePosition(), a.getEndTileNum(), a.getEndTilePosition(), a.getDuration() * multiplyValue,
-                    a.getPositionOffset(), a.getRotationOffset(), a.getScale(), a.getOpacity(),
-                    a.getAngleOffset() * multiplyValue, a.getEase(), a.getEventTag());
+            return new MoveTrack.Builder().from(a)
+                    .duration(a.getDuration() * multiplyValue)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // SetFilter
@@ -244,7 +248,9 @@ public class MapConverterBase {
         // HallOfMirrors
         editAction(tile, EventType.HALL_OF_MIRRORS, (action) -> {
             HallOfMirrors a = (HallOfMirrors) action;
-            return new HallOfMirrors(a.getEnabled(), a.getAngleOffset() * multiplyValue, a.getEventTag());
+            return new HallOfMirrors.Builder().from(a)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // ShakeScreen
@@ -257,9 +263,10 @@ public class MapConverterBase {
         // MoveDecorations
         editAction(tile, EventType.MOVE_DECORATIONS, (action) -> {
             MoveDecorations a = (MoveDecorations) action;
-            return new MoveDecorations(a.getDuration() * multiplyValue, a.getTag(), a.getPositionOffset(),
-                    a.getRotationOffset(), a.getScale(), a.getColor(), a.getOpacity(), a.getAngleOffset() * multiplyValue, a.getEase(),
-                    a.getEventTag());
+            return new MoveDecorations.Builder().from(a)
+                    .duration(a.getDuration() * multiplyValue)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // RepeatEvents
@@ -271,8 +278,9 @@ public class MapConverterBase {
         // Bloom
         editAction(tile, EventType.BLOOM, (action) -> {
             Bloom a = (Bloom) action;
-            return new Bloom(a.getEnabled(), a.getThreshold(), a.getIntensity(), a.getColor(),
-                    a.getAngleOffset() * multiplyValue, a.getEventTag());
+            return new Bloom.Builder().from(a)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
     }
 

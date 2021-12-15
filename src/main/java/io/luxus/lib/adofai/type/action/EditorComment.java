@@ -1,37 +1,27 @@
 package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class EditorComment extends Action {
 
-    private String comment = "";
+    private final String comment;
 
-    public EditorComment() {
+    private EditorComment(String comment) {
         super(EventType.EDITOR_COMMENT);
-    }
-
-    public EditorComment(String comment) {
-        this();
         this.comment = comment;
     }
 
     @Getter
     @ToString
-    public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+    public static final class Builder extends Action.Builder<Builder> {
 
-        private TrackAnimation trackAnimation = TrackAnimation.NONE;
-        private Double beatsAhead = 3.0;
-        private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-        private Double beatsBehind = 4.0;
+        private String comment = "";
 
         /**
          * set all parameter with given action
@@ -39,12 +29,9 @@ public class EditorComment extends Action {
          * @param src source action
          * @return self
          */
-        public AnimateTrack.Builder from(AnimateTrack src) {
+        public Builder from(EditorComment src) {
             return self()
-                    .trackAnimation(src.trackAnimation)
-                    .beatsAhead(src.beatsAhead)
-                    .trackDisappearAnimation(src.trackDisappearAnimation)
-                    .beatsBehind(src.beatsBehind);
+                    .comment(src.comment);
         }
 
         /**
@@ -53,8 +40,8 @@ public class EditorComment extends Action {
          * @return Built AddText action
          */
         @Override
-        public AnimateTrack build() {
-            return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+        public EditorComment build() {
+            return new EditorComment(comment);
         }
 
         /**
@@ -63,20 +50,20 @@ public class EditorComment extends Action {
          * @return self
          */
         @Override
-        public AnimateTrack.Builder self() {
+        public Builder self() {
             return this;
         }
 
         /**
-         * setter of trackAnimation
+         * setter of comment
          *
-         * @param trackAnimation trackAnimation of AnimateTrack Event
+         * @param comment comment of EditorComment Event
          * @return self
-         * @throws NullPointerException when trackAnimation is null
+         * @throws NullPointerException when comment is null
          */
-        public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-            Objects.requireNonNull(trackAnimation);
-            this.trackAnimation = trackAnimation;
+        public Builder comment(String comment) {
+            Objects.requireNonNull(comment);
+            this.comment = comment;
             return self();
         }
     }

@@ -47,6 +47,8 @@ public class AddText extends Action {
 		this.tag = tag;
 	}
 
+	@Getter
+	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
 		private String decText = "text";

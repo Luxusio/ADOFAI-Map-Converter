@@ -8,15 +8,17 @@ import lombok.ToString;
 
 import java.util.Objects;
 
+@Getter
+@ToString
 public class Bookmark extends Action {
 
-	public Bookmark() {
+	private Bookmark() {
 		super(EventType.BOOKMARK);
 	}
 
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
 		private TrackAnimation trackAnimation = TrackAnimation.NONE;
 		private Double beatsAhead = 3.0;
@@ -29,12 +31,8 @@ public class Bookmark extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
-			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+		public Builder from(Bookmark src) {
+			return self();
 		}
 
 		/**
@@ -43,8 +41,8 @@ public class Bookmark extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public Bookmark build() {
+			return new Bookmark();
 		}
 
 		/**
@@ -53,21 +51,10 @@ public class Bookmark extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
-		/**
-		 * setter of trackAnimation
-		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
-		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
-		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
-			return self();
-		}
 	}
+
 }

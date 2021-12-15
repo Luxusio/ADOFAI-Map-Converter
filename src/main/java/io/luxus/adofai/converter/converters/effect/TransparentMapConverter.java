@@ -6,11 +6,9 @@ import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.action.MoveTrack;
-import io.luxus.lib.adofai.type.Ease;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.TilePosition;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -66,8 +64,11 @@ public class TransparentMapConverter implements MapConverter {
     }
 
     private MoveTrack getTransparentMoveTrack(long opacity) {
-        return new MoveTrack(0L, TilePosition.START, 0L, TilePosition.END,
-                0.0, Arrays.asList(0.0, 0.0), 0.0, Arrays.asList(100L, 100L), opacity, 0.0, Ease.LINEAR, "");
+        return new MoveTrack.Builder()
+                .startTilePosition(TilePosition.START).endTilePosition(TilePosition.END)
+                .duration(0.0)
+                .opacity(opacity)
+                .build();
     }
 
     private void editOpacityEvents(Tile tile, long opacity) {
@@ -77,9 +78,9 @@ public class TransparentMapConverter implements MapConverter {
         List<Action> newActions = actions.stream()
                 .map(action -> {
                     MoveTrack a = (MoveTrack) action;
-                    return new MoveTrack(a.getStartTileNum(), a.getStartTilePosition(), a.getEndTileNum(), a.getEndTilePosition(),
-                            a.getDuration(), a.getPositionOffset(), a.getRotationOffset(), a.getScale(), a.getOpacity() == 0 ? 0 : opacity,
-                            a.getAngleOffset(), a.getEase(), a.getEventTag());
+                    return new MoveTrack.Builder().from(a)
+                            .opacity(a.getOpacity() == 0 ? 0 : opacity)
+                            .build();
                 })
                 .collect(Collectors.toList());
 

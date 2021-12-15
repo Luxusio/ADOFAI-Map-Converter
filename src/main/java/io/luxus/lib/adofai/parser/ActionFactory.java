@@ -84,7 +84,7 @@ public class ActionFactory {
                 break;
             }
             case BOOKMARK: {
-                action = new Bookmark();
+                action = new Bookmark.Builder().build();
                 break;
             }
             case CHECK_POINT: {
