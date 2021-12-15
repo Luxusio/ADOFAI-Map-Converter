@@ -1,31 +1,25 @@
 package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class SetConditionalEvents extends Action {
 
-	private String perfectTag = "NONE";
-	private String hitTag = "NONE";
-	private String barelyTag = "NONE";
-	private String missTag = "NONE";
-	private String lossTag = "NONE";
+	private final String perfectTag;
+	private final String hitTag;
+	private final String barelyTag;
+	private final String missTag;
+	private final String lossTag;
 
-	public SetConditionalEvents() {
-		super(EventType.SET_CONDITIONAL_EVENTS);
-	}
-
-	public SetConditionalEvents(String perfectTag, String hitTag, String barelyTag, String missTag,
+	private SetConditionalEvents(String perfectTag, String hitTag, String barelyTag, String missTag,
 			String lossTag) {
-		this();
+		super(EventType.SET_CONDITIONAL_EVENTS);
 		this.perfectTag = perfectTag;
 		this.hitTag = hitTag;
 		this.barelyTag = barelyTag;
@@ -33,15 +27,15 @@ public class SetConditionalEvents extends Action {
 		this.lossTag = lossTag;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private String perfectTag = "NONE";
+		private String hitTag = "NONE";
+		private String barelyTag = "NONE";
+		private String missTag = "NONE";
+		private String lossTag = "NONE";
 
 		/**
 		 * set all parameter with given action
@@ -49,12 +43,13 @@ public class SetConditionalEvents extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(SetConditionalEvents src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.perfectTag(src.perfectTag)
+					.hitTag(src.hitTag)
+					.barelyTag(src.barelyTag)
+					.missTag(src.missTag)
+					.lossTag(src.lossTag);
 		}
 
 		/**
@@ -63,8 +58,8 @@ public class SetConditionalEvents extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public SetConditionalEvents build() {
+			return new SetConditionalEvents(perfectTag, hitTag, barelyTag, missTag, lossTag);
 		}
 
 		/**
@@ -73,22 +68,75 @@ public class SetConditionalEvents extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of perfectTag
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param perfectTag perfectTag of SetConditionalEvents Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when perfectTag is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder perfectTag(String perfectTag) {
+			Objects.requireNonNull(perfectTag);
+			this.perfectTag = perfectTag;
 			return self();
 		}
+
+		/**
+		 * setter of hitTag
+		 *
+		 * @param hitTag hitTag of SetConditionalEvents Event
+		 * @return self
+		 * @throws NullPointerException when hitTag is null
+		 */
+		public Builder hitTag(String hitTag) {
+			Objects.requireNonNull(hitTag);
+			this.hitTag = hitTag;
+			return self();
+		}
+
+		/**
+		 * setter of barelyTag
+		 *
+		 * @param barelyTag barelyTag of SetConditionalEvents Event
+		 * @return self
+		 * @throws NullPointerException when barelyTag is null
+		 */
+		public Builder barelyTag(String barelyTag) {
+			Objects.requireNonNull(barelyTag);
+			this.barelyTag = barelyTag;
+			return self();
+		}
+
+		/**
+		 * setter of missTag
+		 *
+		 * @param missTag missTag of SetConditionalEvents Event
+		 * @return self
+		 * @throws NullPointerException when missTag is null
+		 */
+		public Builder missTag(String missTag) {
+			Objects.requireNonNull(missTag);
+			this.missTag = missTag;
+			return self();
+		}
+
+		/**
+		 * setter of lossTag
+		 *
+		 * @param lossTag lossTag of SetConditionalEvents Event
+		 * @return self
+		 * @throws NullPointerException when lossTag is null
+		 */
+		public Builder lossTag(String lossTag) {
+			Objects.requireNonNull(lossTag);
+			this.lossTag = lossTag;
+			return self();
+		}
+
 	}
 
 }

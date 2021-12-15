@@ -1,44 +1,36 @@
 package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
+import io.luxus.lib.adofai.util.ListUtil;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class ScreenScroll extends Action {
 
-	private List<Double> scroll = Arrays.asList(0.0, 0.0);
-	private Double angleOffset = 0.0;
-	private String eventTag = "";
-	
-	public ScreenScroll() {
-		super(EventType.SCREEN_SCROLL);
-	}
+	private final List<Double> scroll;
+	private final Double angleOffset;
+	private final String eventTag;
 
 	public ScreenScroll(List<Double> scroll, Double angleOffset, String eventTag) {
-		this();
+		super(EventType.SCREEN_SCROLL);
 		this.scroll = scroll;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private List<Double> scroll = Arrays.asList(0.0, 0.0);
+		private Double angleOffset = 0.0;
+		private String eventTag = "";
 
 		/**
 		 * set all parameter with given action
@@ -46,12 +38,11 @@ public class ScreenScroll extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(ScreenScroll src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.scroll(src.scroll)
+					.angleOffset(src.angleOffset)
+					.eventTag(src.eventTag);
 		}
 
 		/**
@@ -60,8 +51,8 @@ public class ScreenScroll extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public ScreenScroll build() {
+			return new ScreenScroll(scroll, angleOffset, eventTag);
 		}
 
 		/**
@@ -70,20 +61,50 @@ public class ScreenScroll extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of scroll
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param scroll scroll of ScreenScroll Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when scroll is null
+		 * @throws IllegalArgumentException when size of scroll is not 2
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder scroll(List<Double> scroll) {
+			Objects.requireNonNull(scroll);
+			if (scroll.size() != 2) {
+				throw new IllegalArgumentException("size of scroll must be 2");
+			}
+			this.scroll = ListUtil.createNewUnmodifiableList(scroll);
+			return self();
+		}
+
+		/**
+		 * setter of angleOffset
+		 *
+		 * @param angleOffset angleOffset of ScreenScroll Event
+		 * @return self
+		 * @throws NullPointerException when angleOffset is null
+		 */
+		public Builder angleOffset(Double angleOffset) {
+			Objects.requireNonNull(angleOffset);
+			this.angleOffset = angleOffset;
+			return self();
+		}
+
+		/**
+		 * setter of eventTag
+		 *
+		 * @param eventTag eventTag of ScreenScroll Event
+		 * @return self
+		 * @throws NullPointerException when eventTag is null
+		 */
+		public Builder eventTag(String eventTag) {
+			Objects.requireNonNull(eventTag);
+			this.eventTag = eventTag;
 			return self();
 		}
 	}

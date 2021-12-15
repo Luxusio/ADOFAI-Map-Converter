@@ -1,6 +1,7 @@
 package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.*;
+import io.luxus.lib.adofai.util.ListUtil;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -181,7 +182,7 @@ public class MoveTrack extends Action {
 			if (positionOffset.size() != 2) {
 				throw new IllegalArgumentException("size of positionOffset must be 2");
 			}
-			this.positionOffset = positionOffset;
+			this.positionOffset = ListUtil.createNewUnmodifiableList(positionOffset);
 			return self();
 		}
 
@@ -211,7 +212,7 @@ public class MoveTrack extends Action {
 			if (scale.size() != 2) {
 				throw new IllegalArgumentException("size of scale must be 2");
 			}
-			this.scale = scale;
+			this.scale = ListUtil.createNewUnmodifiableList(scale);
 			return self();
 		}
 

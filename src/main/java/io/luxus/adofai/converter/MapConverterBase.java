@@ -223,10 +223,9 @@ public class MapConverterBase {
         // RecolorTrack
         editAction(tile, EventType.RECOLOR_TRACK, (action) -> {
             RecolorTrack a = (RecolorTrack) action;
-            return new RecolorTrack(a.getStartTileNum(), a.getStartTilePosition(), a.getEndTileNum(), a.getEndTilePosition(), a.getTrackColorType(), a.getTrackColor(),
-                    a.getSecondaryTrackColor(), a.getTrackColorAnimDuration(), a.getTrackColorPulse(),
-                    a.getTrackPulseLength(), a.getTrackStyle(), a.getAngleOffset() * multiplyValue,
-                    a.getEventTag());
+            return new RecolorTrack.Builder().from(a)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // MoveTrack
@@ -282,6 +281,14 @@ public class MapConverterBase {
                     .angleOffset(a.getAngleOffset() * multiplyValue)
                     .build();
         });
+
+        editAction(tile, EventType.PLAY_SOUND, (action) -> {
+            PlaySound a = (PlaySound) action;
+            return new PlaySound.Builder().from(a)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
+        });
+
     }
 
     /**
@@ -291,6 +298,7 @@ public class MapConverterBase {
      * @param eventType the eventType to edit
      * @param function individual edit function
      */
+    // todo : use generic(<T extends Action>) to remove casting
     private static void editAction(Tile tile, EventType eventType, Function<Action, Action> function) {
         List<Action> actions = tile.getActions(eventType);
         List<Action> newActionList = new ArrayList<>();

@@ -2,42 +2,33 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.Toggle;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
+import io.luxus.lib.adofai.util.ListUtil;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class PositionTrack extends Action {
 
-	private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
-	private Toggle editorOnly = Toggle.DISABLED;
+	private final List<Double> positionOffset;
+	private final Toggle editorOnly;
 
-	public PositionTrack() {
+	private PositionTrack(List<Double> positionOffset, Toggle editorOnly) {
 		super(EventType.POSITION_TRACK);
-	}
-
-	public PositionTrack(List<Double> positionOffset, Toggle editorOnly) {
-		this();
 		this.positionOffset = positionOffset;
 		this.editorOnly = editorOnly;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
+		private Toggle editorOnly = Toggle.DISABLED;
 
 		/**
 		 * set all parameter with given action
@@ -45,12 +36,10 @@ public class PositionTrack extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(PositionTrack src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.positionOffset(src.positionOffset)
+					.editorOnly(src.editorOnly);
 		}
 
 		/**
@@ -59,8 +48,8 @@ public class PositionTrack extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public PositionTrack build() {
+			return new PositionTrack(positionOffset, editorOnly);
 		}
 
 		/**
@@ -69,20 +58,37 @@ public class PositionTrack extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of positionOffset
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param positionOffset positionOffset of PositionTrack Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when positionOffset is null
+		 * @throws IllegalArgumentException when size of positionOffset is not 2
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder positionOffset(List<Double> positionOffset) {
+			Objects.requireNonNull(positionOffset);
+			if (positionOffset.size() != 2) {
+				throw new IllegalArgumentException("size of positionOffset must be 2");
+			}
+			this.positionOffset = ListUtil.createNewUnmodifiableList(positionOffset);
+			return self();
+		}
+
+		/**
+		 * setter of editorOnly
+		 *
+		 * @param editorOnly editorOnly of PositionTrack Event
+		 * @return self
+		 * @throws NullPointerException when editorOnly is null
+		 */
+		public Builder editorOnly(Toggle editorOnly) {
+			Objects.requireNonNull(editorOnly);
+			this.editorOnly = editorOnly;
 			return self();
 		}
 	}

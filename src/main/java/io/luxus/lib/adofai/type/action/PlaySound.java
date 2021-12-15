@@ -10,34 +10,28 @@ import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class PlaySound extends Action {
 
-	private HitSound hitsound = HitSound.KICK;
-	private Long hitsoundVolume = 100L;
-	private Double angleOffset = 0.0;
+	private final HitSound hitsound;
+	private final Long hitsoundVolume;
+	private final Double angleOffset;
 
-	public PlaySound() {
+	private PlaySound(HitSound hitsound, Long hitsoundVolume, Double angleOffset) {
 		super(EventType.PLAY_SOUND);
-	}
-
-	public PlaySound(HitSound hitsound, Long hitsoundVolume, Double angleOffset) {
-		this();
 		this.hitsound = hitsound;
 		this.hitsoundVolume = hitsoundVolume;
 		this.angleOffset = angleOffset;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private HitSound hitsound = HitSound.KICK;
+		private Long hitsoundVolume = 100L;
+		private Double angleOffset = 0.0;
 
 		/**
 		 * set all parameter with given action
@@ -45,12 +39,11 @@ public class PlaySound extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(PlaySound src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.hitsound(src.hitsound)
+					.hitsoundVolume(src.hitsoundVolume)
+					.angleOffset(src.angleOffset);
 		}
 
 		/**
@@ -59,8 +52,8 @@ public class PlaySound extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public PlaySound build() {
+			return new PlaySound(hitsound, hitsoundVolume, angleOffset);
 		}
 
 		/**
@@ -69,20 +62,46 @@ public class PlaySound extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of hitsound
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param hitsound hitsound of PlaySound Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when hitsound is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder hitsound(HitSound hitsound) {
+			Objects.requireNonNull(hitsound);
+			this.hitsound = hitsound;
+			return self();
+		}
+
+		/**
+		 * setter of hitsoundVolume
+		 *
+		 * @param hitsoundVolume hitsoundVolume of PlaySound Event
+		 * @return self
+		 * @throws NullPointerException when hitsoundVolume is null
+		 */
+		public Builder hitsoundVolume(Long hitsoundVolume) {
+			Objects.requireNonNull(hitsoundVolume);
+			this.hitsoundVolume = hitsoundVolume;
+			return self();
+		}
+
+		/**
+		 * setter of angleOffset
+		 *
+		 * @param angleOffset angleOffset of PlaySound Event
+		 * @return self
+		 * @throws NullPointerException when angleOffset is null
+		 */
+		public Builder angleOffset(Double angleOffset) {
+			Objects.requireNonNull(angleOffset);
+			this.angleOffset = angleOffset;
 			return self();
 		}
 	}

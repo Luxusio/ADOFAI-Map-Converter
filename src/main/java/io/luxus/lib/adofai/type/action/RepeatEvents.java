@@ -1,42 +1,33 @@
 package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class RepeatEvents extends Action {
 
-	private Long repetitions = 1L;
-	private Double interval = 1.0;
-	private String tag = "";
-
-	public RepeatEvents() {
-		super(EventType.REPEAT_EVENTS);
-	}
+	private final Long repetitions;
+	private final Double interval;
+	private final String tag;
 
 	public RepeatEvents(Long repetitions, Double interval, String tag) {
-		this();
+		super(EventType.REPEAT_EVENTS);
 		this.repetitions = repetitions;
 		this.interval = interval;
 		this.tag = tag;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private Long repetitions = 1L;
+		private Double interval = 1.0;
+		private String tag = "";
 
 		/**
 		 * set all parameter with given action
@@ -44,12 +35,11 @@ public class RepeatEvents extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(RepeatEvents src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.repetitions(src.repetitions)
+					.interval(src.interval)
+					.tag(src.tag);
 		}
 
 		/**
@@ -58,8 +48,8 @@ public class RepeatEvents extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public RepeatEvents build() {
+			return new RepeatEvents(repetitions, interval, tag);
 		}
 
 		/**
@@ -68,22 +58,49 @@ public class RepeatEvents extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of repetitions
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param repetitions repetitions of RepeatEvents Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when repetitions is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder repetitions(Long repetitions) {
+			Objects.requireNonNull(repetitions);
+			this.repetitions = repetitions;
 			return self();
 		}
+
+		/**
+		 * setter of interval
+		 *
+		 * @param interval interval of RepeatEvents Event
+		 * @return self
+		 * @throws NullPointerException when interval is null
+		 */
+		public Builder interval(Double interval) {
+			Objects.requireNonNull(interval);
+			this.interval = interval;
+			return self();
+		}
+
+		/**
+		 * setter of tag
+		 *
+		 * @param tag tag of RepeatEvents Event
+		 * @return self
+		 * @throws NullPointerException when tag is null
+		 */
+		public Builder tag(String tag) {
+			Objects.requireNonNull(tag);
+			this.tag = tag;
+			return self();
+		}
+
 	}
 
 }

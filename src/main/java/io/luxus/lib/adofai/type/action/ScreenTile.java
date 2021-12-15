@@ -3,6 +3,7 @@ package io.luxus.lib.adofai.type.action;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.TrackAnimation;
 import io.luxus.lib.adofai.type.TrackDisappearAnimation;
+import io.luxus.lib.adofai.util.ListUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,34 +12,28 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class ScreenTile extends Action {
 
-	private List<Double> tile = Arrays.asList(1.0, 1.0);
-	private Double angleOffset = 0.0;
-	private String eventTag = "";
-	
-	public ScreenTile() {
-		super(EventType.SCREEN_TILE);
-	}
+	private final List<Double> tile;
+	private final Double angleOffset;
+	private final String eventTag;
 
-	public ScreenTile(List<Double> tile, Double angleOffset, String eventTag) {
-		this();
+	private ScreenTile(List<Double> tile, Double angleOffset, String eventTag) {
+		super(EventType.SCREEN_TILE);
 		this.tile = tile;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private List<Double> tile = Arrays.asList(1.0, 1.0);
+		private Double angleOffset = 0.0;
+		private String eventTag = "";
 
 		/**
 		 * set all parameter with given action
@@ -46,12 +41,11 @@ public class ScreenTile extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(ScreenTile src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.tile(src.tile)
+					.angleOffset(src.angleOffset)
+					.eventTag(src.eventTag);
 		}
 
 		/**
@@ -60,8 +54,8 @@ public class ScreenTile extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public ScreenTile build() {
+			return new ScreenTile(tile, angleOffset, eventTag);
 		}
 
 		/**
@@ -70,22 +64,53 @@ public class ScreenTile extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of tile
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param tile tile of ScreenTile Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when tile is null
+		 * @throws IllegalArgumentException when size of tile is not 2
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder tile(List<Double> tile) {
+			Objects.requireNonNull(tile);
+			if (tile.size() != 2) {
+				throw new IllegalArgumentException("size of tile must be 2");
+			}
+			this.tile = ListUtil.createNewUnmodifiableList(tile);
 			return self();
 		}
+
+		/**
+		 * setter of angleOffset
+		 *
+		 * @param angleOffset angleOffset of ScreenTile Event
+		 * @return self
+		 * @throws NullPointerException when angleOffset is null
+		 */
+		public Builder angleOffset(Double angleOffset) {
+			Objects.requireNonNull(angleOffset);
+			this.angleOffset = angleOffset;
+			return self();
+		}
+
+		/**
+		 * setter of eventTag
+		 *
+		 * @param eventTag eventTag of ScreenTile Event
+		 * @return self
+		 * @throws NullPointerException when eventTag is null
+		 */
+		public Builder eventTag(String eventTag) {
+			Objects.requireNonNull(eventTag);
+			this.eventTag = eventTag;
+			return self();
+		}
+
 	}
 
 }
