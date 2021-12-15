@@ -5,6 +5,7 @@ import io.luxus.lib.adofai.type.action.*;
 import io.luxus.lib.adofai.type.*;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static io.luxus.lib.adofai.util.StringJsonUtil.*;
 
@@ -124,7 +125,7 @@ public class ActionFactory {
                 break;
             }
             case ANIMATE_TRACK: {
-                action = new AnimateTrack(
+                AnimateTrack.Builder builder = new AnimateTrack.Builder();
                         readProperty(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
                         readProperty(map, "beatsAhead", JsonNode::asDouble),
                         readProperty(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
@@ -132,21 +133,27 @@ public class ActionFactory {
                 break;
             }
             case ADD_DECORATION: {
-                action = new AddDecoration(
-                        readPropertyO(map, "decorationImage", o -> o.map(JsonNode::asText))
-                                .orElse(readProperty(map, "decText", JsonNode::asText)),
-                        readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
-                        readProperty(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "rotation", JsonNode::asDouble),
-                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "tile", nodeToXYListFunc(JsonNode::asLong)),
-                        readProperty(map, "color", JsonNode::asText),
-                        readProperty(map, "opacity", JsonNode::asLong),
-                        readProperty(map, "depth", JsonNode::asLong),
-                        readProperty(map, "parallax", JsonNode::asLong),
-                        readProperty(map, "tag", JsonNode::asText),
-                        readProperty(map, "components", JsonNode::asText));
+                AddDecoration.Builder builder = new AddDecoration.Builder();
+
+                // parameter를 읽기 쉽게 해주는 class만들어서 사용하기
+                Stream.of(
+                        readPropertyOptional(map, "decorationImage", o -> o.map(JsonNode::asText)),
+                        readPropertyOptional(map, "decText", o -> o.map(JsonNode::asText)))
+                        .filter(Optional::isPresent).map(Optional::get).findFirst().ifPresent(builder::decorationImage);
+                readPropertyOptionalChain(map, "position", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::position);
+                readPropertyOptionalChain(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get).ifPresent(builder::decorationRelativeTo);
+                readPropertyOptionalChain(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::pivotOffset);
+                readPropertyOptionalChain(map, "rotation", JsonNode::asDouble).ifPresent(builder::rotation);
+                readPropertyOptionalChain(map, "scale", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::scale);
+                readPropertyOptionalChain(map, "tile", nodeToXYListFunc(JsonNode::asLong)).ifPresent(builder::tile);
+                readPropertyOptionalChain(map, "color", JsonNode::asText).ifPresent(builder::color);
+                readPropertyOptionalChain(map, "opacity", JsonNode::asLong).ifPresent(builder::opacity);
+                readPropertyOptionalChain(map, "depth", JsonNode::asLong).ifPresent(builder::depth);
+                readPropertyOptionalChain(map, "parallax", JsonNode::asLong).ifPresent(builder::parallax);
+                readPropertyOptionalChain(map, "tag", JsonNode::asText).ifPresent(builder::tag);
+                readPropertyOptionalChain(map, "components", JsonNode::asText).ifPresent(builder::components);
+
+                action = builder.build();
                 break;
             }
             case FLASH: {
@@ -329,19 +336,22 @@ public class ActionFactory {
                 break;
             }
             case ADD_TEXT: {
-                action = new AddText(
-                        readProperty(map, "decText", JsonNode::asText),
-                        readProperty(map, "font", JsonNode::asText, fontMap::get),
-                        readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get),
-                        readProperty(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "rotation", JsonNode::asDouble),
-                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
-                        readProperty(map, "color", JsonNode::asText),
-                        readProperty(map, "opacity", JsonNode::asLong),
-                        readProperty(map, "depth", JsonNode::asLong),
-                        readProperty(map, "parallax", JsonNode::asLong),
-                        readProperty(map, "tag", JsonNode::asText));
+                AddText.Builder builder = new AddText.Builder();
+                readPropertyOptionalChain(map, "decText", JsonNode::asText).ifPresent(builder::decText);
+                readPropertyOptionalChain(map, "decText", JsonNode::asText).ifPresent(builder::decText);
+                readPropertyOptionalChain(map, "font", JsonNode::asText, fontMap::get).ifPresent(builder::font);
+                readPropertyOptionalChain(map, "position", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::position);
+                readPropertyOptionalChain(map, "relativeTo", JsonNode::asText, decorationRelativeToMap::get).ifPresent(builder::relativeTo);
+                readPropertyOptionalChain(map, "pivotOffset", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::pivotOffset);
+                readPropertyOptionalChain(map, "rotation", JsonNode::asDouble).ifPresent(builder::rotation);
+                readPropertyOptionalChain(map, "scale", nodeToXYListFunc(JsonNode::asLong)).ifPresent(builder::scale);
+                readPropertyOptionalChain(map, "color", JsonNode::asText).ifPresent(builder::color);
+                readPropertyOptionalChain(map, "opacity", JsonNode::asLong).ifPresent(builder::opacity);
+                readPropertyOptionalChain(map, "depth", JsonNode::asLong).ifPresent(builder::depth);
+                readPropertyOptionalChain(map, "parallax", JsonNode::asLong).ifPresent(builder::parallax);
+                readPropertyOptionalChain(map, "tag", JsonNode::asText).ifPresent(builder::tag);
+
+                action = builder.build();
                 break;
             }
             case SET_TEXT: {

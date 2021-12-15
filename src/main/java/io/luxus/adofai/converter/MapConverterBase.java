@@ -196,8 +196,10 @@ public class MapConverterBase {
         // AnimateTrack
         editAction(tile, EventType.ANIMATE_TRACK, (action) -> {
             AnimateTrack a = (AnimateTrack) action;
-            return new AnimateTrack(a.getTrackAnimation(), a.getBeatsAhead() * multiplyValue,
-                    a.getTrackDisappearAnimation(), a.getBeatsBehind() * multiplyValue);
+            return new AnimateTrack.Builder().from(a)
+                    .beatsAhead(a.getBeatsAhead() * multiplyValue)
+                    .beatsBehind(a.getBeatsBehind() * multiplyValue)
+                    .build();
         });
 
         // Flash

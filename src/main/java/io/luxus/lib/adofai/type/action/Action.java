@@ -12,4 +12,11 @@ public abstract class Action {
         this.eventType = eventType;
     }
 
+    public static abstract class Builder<T extends Builder<T>> {
+
+        public abstract Action build();
+        public abstract T self();
+
+    }
+
 }

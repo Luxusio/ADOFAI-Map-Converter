@@ -100,15 +100,24 @@ public class StringJsonUtil {
         };
     }
 
-    public static <T1, T2> T2 readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T1> mapper, Function<T1, T2> mapper2) {
-        return readPropertyO(map, name, jsonNode -> jsonNode.map(mapper).map(mapper2)).orElse(null);
+
+    public static <T1, T2> T2 readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T1> mapper1, Function<T1, T2> mapper2) {
+        return readPropertyOptionalChain(map, name, mapper1, mapper2).orElse(null);
     }
 
     public static <T> T readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
-        return readPropertyO(map, name, jsonNode -> jsonNode.map(mapper)).orElse(null);
+        return readPropertyOptionalChain(map, name, mapper).orElse(null);
     }
 
-    public static <T> Optional<T> readPropertyO(Map<String, JsonNode> map, String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
+    public static <T1, T2> Optional<T2> readPropertyOptionalChain(Map<String, JsonNode> map, String name, Function<JsonNode, T1> mapper1, Function<T1, T2> mapper2) {
+        return readPropertyOptional(map, name, jsonNode -> jsonNode.map(mapper1).map(mapper2));
+    }
+
+    public static <T> Optional<T> readPropertyOptionalChain(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
+        return readPropertyOptional(map, name, jsonNode -> jsonNode.map(mapper));
+    }
+
+    public static <T> Optional<T> readPropertyOptional(Map<String, JsonNode> map, String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
         JsonNode node = map.remove(name);
         Optional<JsonNode> optional = Optional.ofNullable(node);
         try {
@@ -261,6 +270,14 @@ public class StringJsonUtil {
         else {
             throw new IllegalStateException("Unknown number type : (" + number + ")" + number.getClass().getSimpleName());
         }
+    }
+
+    public static boolean isRGBCode(String color) {
+        return true;
+    }
+
+    public static boolean isARGBCode(String color) {
+        return true;
     }
 
 }
