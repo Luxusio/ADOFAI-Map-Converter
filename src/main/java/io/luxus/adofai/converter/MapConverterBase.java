@@ -240,8 +240,9 @@ public class MapConverterBase {
         // SetFilter
         editAction(tile, EventType.SET_FILTER, (action) -> {
             SetFilter a = (SetFilter) action;
-            return new SetFilter(a.getFilter(), a.getEnabled(), a.getIntensity(), a.getDisableOthers(),
-                    a.getAngleOffset() * multiplyValue, a.getEventTag());
+            return new SetFilter.Builder().from(a)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // HallOfMirrors
@@ -255,8 +256,10 @@ public class MapConverterBase {
         // ShakeScreen
         editAction(tile, EventType.SHAKE_SCREEN, (action) -> {
             ShakeScreen a = (ShakeScreen) action;
-            return new ShakeScreen(a.getDuration() * multiplyValue, a.getStrength(), a.getIntensity(),
-                    a.getFadeOut(), a.getAngleOffset() * multiplyValue, a.getEventTag());
+            return new ShakeScreen.Builder().from(a)
+                    .duration(a.getDuration() * multiplyValue)
+                    .angleOffset(a.getAngleOffset() * multiplyValue)
+                    .build();
         });
 
         // MoveDecorations
@@ -271,7 +274,9 @@ public class MapConverterBase {
         // RepeatEvents
         editAction(tile, EventType.REPEAT_EVENTS, (action) -> {
             RepeatEvents a = (RepeatEvents) action;
-            return new RepeatEvents(a.getRepetitions(), a.getInterval() * multiplyValue, a.getTag());
+            return new RepeatEvents.Builder().from(a)
+                    .interval(a.getInterval() * multiplyValue)
+                    .build();
         });
 
         // Bloom
@@ -326,8 +331,9 @@ public class MapConverterBase {
                     angleOffset = Math.max(angleOffset - 0.000001, 0.0);
                 }
 
-                return new SetFilter(a.getFilter(), a.getEnabled(), a.getIntensity(), a.getDisableOthers(),
-                        angleOffset, a.getEventTag());
+                return new SetFilter.Builder().from(a)
+                        .angleOffset(angleOffset)
+                        .build();
             });
         }
     }

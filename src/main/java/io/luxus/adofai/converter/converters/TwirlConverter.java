@@ -22,7 +22,7 @@ public class TwirlConverter implements MapConverter {
 			List<Action> actionList = tile.getActions(EventType.TWIRL);
 			actionList.clear();
 			if (rate > Math.random()) {
-				actionList.add(new Twirl());
+				actionList.add(new Twirl.Builder().build());
 			}
 
 			return tile.getTileMeta().getTravelAngle();
@@ -68,7 +68,7 @@ public class TwirlConverter implements MapConverter {
 			actionList.clear();
 
 			if (twirlRate > Math.random()) {
-				actionList.add(new Twirl());
+				actionList.add(new Twirl.Builder().build());
 			}
 
 			return tile.getTileMeta().getTravelAngle();

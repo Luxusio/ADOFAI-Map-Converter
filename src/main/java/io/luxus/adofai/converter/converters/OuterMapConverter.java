@@ -45,7 +45,7 @@ public class OuterMapConverter implements MapConverter {
 						Tile firstTile = newTiles.get(0);
 						List<Action> actionList = firstTile.getActions(EventType.TWIRL);
 						if (actionList.isEmpty()) {
-							actionList.add(new Twirl());
+							actionList.add(new Twirl.Builder().build());
 						} else {
 							actionList.clear();
 						}

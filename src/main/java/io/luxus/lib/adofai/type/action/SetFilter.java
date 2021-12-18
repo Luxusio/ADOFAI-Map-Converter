@@ -2,28 +2,23 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.*;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class SetFilter extends Action {
 	
-	private Filter filter = Filter.GRAYSCALE;
-	private Toggle enabled = Toggle.ENABLED;
-	private Long intensity = 100L;
-	private Toggle disableOthers = Toggle.DISABLED;
-	private Double angleOffset = 0.0;
-	private String eventTag = "";
-	
-	public SetFilter() {
-		super(EventType.SET_FILTER);
-	}
+	private final Filter filter;
+	private final Toggle enabled;
+	private final Long intensity;
+	private final Toggle disableOthers;
+	private final Double angleOffset;
+	private final String eventTag;
 
-	public SetFilter(Filter filter, Toggle enabled, Long intensity, Toggle disableOthers, Double angleOffset, String eventTag) {
-		this();
+	private SetFilter(Filter filter, Toggle enabled, Long intensity, Toggle disableOthers, Double angleOffset, String eventTag) {
+		super(EventType.SET_FILTER);
 		this.filter = filter;
 		this.enabled = enabled;
 		this.intensity = intensity;
@@ -34,12 +29,14 @@ public class SetFilter extends Action {
 
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private Filter filter = Filter.GRAYSCALE;
+		private Toggle enabled = Toggle.ENABLED;
+		private Long intensity = 100L;
+		private Toggle disableOthers = Toggle.DISABLED;
+		private Double angleOffset = 0.0;
+		private String eventTag = "";
 
 		/**
 		 * set all parameter with given action
@@ -47,12 +44,14 @@ public class SetFilter extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(SetFilter src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.filter(src.filter)
+					.enabled(src.enabled)
+					.intensity(src.intensity)
+					.disableOthers(src.disableOthers)
+					.angleOffset(src.angleOffset)
+					.eventTag(src.eventTag);
 		}
 
 		/**
@@ -61,8 +60,8 @@ public class SetFilter extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public SetFilter build() {
+			return new SetFilter(filter, enabled, intensity, disableOthers, angleOffset, eventTag);
 		}
 
 		/**
@@ -71,22 +70,88 @@ public class SetFilter extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of filter
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param filter filter of SetFilter Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when filter is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder filter(Filter filter) {
+			Objects.requireNonNull(filter);
+			this.filter = filter;
 			return self();
 		}
+
+		/**
+		 * setter of enabled
+		 *
+		 * @param enabled enabled of SetFilter Event
+		 * @return self
+		 * @throws NullPointerException when enabled is null
+		 */
+		public Builder enabled(Toggle enabled) {
+			Objects.requireNonNull(enabled);
+			this.enabled = enabled;
+			return self();
+		}
+
+		/**
+		 * setter of intensity
+		 *
+		 * @param intensity intensity of SetFilter Event
+		 * @return self
+		 * @throws NullPointerException when intensity is null
+		 */
+		public Builder intensity(Long intensity) {
+			Objects.requireNonNull(intensity);
+			this.intensity = intensity;
+			return self();
+		}
+
+		/**
+		 * setter of disableOthers
+		 *
+		 * @param disableOthers disableOthers of SetFilter Event
+		 * @return self
+		 * @throws NullPointerException when disableOthers is null
+		 */
+		public Builder disableOthers(Toggle disableOthers) {
+			Objects.requireNonNull(disableOthers);
+			this.disableOthers = disableOthers;
+			return self();
+		}
+
+		/**
+		 * setter of angleOffset
+		 *
+		 * @param angleOffset angleOffset of SetFilter Event
+		 * @return self
+		 * @throws NullPointerException when angleOffset is null
+		 */
+		public Builder angleOffset(Double angleOffset) {
+			Objects.requireNonNull(angleOffset);
+			this.angleOffset = angleOffset;
+			return self();
+		}
+
+		/**
+		 * setter of eventTag
+		 *
+		 * @param eventTag eventTag of SetFilter Event
+		 * @return self
+		 * @throws NullPointerException when eventTag is null
+		 */
+		public Builder eventTag(String eventTag) {
+			Objects.requireNonNull(eventTag);
+			this.eventTag = eventTag;
+			return self();
+		}
+
 	}
 
 }

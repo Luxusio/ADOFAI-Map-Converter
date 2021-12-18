@@ -14,7 +14,7 @@ public class RepeatEvents extends Action {
 	private final Double interval;
 	private final String tag;
 
-	public RepeatEvents(Long repetitions, Double interval, String tag) {
+	private RepeatEvents(Long repetitions, Double interval, String tag) {
 		super(EventType.REPEAT_EVENTS);
 		this.repetitions = repetitions;
 		this.interval = interval;

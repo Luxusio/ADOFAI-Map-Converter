@@ -2,39 +2,32 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.*;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class SetHitsound extends Action {
 
-	private GameSound gameSound = GameSound.HITSOUND;
-	private HitSound hitsound = HitSound.KICK;
-	private Long hitsoundVolume = 100L;
-	
-	public SetHitsound() {
-		super(EventType.SET_HITSOUND);
-	}
+	private final GameSound gameSound;
+	private final HitSound hitsound;
+	private final Long hitsoundVolume;
 
-	public SetHitsound(GameSound gameSound, HitSound hitsound, Long hitsoundVolume) {
-		this();
+	private SetHitsound(GameSound gameSound, HitSound hitsound, Long hitsoundVolume) {
+		super(EventType.SET_HITSOUND);
 		this.gameSound = gameSound;
 		this.hitsound = hitsound;
 		this.hitsoundVolume = hitsoundVolume;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private GameSound gameSound = GameSound.HITSOUND;
+		private HitSound hitsound = HitSound.KICK;
+		private Long hitsoundVolume = 100L;
 
 		/**
 		 * set all parameter with given action
@@ -42,12 +35,11 @@ public class SetHitsound extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(SetHitsound src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.gameSound(src.gameSound)
+					.hitsound(src.hitsound)
+					.hitsoundVolume(src.hitsoundVolume);
 		}
 
 		/**
@@ -56,8 +48,8 @@ public class SetHitsound extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public SetHitsound build() {
+			return new SetHitsound(gameSound, hitsound, hitsoundVolume);
 		}
 
 		/**
@@ -66,22 +58,49 @@ public class SetHitsound extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of gameSound
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param gameSound gameSound of SetHitsound Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when gameSound is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder gameSound(GameSound gameSound) {
+			Objects.requireNonNull(gameSound);
+			this.gameSound = gameSound;
 			return self();
 		}
+
+		/**
+		 * setter of hitsound
+		 *
+		 * @param hitsound hitsound of SetHitsound Event
+		 * @return self
+		 * @throws NullPointerException when hitsound is null
+		 */
+		public Builder hitsound(HitSound hitsound) {
+			Objects.requireNonNull(hitsound);
+			this.hitsound = hitsound;
+			return self();
+		}
+
+		/**
+		 * setter of hitsoundVolume
+		 *
+		 * @param hitsoundVolume hitsoundVolume of SetHitsound Event
+		 * @return self
+		 * @throws NullPointerException when hitsoundVolume is null
+		 */
+		public Builder hitsoundVolume(Long hitsoundVolume) {
+			Objects.requireNonNull(hitsoundVolume);
+			this.hitsoundVolume = hitsoundVolume;
+			return self();
+		}
+
 	}
 
 }

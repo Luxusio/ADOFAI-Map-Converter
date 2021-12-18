@@ -80,7 +80,7 @@ public class ActionFactory {
                 break;
             }
             case TWIRL: {
-                action = new Twirl();
+                action = new Twirl.Builder().build();
                 break;
             }
             case BOOKMARK: {
@@ -88,48 +88,54 @@ public class ActionFactory {
                 break;
             }
             case CHECK_POINT: {
-                action = new Checkpoint();
+                action = new Checkpoint.Builder().build();
                 break;
             }
             case EDITOR_COMMENT: {
-                action = new EditorComment(
-                        readProperty(map, "comment", JsonNode::asText));
+                EditorComment.Builder builder = new EditorComment.Builder();
+                readPropertyOptionalChain(map, "comment", JsonNode::asText).ifPresent(builder::comment);
+                action = builder.build();
                 break;
             }
             case CUSTOM_BACKGROUND: {
-                action = new CustomBackground(
-                        readProperty(map, "color", JsonNode::asText),
-                        readProperty(map, "bgImage", JsonNode::asText),
-                        readProperty(map, "imageColor", JsonNode::asText),
-                        readProperty(map, "parallax", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "bgDisplayMode", JsonNode::asText, bgDisplayModeTypeMap::get),
-                        readProperty(map, "lockRot", JsonNode::asText, toggleMap::get),
-                        readProperty(map, "loopBG", JsonNode::asText, toggleMap::get),
-                        readProperty(map, "unscaledSize", JsonNode::asLong),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText)
-                );
+                CustomBackground.Builder builder = new CustomBackground.Builder();
+                readPropertyOptionalChain(map, "color", JsonNode::asText).ifPresent(builder::color);
+                readPropertyOptionalChain(map, "bgImage", JsonNode::asText).ifPresent(builder::bgImage);
+                readPropertyOptionalChain(map, "imageColor", JsonNode::asText).ifPresent(builder::imageColor);
+                readPropertyOptionalChain(map, "parallax", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::parallax);
+                readPropertyOptionalChain(map, "bgDisplayMode", JsonNode::asText, bgDisplayModeTypeMap::get).ifPresent(builder::bgDisplayMode);
+                readPropertyOptionalChain(map, "lockRot", JsonNode::asText, toggleMap::get).ifPresent(builder::lockRot);
+                readPropertyOptionalChain(map, "loopBG", JsonNode::asText, toggleMap::get).ifPresent(builder::loopBG);
+                readPropertyOptionalChain(map, "unscaledSize", JsonNode::asLong).ifPresent(builder::unscaledSize);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case COLOR_TRACK: {
-                action = new ColorTrack(
-                        readProperty(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
-                        readProperty(map, "trackColor", JsonNode::asText),
-                        readProperty(map, "secondaryTrackColor", JsonNode::asText),
-                        readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readProperty(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
-                        readProperty(map, "trackPulseLength", JsonNode::asLong),
-                        readProperty(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
-                        readProperty(map, "trackTexture", JsonNode::asText),
-                        readProperty(map, "trackTextureScale", JsonNode::asDouble));
+                ColorTrack.Builder builder = new ColorTrack.Builder();
+                readPropertyOptionalChain(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get).ifPresent(builder::trackColorType);
+                readPropertyOptionalChain(map, "trackColor", JsonNode::asText).ifPresent(builder::trackColor);
+                readPropertyOptionalChain(map, "secondaryTrackColor", JsonNode::asText).ifPresent(builder::secondaryTrackColor);
+                readPropertyOptionalChain(map, "trackColorAnimDuration", JsonNode::asDouble).ifPresent(builder::trackColorAnimDuration);
+                readPropertyOptionalChain(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get).ifPresent(builder::trackColorPulse);
+                readPropertyOptionalChain(map, "trackPulseLength", JsonNode::asLong).ifPresent(builder::trackPulseLength);
+                readPropertyOptionalChain(map, "trackStyle", JsonNode::asText, trackStyleMap::get).ifPresent(builder::trackStyle);
+                readPropertyOptionalChain(map, "trackTexture", JsonNode::asText).ifPresent(builder::trackTexture);
+                readPropertyOptionalChain(map, "trackTextureScale", JsonNode::asDouble).ifPresent(builder::trackTextureScale);
+
+                action = builder.build();
                 break;
             }
             case ANIMATE_TRACK: {
                 AnimateTrack.Builder builder = new AnimateTrack.Builder();
-                        readProperty(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
-                        readProperty(map, "beatsAhead", JsonNode::asDouble),
-                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
-                        readProperty(map, "beatsBehind", JsonNode::asDouble));
+                readPropertyOptionalChain(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get).ifPresent(builder::trackAnimation);
+                readPropertyOptionalChain(map, "beatsAhead", JsonNode::asDouble).ifPresent(builder::beatsAhead);
+                readPropertyOptionalChain(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get).ifPresent(builder::trackDisappearAnimation);
+                readPropertyOptionalChain(map, "beatsBehind", JsonNode::asDouble).ifPresent(builder::beatsBehind);
+
+                action = builder.build();
                 break;
             }
             case ADD_DECORATION: {
@@ -157,182 +163,228 @@ public class ActionFactory {
                 break;
             }
             case FLASH: {
-                action = new Flash(
-                        readProperty(map, "duration", JsonNode::asDouble),
-                        readProperty(map, "plane", JsonNode::asText, planeMap::get),
-                        readProperty(map, "startColor", JsonNode::asText),
-                        readProperty(map, "startOpacity", JsonNode::asLong),
-                        readProperty(map, "endColor", JsonNode::asText),
-                        readProperty(map, "endOpacity", JsonNode::asLong),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                Flash.Builder builder = new Flash.Builder();
+                readPropertyOptionalChain(map, "duration", JsonNode::asDouble).ifPresent(builder::duration);
+                readPropertyOptionalChain(map, "plane", JsonNode::asText, planeMap::get).ifPresent(builder::plane);
+                readPropertyOptionalChain(map, "startColor", JsonNode::asText).ifPresent(builder::startColor);
+                readPropertyOptionalChain(map, "startOpacity", JsonNode::asLong).ifPresent(builder::startOpacity);
+                readPropertyOptionalChain(map, "endColor", JsonNode::asText).ifPresent(builder::endColor);
+                readPropertyOptionalChain(map, "endOpacity", JsonNode::asLong).ifPresent(builder::endOpacity);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "ease", JsonNode::asText, easeMap::get).ifPresent(builder::ease);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case MOVE_CAMERA: {
-                action = new MoveCamera(
-                        readProperty(map, "duration", JsonNode::asDouble),
-                        readProperty(map, "relativeTo", JsonNode::asText, cameraRelativeToMap::get),
-                        readProperty(map, "position", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "rotation", JsonNode::asDouble),
-                        readProperty(map, "zoom", JsonNode::asLong),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                MoveCamera.Builder builder = new MoveCamera.Builder();
+                readPropertyOptionalChain(map, "duration", JsonNode::asDouble).ifPresent(builder::duration);
+                readPropertyOptionalChain(map, "relativeTo", JsonNode::asText, cameraRelativeToMap::get).ifPresent(builder::relativeTo);
+                readPropertyOptionalChain(map, "position", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::position);
+                readPropertyOptionalChain(map, "rotation", JsonNode::asDouble).ifPresent(builder::rotation);
+                readPropertyOptionalChain(map, "zoom", JsonNode::asLong).ifPresent(builder::zoom);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "ease", JsonNode::asText, easeMap::get).ifPresent(builder::ease);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case SET_HITSOUND: {
-                action = new SetHitsound(
-                        readProperty(map, "gameSound", JsonNode::asText, gameSoundMap::get),
-                        readProperty(map, "hitsound", JsonNode::asText, hitSoundMap::get),
-                        readProperty(map, "hitsoundVolume", JsonNode::asLong));
+                SetHitsound.Builder builder = new SetHitsound.Builder();
+                readPropertyOptionalChain(map, "gameSound", JsonNode::asText, gameSoundMap::get).ifPresent(builder::gameSound);
+                readPropertyOptionalChain(map, "hitsound", JsonNode::asText, hitSoundMap::get).ifPresent(builder::hitsound);
+                readPropertyOptionalChain(map, "hitsoundVolume", JsonNode::asLong).ifPresent(builder::hitsoundVolume);
+
+                action = builder.build();
                 break;
             }
             case PLAY_SOUND: {
-                action = new PlaySound(
-                        readProperty(map, "hitsound", JsonNode::asText, hitSoundMap::get),
-                        readProperty(map, "hitsoundVolume", JsonNode::asLong),
-                        readProperty(map, "angleOffset", JsonNode::asDouble));
+                PlaySound.Builder builder = new PlaySound.Builder();
+                readPropertyOptionalChain(map, "hitsound", JsonNode::asText, hitSoundMap::get).ifPresent(builder::hitsound);
+                readPropertyOptionalChain(map, "hitsoundVolume", JsonNode::asLong).ifPresent(builder::hitsoundVolume);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+
+                action = builder.build();
                 break;
             }
             case RECOLOR_TRACK: {
-                List<Object> startTile = readProperty(map, "startTile", jsonNode -> Arrays.asList(
-                        jsonNode.get(0).asLong(),
-                        tilePositionMap.get(jsonNode.get(1).asText())));
-                List<Object> endTile = readProperty(map, "endTile", jsonNode -> Arrays.asList(
-                        jsonNode.get(0).asLong(),
-                        tilePositionMap.get(jsonNode.get(1).asText())));
+                RecolorTrack.Builder builder = new RecolorTrack.Builder();
 
-                action = new RecolorTrack(
-                        startTile != null ? (Long) startTile.get(0) : null,
-                        startTile != null ? (TilePosition) startTile.get(1) : null,
-                        endTile != null ? (Long) endTile.get(0) : null,
-                        endTile != null ? (TilePosition) endTile.get(1) : null,
-                        readProperty(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
-                        readProperty(map, "trackColor", JsonNode::asText),
-                        readProperty(map, "secondaryTrackColor", JsonNode::asText),
-                        readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readProperty(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
-                        readProperty(map, "trackPulseLength", JsonNode::asLong),
-                        readProperty(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                readPropertyOptionalChain(map, "startTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())))
+                        .ifPresent(startTile -> {
+                            builder.startTileNum((Long) startTile.get(0));
+                            builder.startTilePosition((TilePosition) startTile.get(1));
+                        });
+
+                readPropertyOptionalChain(map, "endTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())))
+                        .ifPresent(endTile -> {
+                            builder.endTileNum((Long) endTile.get(0));
+                            builder.endTilePosition((TilePosition) endTile.get(1));
+                        });
+
+                readPropertyOptionalChain(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get).ifPresent(builder::trackColorType);
+                readPropertyOptionalChain(map, "trackColor", JsonNode::asText).ifPresent(builder::trackColor);
+                readPropertyOptionalChain(map, "secondaryTrackColor", JsonNode::asText).ifPresent(builder::secondaryTrackColor);
+                readPropertyOptionalChain(map, "trackColorAnimDuration", JsonNode::asDouble).ifPresent(builder::trackColorAnimDuration);
+                readPropertyOptionalChain(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get).ifPresent(builder::trackColorPulse);
+                readPropertyOptionalChain(map, "trackPulseLength", JsonNode::asLong).ifPresent(builder::trackPulseLength);
+                readPropertyOptionalChain(map, "trackStyle", JsonNode::asText, trackStyleMap::get).ifPresent(builder::trackStyle);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case MOVE_TRACK: {
-                List<Object> startTile = readProperty(map, "startTile", jsonNode -> Arrays.asList(
-                        jsonNode.get(0).asLong(),
-                        tilePositionMap.get(jsonNode.get(1).asText())));
-                List<Object> endTile = readProperty(map, "endTile", jsonNode -> Arrays.asList(
-                        jsonNode.get(0).asLong(),
-                        tilePositionMap.get(jsonNode.get(1).asText())));
+                MoveTrack.Builder builder = new MoveTrack.Builder();
 
-                action = new MoveTrack(
-                        startTile != null ? (Long) startTile.get(0) : null,
-                        startTile != null ? (TilePosition) startTile.get(1) : null,
-                        endTile != null ? (Long) endTile.get(0) : null,
-                        endTile != null ? (TilePosition) endTile.get(1) : null,
-                        readProperty(map, "duration", JsonNode::asDouble),
-                        readProperty(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "rotationOffset", JsonNode::asDouble),
-                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
-                        readProperty(map, "opacity", JsonNode::asLong),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                readPropertyOptionalChain(map, "startTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())))
+                        .ifPresent(startTile -> {
+                            builder.startTileNum((Long) startTile.get(0));
+                            builder.startTilePosition((TilePosition) startTile.get(1));
+                        });
+
+                readPropertyOptionalChain(map, "endTile", jsonNode -> Arrays.asList(
+                        jsonNode.get(0).asLong(),
+                        tilePositionMap.get(jsonNode.get(1).asText())))
+                        .ifPresent(endTile -> {
+                            builder.endTileNum((Long) endTile.get(0));
+                            builder.endTilePosition((TilePosition) endTile.get(1));
+                        });
+
+                readPropertyOptionalChain(map, "duration", JsonNode::asDouble).ifPresent(builder::duration);
+                readPropertyOptionalChain(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::positionOffset);
+                readPropertyOptionalChain(map, "rotationOffset", JsonNode::asDouble).ifPresent(builder::rotationOffset);
+                readPropertyOptionalChain(map, "scale", nodeToXYListFunc(JsonNode::asLong)).ifPresent(builder::scale);
+                readPropertyOptionalChain(map, "opacity", JsonNode::asLong).ifPresent(builder::opacity);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "ease", JsonNode::asText, easeMap::get).ifPresent(builder::ease);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case SET_FILTER: {
-                action = new SetFilter(
-                        readProperty(map, "filter", JsonNode::asText, filterMap::get),
-                        readProperty(map, "enabled", JsonNode::asText, toggleMap::get),
-                        readProperty(map, "intensity", JsonNode::asLong),
-                        readProperty(map, "disableOthers", JsonNode::asText, toggleMap::get),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                SetFilter.Builder builder = new SetFilter.Builder();
+                readPropertyOptionalChain(map, "filter", JsonNode::asText, filterMap::get).ifPresent(builder::filter);
+                readPropertyOptionalChain(map, "enabled", JsonNode::asText, toggleMap::get).ifPresent(builder::enabled);
+                readPropertyOptionalChain(map, "intensity", JsonNode::asLong).ifPresent(builder::intensity);
+                readPropertyOptionalChain(map, "disableOthers", JsonNode::asText, toggleMap::get).ifPresent(builder::disableOthers);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case HALL_OF_MIRRORS: {
-                action = new HallOfMirrors(
-                        readProperty(map, "enabled", JsonNode::asText, toggleMap::get),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                HallOfMirrors.Builder builder = new HallOfMirrors.Builder();
+                readPropertyOptionalChain(map, "enabled", JsonNode::asText, toggleMap::get).ifPresent(builder::enabled);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case SHAKE_SCREEN: {
-                action = new ShakeScreen(
-                        readProperty(map, "duration", JsonNode::asDouble),
-                        readProperty(map, "strength", JsonNode::asLong),
-                        readProperty(map, "intensity", JsonNode::asLong),
-                        readProperty(map, "fadeOut", JsonNode::asText, toggleMap::get),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                ShakeScreen.Builder builder = new ShakeScreen.Builder();
+                readPropertyOptionalChain(map, "duration", JsonNode::asDouble).ifPresent(builder::duration);
+                readPropertyOptionalChain(map, "strength", JsonNode::asLong).ifPresent(builder::strength);
+                readPropertyOptionalChain(map, "intensity", JsonNode::asLong).ifPresent(builder::intensity);
+                readPropertyOptionalChain(map, "fadeOut", JsonNode::asText, toggleMap::get).ifPresent(builder::fadeOut);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case SET_PLANET_ROTATION: {
-                action = new SetPlanetRotation(
-                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
-                        readProperty(map, "easeParts", JsonNode::asLong));
+                SetPlanetRotation.Builder builder = new SetPlanetRotation.Builder();
+                readPropertyOptionalChain(map, "ease", JsonNode::asText, easeMap::get).ifPresent(builder::ease);
+                readPropertyOptionalChain(map, "easeParts", JsonNode::asLong).ifPresent(builder::easeParts);
+
+                action = builder.build();
                 break;
             }
             case MOVE_DECORATIONS: {
-                action = new MoveDecorations(
-                        readProperty(map, "duration", JsonNode::asDouble),
-                        readProperty(map, "tag", JsonNode::asText),
-                        readProperty(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "rotationOffset", JsonNode::asDouble),
-                        readProperty(map, "scale", nodeToXYListFunc(JsonNode::asLong)),
-                        readProperty(map, "color", JsonNode::asText),
-                        readProperty(map, "opacity", JsonNode::asLong),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "ease", JsonNode::asText, easeMap::get),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                MoveDecorations.Builder builder = new MoveDecorations.Builder();
+                readPropertyOptionalChain(map, "duration", JsonNode::asDouble).ifPresent(builder::duration);
+                readPropertyOptionalChain(map, "tag", JsonNode::asText).ifPresent(builder::tag);
+                readPropertyOptionalChain(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::positionOffset);
+                readPropertyOptionalChain(map, "rotationOffset", JsonNode::asDouble).ifPresent(builder::rotationOffset);
+                readPropertyOptionalChain(map, "scale", nodeToXYListFunc(JsonNode::asLong)).ifPresent(builder::scale);
+                readPropertyOptionalChain(map, "color", JsonNode::asText).ifPresent(builder::color);
+                readPropertyOptionalChain(map, "opacity", JsonNode::asLong).ifPresent(builder::opacity);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "ease", JsonNode::asText, easeMap::get).ifPresent(builder::ease);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case POSITION_TRACK: {
-                action = new PositionTrack(
-                        readProperty(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "editorOnly", JsonNode::asText, toggleMap::get));
+                PositionTrack.Builder builder = new PositionTrack.Builder();
+                readPropertyOptionalChain(map, "positionOffset", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::positionOffset);
+                readPropertyOptionalChain(map, "editorOnly", JsonNode::asText, toggleMap::get).ifPresent(builder::editorOnly);
+
+                action = builder.build();
                 break;
             }
             case REPEAT_EVENTS: {
-                action = new RepeatEvents(
-                        readProperty(map, "repetitions", JsonNode::asLong),
-                        readProperty(map, "interval", JsonNode::asDouble),
-                        readProperty(map, "tag", JsonNode::asText));
+                RepeatEvents.Builder builder = new RepeatEvents.Builder();
+                readPropertyOptionalChain(map, "repetitions", JsonNode::asLong).ifPresent(builder::repetitions);
+                readPropertyOptionalChain(map, "interval", JsonNode::asDouble).ifPresent(builder::interval);
+                readPropertyOptionalChain(map, "tag", JsonNode::asText).ifPresent(builder::tag);
+
+                action = builder.build();
                 break;
             }
             case BLOOM: {
-                action = new Bloom(
-                        readProperty(map, "enabled", JsonNode::asText, toggleMap::get),
-                        readProperty(map, "threshold", JsonNode::asLong),
-                        readProperty(map, "intensity", JsonNode::asLong),
-                        readProperty(map, "color", JsonNode::asText),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                Bloom.Builder builder = new Bloom.Builder();
+                readPropertyOptionalChain(map, "enabled", JsonNode::asText, toggleMap::get).ifPresent(builder::enabled);
+                readPropertyOptionalChain(map, "threshold", JsonNode::asLong).ifPresent(builder::threshold);
+                readPropertyOptionalChain(map, "intensity", JsonNode::asLong).ifPresent(builder::intensity);
+                readPropertyOptionalChain(map, "color", JsonNode::asText).ifPresent(builder::color);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case SET_CONDITIONAL_EVENTS: {
-                action = new SetConditionalEvents(
-                        readProperty(map, "perfectTag", JsonNode::asText),
-                        readProperty(map, "hitTag", JsonNode::asText),
-                        readProperty(map, "barelyTag", JsonNode::asText),
-                        readProperty(map, "missTag", JsonNode::asText),
-                        readProperty(map, "lossTag", JsonNode::asText));
+                SetConditionalEvents.Builder builder = new SetConditionalEvents.Builder();
+                readPropertyOptionalChain(map, "perfectTag", JsonNode::asText).ifPresent(builder::perfectTag);
+                readPropertyOptionalChain(map, "hitTag", JsonNode::asText).ifPresent(builder::hitTag);
+                readPropertyOptionalChain(map, "barelyTag", JsonNode::asText).ifPresent(builder::barelyTag);
+                readPropertyOptionalChain(map, "missTag", JsonNode::asText).ifPresent(builder::missTag);
+                readPropertyOptionalChain(map, "lossTag", JsonNode::asText).ifPresent(builder::lossTag);
+
+                action = builder.build();
                 break;
             }
             case SCREEN_TILE: {
-                action = new ScreenTile(
-                        readProperty(map, "tile", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                ScreenTile.Builder builder = new ScreenTile.Builder();
+                readPropertyOptionalChain(map, "tile", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::tile);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case SCREEN_SCROLL: {
-                action = new ScreenScroll(
-                        readProperty(map, "scroll", nodeToXYListFunc(JsonNode::asDouble)),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                ScreenScroll.Builder builder = new ScreenScroll.Builder();
+                readPropertyOptionalChain(map, "scroll", nodeToXYListFunc(JsonNode::asDouble)).ifPresent(builder::scroll);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case ADD_TEXT: {
@@ -355,26 +407,30 @@ public class ActionFactory {
                 break;
             }
             case SET_TEXT: {
-                action = new SetText(
-                        readProperty(map, "decText", JsonNode::asText),
-                        readProperty(map, "tag", JsonNode::asText),
-                        readProperty(map, "angleOffset", JsonNode::asDouble),
-                        readProperty(map, "eventTag", JsonNode::asText));
+                SetText.Builder builder = new SetText.Builder();
+                readPropertyOptionalChain(map, "decText", JsonNode::asText).ifPresent(builder::decText);
+                readPropertyOptionalChain(map, "tag", JsonNode::asText).ifPresent(builder::tag);
+                readPropertyOptionalChain(map, "angleOffset", JsonNode::asDouble).ifPresent(builder::angleOffset);
+                readPropertyOptionalChain(map, "eventTag", JsonNode::asText).ifPresent(builder::eventTag);
+
+                action = builder.build();
                 break;
             }
             case CHANGE_TRACK: {
-                action = new ChangeTrack(
-                        readProperty(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get),
-                        readProperty(map, "trackColor", JsonNode::asText),
-                        readProperty(map, "secondaryTrackColor", JsonNode::asText),
-                        readProperty(map, "trackColorAnimDuration", JsonNode::asDouble),
-                        readProperty(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get),
-                        readProperty(map, "trackPulseLength", JsonNode::asLong),
-                        readProperty(map, "trackStyle", JsonNode::asText, trackStyleMap::get),
-                        readProperty(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get),
-                        readProperty(map, "beatsAhead", JsonNode::asDouble),
-                        readProperty(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get),
-                        readProperty(map, "beatsBehind", JsonNode::asDouble));
+                ChangeTrack.Builder builder = new ChangeTrack.Builder();
+                readPropertyOptionalChain(map, "trackColorType", JsonNode::asText, trackColorTypeMap::get).ifPresent(builder::trackColorType);
+                readPropertyOptionalChain(map, "trackColor", JsonNode::asText).ifPresent(builder::trackColor);
+                readPropertyOptionalChain(map, "secondaryTrackColor", JsonNode::asText).ifPresent(builder::secondaryTrackColor);
+                readPropertyOptionalChain(map, "trackColorAnimDuration", JsonNode::asDouble).ifPresent(builder::trackColorAnimDuration);
+                readPropertyOptionalChain(map, "trackColorPulse", JsonNode::asText, trackColorPulseMap::get).ifPresent(builder::trackColorPulse);
+                readPropertyOptionalChain(map, "trackPulseLength", JsonNode::asLong).ifPresent(builder::trackPulseLength);
+                readPropertyOptionalChain(map, "trackStyle", JsonNode::asText, trackStyleMap::get).ifPresent(builder::trackStyle);
+                readPropertyOptionalChain(map, "trackAnimation", JsonNode::asText, trackAnimationMap::get).ifPresent(builder::trackAnimation);
+                readPropertyOptionalChain(map, "beatsAhead", JsonNode::asDouble).ifPresent(builder::beatsAhead);
+                readPropertyOptionalChain(map, "trackDisappearAnimation", JsonNode::asText, trackDisappearAnimationMap::get).ifPresent(builder::trackDisappearAnimation);
+                readPropertyOptionalChain(map, "beatsBehind", JsonNode::asDouble).ifPresent(builder::beatsBehind);
+
+                action = builder.build();
                 break;
             }
             case UNKNOWN: {

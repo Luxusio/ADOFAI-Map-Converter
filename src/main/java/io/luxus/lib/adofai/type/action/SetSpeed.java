@@ -2,42 +2,31 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.SpeedType;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Objects;
-
-@Getter @Setter
+@Getter
 @ToString
 public class SetSpeed extends Action {
-	
-	private SpeedType speedType = SpeedType.BPM;
-	private Double beatsPerMinute = 100.0;
-	private Double bpmMultiplier = 1.0;
-	
-	public SetSpeed() {
-		super(EventType.SET_SPEED);
-	}
+
+	private final SpeedType speedType;
+	private final Double beatsPerMinute;
+	private final Double bpmMultiplier;
 	
 	public SetSpeed(SpeedType speedType, Double beatsPerMinute, Double bpmMultiplier) {
-		this();
-		if (speedType != null) this.speedType = speedType;
+		super(EventType.SET_SPEED);
+		this.speedType = speedType;
 		this.beatsPerMinute = beatsPerMinute;
 		this.bpmMultiplier = bpmMultiplier;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private SpeedType speedType = SpeedType.BPM;
+		private Double beatsPerMinute = 100.0;
+		private Double bpmMultiplier = 1.0;
 
 		/**
 		 * set all parameter with given action
@@ -45,12 +34,11 @@ public class SetSpeed extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(SetSpeed src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.speedType(src.speedType)
+					.beatsPerMinute(src.beatsPerMinute)
+					.bpmMultiplier(src.bpmMultiplier);
 		}
 
 		/**
@@ -59,8 +47,8 @@ public class SetSpeed extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public SetSpeed build() {
+			return new SetSpeed(speedType, beatsPerMinute, bpmMultiplier);
 		}
 
 		/**
@@ -69,22 +57,46 @@ public class SetSpeed extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of speedType
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param speedType speedType of SetSpeed Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when speedType is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder speedType(SpeedType speedType) {
+			this.speedType = speedType;
 			return self();
 		}
+
+		/**
+		 * setter of beatsPerMinute
+		 *
+		 * @param beatsPerMinute beatsPerMinute of SetSpeed Event
+		 * @return self
+		 * @throws NullPointerException when beatsPerMinute is null
+		 */
+		public Builder beatsPerMinute(Double beatsPerMinute) {
+			this.beatsPerMinute = beatsPerMinute;
+			return self();
+		}
+
+		/**
+		 * setter of bpmMultiplier
+		 *
+		 * @param bpmMultiplier bpmMultiplier of SetSpeed Event
+		 * @return self
+		 * @throws NullPointerException when bpmMultiplier is null
+		 */
+		public Builder bpmMultiplier(Double bpmMultiplier) {
+			this.bpmMultiplier = bpmMultiplier;
+			return self();
+		}
+
 	}
 
 }

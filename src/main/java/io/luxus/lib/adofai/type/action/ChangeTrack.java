@@ -69,6 +69,7 @@ public class ChangeTrack extends Action {
 					.secondaryTrackColor(src.secondaryTrackColor)
 					.trackColorAnimDuration(src.trackColorAnimDuration)
 					.trackColorPulse(src.trackColorPulse)
+					.trackPulseLength(src.trackPulseLength)
 					.trackStyle(src.trackStyle)
 					.trackAnimation(src.trackAnimation)
 					.beatsAhead(src.beatsAhead)
@@ -177,7 +178,7 @@ public class ChangeTrack extends Action {
 		 * @return self
 		 * @throws NullPointerException when trackPulseLength is null
 		 */
-		public Builder setTrackPulseLength(Long trackPulseLength) {
+		public Builder trackPulseLength(Long trackPulseLength) {
 			Objects.requireNonNull(trackPulseLength);
 			this.trackPulseLength = trackPulseLength;
 			return self();

@@ -3,39 +3,31 @@ package io.luxus.lib.adofai.type.action;
 import io.luxus.lib.adofai.type.Ease;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class SetPlanetRotation extends Action {
 
-	private Ease ease = Ease.LINEAR;
-	private Long easeParts = 1L;
+	private final Ease ease;
+	private final Long easeParts;
 
-	public SetPlanetRotation() {
+	private SetPlanetRotation(Ease ease, Long easeParts) {
 		super(EventType.SET_PLANET_ROTATION);
-	}
-
-	public SetPlanetRotation(Ease ease, Long easeParts) {
-		this();
 		this.ease = ease;
 		this.easeParts = easeParts;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private Ease ease = Ease.LINEAR;
+		private Long easeParts = 1L;
 
 		/**
 		 * set all parameter with given action
@@ -43,12 +35,10 @@ public class SetPlanetRotation extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(SetPlanetRotation src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.ease(src.ease)
+					.easeParts(src.easeParts);
 		}
 
 		/**
@@ -57,8 +47,8 @@ public class SetPlanetRotation extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public SetPlanetRotation build() {
+			return new SetPlanetRotation(ease, easeParts);
 		}
 
 		/**
@@ -67,22 +57,36 @@ public class SetPlanetRotation extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
+		}
+
+		/**
+		 * setter of ease
+		 *
+		 * @param ease ease of SetPlanetRotation Event
+		 * @return self
+		 * @throws NullPointerException when ease is null
+		 */
+		public Builder ease(Ease ease) {
+			Objects.requireNonNull(ease);
+			this.ease = ease;
+			return self();
 		}
 
 		/**
 		 * setter of trackAnimation
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param easeParts easeParts of SetPlanetRotation Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when easeParts is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
+		public Builder easeParts(Long easeParts) {
+			Objects.requireNonNull(easeParts);
+			this.easeParts = easeParts;
 			return self();
 		}
+
 	}
 
 }

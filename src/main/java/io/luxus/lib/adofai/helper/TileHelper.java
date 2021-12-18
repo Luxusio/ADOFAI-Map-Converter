@@ -31,7 +31,7 @@ public class TileHelper {
                     boolean hasTwirl = (destinationList.size() % 2) == 1;
                     destinationList.clear();
                     if (hasTwirl) {
-                        destinationList.add(new Twirl());
+                        destinationList.add(new Twirl.Builder().build());
                     }
                 } else {
                     while (destinationList.size() > 1) {

@@ -10,23 +10,19 @@ import lombok.ToString;
 
 import java.util.Objects;
 
-@Getter @Setter
+@Getter
 @ToString
 public class ShakeScreen extends Action {
 
-	private Double duration = 1.0;
-	private Long strength = 100L;
-	private Long intensity = 100L;
-	private Toggle fadeOut = Toggle.ENABLED;
-	private Double angleOffset = 0.0;
-	private String eventTag = "";
+	private final Double duration;
+	private final Long strength;
+	private final Long intensity;
+	private final Toggle fadeOut;
+	private final Double angleOffset;
+	private final String eventTag;
 
-	public ShakeScreen() {
+	private ShakeScreen(Double duration, Long strength, Long intensity, Toggle fadeOut, Double angleOffset, String eventTag) {
 		super(EventType.SHAKE_SCREEN);
-	}
-
-	public ShakeScreen(Double duration, Long strength, Long intensity, Toggle fadeOut, Double angleOffset, String eventTag) {
-		this();
 		this.duration = duration;
 		this.strength = strength;
 		this.intensity = intensity;
@@ -35,15 +31,16 @@ public class ShakeScreen extends Action {
 		this.eventTag = eventTag;
 	}
 
-
 	@Getter
 	@ToString
-	public static final class Builder extends Action.Builder<AnimateTrack.Builder> {
+	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
+		private Double duration = 1.0;
+		private Long strength = 100L;
+		private Long intensity = 100L;
+		private Toggle fadeOut = Toggle.ENABLED;
+		private Double angleOffset = 0.0;
+		private String eventTag = "";
 
 		/**
 		 * set all parameter with given action
@@ -51,12 +48,14 @@ public class ShakeScreen extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public AnimateTrack.Builder from(AnimateTrack src) {
+		public Builder from(ShakeScreen src) {
 			return self()
-					.trackAnimation(src.trackAnimation)
-					.beatsAhead(src.beatsAhead)
-					.trackDisappearAnimation(src.trackDisappearAnimation)
-					.beatsBehind(src.beatsBehind);
+					.duration(src.duration)
+					.strength(src.strength)
+					.intensity(src.intensity)
+					.fadeOut(src.fadeOut)
+					.angleOffset(src.angleOffset)
+					.eventTag(src.eventTag);
 		}
 
 		/**
@@ -65,8 +64,8 @@ public class ShakeScreen extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+		public ShakeScreen build() {
+			return new ShakeScreen(duration, strength, intensity, fadeOut, angleOffset, eventTag);
 		}
 
 		/**
@@ -75,22 +74,83 @@ public class ShakeScreen extends Action {
 		 * @return self
 		 */
 		@Override
-		public AnimateTrack.Builder self() {
+		public Builder self() {
 			return this;
 		}
 
 		/**
-		 * setter of trackAnimation
+		 * setter of duration
 		 *
-		 * @param trackAnimation trackAnimation of AnimateTrack Event
+		 * @param duration duration of ShakeScreen Event
 		 * @return self
-		 * @throws NullPointerException when trackAnimation is null
+		 * @throws NullPointerException when duration is null
 		 */
-		public AnimateTrack.Builder trackAnimation(TrackAnimation trackAnimation) {
-			Objects.requireNonNull(trackAnimation);
-			this.trackAnimation = trackAnimation;
-			return self();
+		public Builder duration(Double duration) {
+			Objects.requireNonNull(duration);
+			this.duration = duration;
+			return this;
 		}
+		/**
+		 * setter of strength
+		 *
+		 * @param strength strength of ShakeScreen Event
+		 * @return self
+		 * @throws NullPointerException when strength is null
+		 */
+		public Builder strength(Long strength) {
+			Objects.requireNonNull(strength);
+			this.strength = strength;
+			return this;
+		}
+		/**
+		 * setter of intensity
+		 *
+		 * @param intensity intensity of ShakeScreen Event
+		 * @return self
+		 * @throws NullPointerException when intensity is null
+		 */
+		public Builder intensity(Long intensity) {
+			Objects.requireNonNull(intensity);
+			this.intensity = intensity;
+			return this;
+		}
+		/**
+		 * setter of fadeOut
+		 *
+		 * @param fadeOut fadeOut of ShakeScreen Event
+		 * @return self
+		 * @throws NullPointerException when fadeOut is null
+		 */
+		public Builder fadeOut(Toggle fadeOut) {
+			Objects.requireNonNull(fadeOut);
+			this.fadeOut = fadeOut;
+			return this;
+		}
+		/**
+		 * setter of angleOffset
+		 *
+		 * @param angleOffset angleOffset of ShakeScreen Event
+		 * @return self
+		 * @throws NullPointerException when angleOffset is null
+		 */
+		public Builder angleOffset(Double angleOffset) {
+			Objects.requireNonNull(angleOffset);
+			this.angleOffset = angleOffset;
+			return this;
+		}
+		/**
+		 * setter of eventTag
+		 *
+		 * @param eventTag eventTag of ShakeScreen Event
+		 * @return self
+		 * @throws NullPointerException when eventTag is null
+		 */
+		public Builder eventTag(String eventTag) {
+			Objects.requireNonNull(eventTag);
+			this.eventTag = eventTag;
+			return this;
+		}
+
 	}
 
 }

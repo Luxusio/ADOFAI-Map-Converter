@@ -184,7 +184,7 @@ public class ShapedMapConverter implements MapConverter {
 							if (shapeTiles.get(shapeTiles.size() - 1).getTileMeta().isReversed()) {
 								List<Action> twirls = newTiles.get(newTiles.size() - 1).getActions(EventType.TWIRL);
 								if (twirls.isEmpty()) {
-									twirls.add(new Twirl());
+									twirls.add(new Twirl.Builder().build());
 								}
 								else {
 									twirls.clear();
