@@ -28,7 +28,12 @@ public class NoSpeedChangeMapConverter implements MapConverter {
         double possibleMaxBpm = getPossibleMaxBpm(customLevel.getTiles());
         if (destBpm > possibleMaxBpm) {
             System.err.println("destBpm이 너무 빠릅니다. " + possibleMaxBpm + "bpm 이하로 입력 해 주세요.");
-            return false;
+            return true;
+        }
+
+        if (destBpm <= 0) {
+            System.err.println("destBpm은 0보다 커야합니다.");
+            return true;
         }
 
         return false;
