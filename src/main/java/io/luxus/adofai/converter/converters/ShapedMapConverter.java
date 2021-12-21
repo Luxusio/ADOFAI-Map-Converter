@@ -135,7 +135,7 @@ public class ShapedMapConverter implements MapConverter {
 					.collect(Collectors.toList());
 
 			tiles.add(0, new Tile(0.0));
-			shapeLevel = new CustomLevel(new LevelSetting(), tiles);
+			shapeLevel = new CustomLevel(new LevelSetting.Builder().build(), tiles);
 		}
 		else {
 			shapeLevel = (CustomLevel) args[1];

@@ -92,46 +92,6 @@ public class StringJsonUtil {
         return sb.toString();
     }
 
-    public static <T> Function<String, T> getOrThrowFunc(Map<String, T> map) {
-        return name -> {
-            T result = map.get(name);
-            if (result == null) throw new IllegalStateException("Property not found!(" + name + ")");
-            return result;
-        };
-    }
-
-
-    public static <T1, T2> T2 readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T1> mapper1, Function<T1, T2> mapper2) {
-        return readPropertyOptionalChain(map, name, mapper1, mapper2).orElse(null);
-    }
-
-    public static <T> T readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
-        return readPropertyOptionalChain(map, name, mapper).orElse(null);
-    }
-
-    public static <T1, T2> Optional<T2> readPropertyOptionalChain(Map<String, JsonNode> map, String name, Function<JsonNode, T1> mapper1, Function<T1, T2> mapper2) {
-        return readPropertyOptional(map, name, jsonNode -> jsonNode.map(mapper1).map(mapper2));
-    }
-
-    public static <T> Optional<T> readPropertyOptionalChain(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
-        return readPropertyOptional(map, name, jsonNode -> jsonNode.map(mapper));
-    }
-
-    public static <T> Optional<T> readPropertyOptional(Map<String, JsonNode> map, String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
-        JsonNode node = map.remove(name);
-        Optional<JsonNode> optional = Optional.ofNullable(node);
-        try {
-            Optional<T> o = mapper.apply(optional);
-            if (node != null && !o.isPresent()) {
-                map.put(name, node);
-            }
-            return o;
-        } catch (Throwable t) {
-            map.put(name, node);
-            throw t;
-        }
-    }
-
     public static <R> Function<JsonNode, List<R>> nodeToXYListFunc(Function<? super JsonNode, ? extends R> mapper) {
         return node -> {
             List<R> result = nodeToList(node, mapper);

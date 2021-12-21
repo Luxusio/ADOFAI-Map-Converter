@@ -13,7 +13,7 @@ public class SetSpeed extends Action {
 	private final Double beatsPerMinute;
 	private final Double bpmMultiplier;
 	
-	public SetSpeed(SpeedType speedType, Double beatsPerMinute, Double bpmMultiplier) {
+	private SetSpeed(SpeedType speedType, Double beatsPerMinute, Double bpmMultiplier) {
 		super(EventType.SET_SPEED);
 		this.speedType = speedType;
 		this.beatsPerMinute = beatsPerMinute;

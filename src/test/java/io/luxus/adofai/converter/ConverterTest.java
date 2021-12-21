@@ -30,6 +30,7 @@ public class ConverterTest {
         dispatcher.convertMapAndSave(path, ConverterType.TRANSPARENCY, 30);
         dispatcher.convertMapAndSave(path, ConverterType.PSEUDO, 4, 15.0, false);
         dispatcher.convertMapAndSave(path, ConverterType.MIDSPIN, 2);
+        dispatcher.convertMapAndSave(path, ConverterType.NO_SPEED_CHANGE, 113.3333333333);
 
         // then
 

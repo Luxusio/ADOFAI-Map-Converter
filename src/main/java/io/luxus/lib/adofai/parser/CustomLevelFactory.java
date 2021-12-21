@@ -60,21 +60,23 @@ public class CustomLevelFactory {
         List<Double> angleData = customLevel.getTiles().stream()
                 .map(Tile::getAngle)
                 .collect(Collectors.toList());
+        LevelSetting levelSetting = customLevel.getLevelSetting();
+
         if (customLevel.getLevelSetting().getVersion() >= 5) {
             FlowFactory.writeAngleData(sb, angleData);
         }
         else {
-            //boolean success = FlowFactory.writePathData(sb, angleData);
-            boolean success = false;
+            boolean success = FlowFactory.writePathData(sb, angleData);
             if (!success) {
-                customLevel.getLevelSetting().setVersion(5L);
+                levelSetting = new LevelSetting.Builder().from(levelSetting)
+                        .version(5L).build();
                 FlowFactory.writeAngleData(sb, angleData);
             }
         }
 
         sb.append(",\n");
 
-        LevelSettingFactory.write(sb, customLevel.getLevelSetting());
+        LevelSettingFactory.write(sb, levelSetting);
 
         sb.append(",\n\t\"actions\":\n\t[");
         List<Tile> tiles = customLevel.getTiles();

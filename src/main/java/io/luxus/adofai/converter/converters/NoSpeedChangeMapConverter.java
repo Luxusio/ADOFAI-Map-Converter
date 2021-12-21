@@ -3,6 +3,7 @@ package io.luxus.adofai.converter.converters;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.type.EventType;
@@ -49,7 +50,9 @@ public class NoSpeedChangeMapConverter implements MapConverter {
     public CustomLevel convert(CustomLevel customLevel, Object... args) {
         double destBpm = (double) args[0];
 
-        customLevel.getLevelSetting().setBpm(destBpm);
+        customLevel.setLevelSetting(new LevelSetting.Builder().from(customLevel.getLevelSetting())
+                .bpm(destBpm)
+                .build());
         CustomLevel result = MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
                 tile -> tile.getTileMeta().getTravelAngle() * destBpm /  tile.getTileMeta().getBpm());
 

@@ -82,9 +82,7 @@ public class MapConverterBase {
             i += oneTimingTiles.size();
         }
 
-        final LevelSetting newLevelSetting = customLevel.getLevelSetting()
-                .toBuilder().build();
-        final CustomLevel newCustomLevel = new CustomLevel(newLevelSetting, newTiles);
+        final CustomLevel newCustomLevel = new CustomLevel(customLevel.getLevelSetting(), newTiles);
 
         arrangeCustomLevelSync(customLevel, newCustomLevel, newTileAmounts);
 
@@ -125,7 +123,9 @@ public class MapConverterBase {
 
                 double additionalTravelMs = originalZeroTileTravelMs- newZeroTileTravelMs;
 
-                newCustomLevel.getLevelSetting().setOffset(originalStraightTravelMs + (long) additionalTravelMs);
+                newCustomLevel.setLevelSetting(new LevelSetting.Builder().from(newCustomLevel.getLevelSetting())
+                        .offset(originalStraightTravelMs + (long) additionalTravelMs)
+                        .build());
             }
             else if (newTileIdx + newTileAmount < newTiles.size()) {
 
@@ -139,7 +139,9 @@ public class MapConverterBase {
                     if (!Double.isFinite(currBpm) || NumberUtil.fuzzyEquals(currBpm, 0.0)) {
                         System.err.println("Wrong TempBpm value (" + currBpm + ")");
                     }
-                    actionList.add(new SetSpeed(SpeedType.BPM, currBpm, 1.0));
+                    actionList.add(new SetSpeed.Builder()
+                            .beatsPerMinute(currBpm)
+                            .build());
                 }
 
                 for (Tile newTile : newTimingTiles) {
