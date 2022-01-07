@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.util.NumberUtil.*;
+import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
 public class AngleHelper {
 
@@ -20,12 +20,11 @@ public class AngleHelper {
         double currStaticAngle = isMidAngle(currAngle) ? prevStaticAngle : currAngle;
         double currTravelAngle;
 
-
         if (isMidAngle(nextAngle)) {
             currTravelAngle = 0.0;
             if (isMidAngle(currAngle)) {
                 currStaticAngle += 180;
-                currStaticAngle = generalizeAngleExclude360(currStaticAngle);
+                currStaticAngle = generalizeAngle(currStaticAngle);
             }
         }
         else {
@@ -38,11 +37,9 @@ public class AngleHelper {
                 currTravelAngle += 180;
             }
 
-            currTravelAngle = generalizeAngleInclude360(currTravelAngle);
+            currTravelAngle = generalizeAngle(currTravelAngle);
+            currTravelAngle = currTravelAngle == 0.0 ? 360.0 : currTravelAngle;
         }
-
-        System.out.println("ca " + prevStaticAngle + ", " + currAngle + ", " + nextAngle + ", " + currReversed + "=>" + currStaticAngle + ", " + currTravelAngle);
-
         return new Result(currStaticAngle, currTravelAngle);
     }
 
@@ -53,7 +50,7 @@ public class AngleHelper {
             staticAngle = staticAngle - relativeAngle + 180;
         }
 
-        return generalizeAngleExclude360(staticAngle);
+        return generalizeAngle(staticAngle);
     }
 
     public static boolean isMidAngle(Double angle) {

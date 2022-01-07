@@ -157,11 +157,6 @@ public class MapConverterBase {
 
                 // SetSpeed
                 if (!NumberUtil.fuzzyEquals(currBpm, prevBpm)) {
-                    System.out.println("setSpeed " + newTileIdx + "~" + (newTileIdx + newTileAmount) + "(" + currBpm + ", " + timingBpm + ", " +
-                            "multiplyValue=" + multiplyValue +
-                            ", newTravelAngle=" + newTravelAngle +
-                            ", timingTravelAngle=" + timingTravelAngle + ")");
-
                     if (!Double.isFinite(currBpm) || NumberUtil.fuzzyEquals(currBpm, 0.0)) {
                         System.err.println("Wrong TempBpm value (" + currBpm + ", " + timingBpm + ", " +
                                 "multiplyValue=" + multiplyValue +
