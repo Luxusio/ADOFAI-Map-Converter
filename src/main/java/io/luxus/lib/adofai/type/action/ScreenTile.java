@@ -69,6 +69,16 @@ public class ScreenTile extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SCREEN_TILE;
+		}
+
+		/**
 		 * setter of tile
 		 *
 		 * @param tile tile of ScreenTile Event

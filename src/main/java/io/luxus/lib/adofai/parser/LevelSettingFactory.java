@@ -17,7 +17,7 @@ import static io.luxus.lib.adofai.util.StringJsonUtil.*;
 
 public class LevelSettingFactory {
 
-    public static LevelSetting read(JsonNode node) {
+    public static LevelSetting.Builder read(JsonNode node) {
         Map<String, JsonNode> map = new HashMap<>();
 
         Iterator<Map.Entry<String, JsonNode>> it = node.fields();
@@ -91,7 +91,7 @@ public class LevelSettingFactory {
         reader.read("legacySpriteTiles", builder::legacySpriteTiles, JsonNode::asBoolean);
         builder.unknownProperties(reader.getPropertyMap());
 
-        return builder.build();
+        return builder;
     }
 
     public static void write(StringBuilder sb, LevelSetting s) {

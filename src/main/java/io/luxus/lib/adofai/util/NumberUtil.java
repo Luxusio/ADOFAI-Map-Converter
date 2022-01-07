@@ -26,6 +26,17 @@ public class NumberUtil {
     }
 
     /**
+     * generalize angle exclude 360
+     *
+     * @param angle not generalized angle
+     * @return 0 <= angle < 360
+     */
+    public static double generalizeAngle(double angle) {
+        angle = angle - ((int) (angle / 360)) * 360;
+        return angle < 0 ? angle + 360 : angle;
+    }
+
+    /**
      * returns ranged random number
      *
      * @param min minimum return value

@@ -62,6 +62,16 @@ public class SetSpeed extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SET_SPEED;
+		}
+
+		/**
 		 * setter of speedType
 		 *
 		 * @param speedType speedType of SetSpeed Event

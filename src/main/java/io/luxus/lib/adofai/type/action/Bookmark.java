@@ -55,6 +55,16 @@ public class Bookmark extends Action {
 			return this;
 		}
 
+		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.BOOKMARK;
+		}
+
 	}
 
 }

@@ -30,11 +30,11 @@ public class ChaosBpmMapConverter implements MapConverter {
         double levelBaseBpm = customLevel.getTiles().get(0).getTileMeta()
                 .getPossibleMaxBpm() * NumberUtil.randomMinMax(0.000001, 1.0);
 
-        customLevel.setLevelSetting(new LevelSetting.Builder()
-                .bpm(levelBaseBpm)
-                .build());
         return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
-                tile -> tile.getTileMeta().getTravelAngle() == 0 ? 0 : 360.0 - NumberUtil.randomMinMax(0, 359.99999));
+                tile -> tile.getTileMeta().getTravelAngle() == 0 ? 0 : 360.0 - NumberUtil.randomMinMax(0, 359.99999),
+                noop -> {},
+                customLevelBuilder -> customLevelBuilder.getLevelSettingBuilder()
+                        .bpm(levelBaseBpm));
     }
 
 }

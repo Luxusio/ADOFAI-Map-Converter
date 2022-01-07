@@ -9,8 +9,6 @@ import io.luxus.lib.adofai.type.EventType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.luxus.adofai.converter.MapConverterBase.copyTiles;
-
 public class NonEffectMapConverter implements MapConverter {
 
     @Override
@@ -27,6 +25,7 @@ public class NonEffectMapConverter implements MapConverter {
                     try {
                         return EventType.valueOf(eventTypeName);
                     } catch (IllegalArgumentException exception) {
+                        System.err.println("알 수 없는 event type 입니다!(" + eventTypeName + ")");
                         return null;
                     }
                 })
@@ -63,17 +62,15 @@ public class NonEffectMapConverter implements MapConverter {
         @SuppressWarnings("unchecked")
         Set<EventType> eventTypeSet = (Set<EventType>) args[0];
 
-        removeActions(customLevel.getTiles().get(0), eventTypeSet);
         return MapConverterBase.convert(customLevel, false,
-                applyEach -> {
-                    List<Tile> newTiles = copyTiles(applyEach.getOneTimingTiles());
-                    newTiles.forEach(newTile -> removeActions(newTile, eventTypeSet));
-                    return newTiles;
+                applyEach -> applyEach.getOneTimingTiles().stream()
+                        .map(tile -> new Tile.Builder().from(tile))
+                        .peek(newTileBuilder -> eventTypeSet.forEach(newTileBuilder::removeActions))
+                        .collect(Collectors.toList()),
+                customLevelBuilder -> {
+                    Tile.Builder tileBuilder = customLevelBuilder.getTileBuilders().get(0);
+                    eventTypeSet.forEach(tileBuilder::removeActions);
                 });
-    }
-
-    private void removeActions(Tile tile, Set<EventType> eventTypeSet) {
-        eventTypeSet.forEach(eventType -> tile.getActions(eventType).clear());
     }
 
 }

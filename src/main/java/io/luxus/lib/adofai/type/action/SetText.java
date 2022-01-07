@@ -69,6 +69,16 @@ public class SetText extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SET_TEXT;
+		}
+
+		/**
 		 * setter of decText
 		 *
 		 * @param decText decText of SetText Event

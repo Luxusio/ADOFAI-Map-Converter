@@ -109,6 +109,16 @@ public final class AddDecoration extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.ADD_DECORATION;
+		}
+
+		/**
 		 * setter of decorationImage
 		 *
 		 * @throws NullPointerException when position is null

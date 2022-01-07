@@ -62,6 +62,16 @@ public class SetPlanetRotation extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SET_PLANET_ROTATION;
+		}
+
+		/**
 		 * setter of ease
 		 *
 		 * @param ease ease of SetPlanetRotation Event

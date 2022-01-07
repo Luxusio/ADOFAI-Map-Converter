@@ -25,14 +25,6 @@ public class JsonPropertyReader {
         readO(name, o -> o.map(mapper)).ifPresent(consumer);
     }
 
-    public <T1, T2> T2 readAndGet(String name, Consumer<T2> consumer, Function<JsonNode, T1> mapper1, Function<T1, T2> mapper2) {
-        return readO(name, o -> o.map(mapper1).map(mapper2)).orElse(null);
-    }
-
-    public <T> T readAndGet(String name, Function<JsonNode, T> mapper) {
-        return readO(name, o -> o.map(mapper)).orElse(null);
-    }
-
     public <T> Optional<T> readO(String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
         JsonNode node = propertyMap.remove(name);
         Optional<JsonNode> optional = Optional.ofNullable(node);
@@ -44,6 +36,7 @@ public class JsonPropertyReader {
             return o;
         } catch (Throwable t) {
             propertyMap.put(name, node);
+            t.printStackTrace();
             throw t;
         }
     }

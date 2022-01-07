@@ -77,6 +77,16 @@ public class Bloom extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.BLOOM;
+		}
+
+		/**
 		 * setter of enabled
 		 *
 		 * @param enabled enabled of Bloom Event
@@ -125,7 +135,7 @@ public class Bloom extends Action {
 		 */
 		public Builder color(String color) {
 			Objects.requireNonNull(color);
-			if (StringJsonUtil.isRGBCode(color)) {
+			if (!StringJsonUtil.isRGBCode(color)) {
 				throw new IllegalArgumentException("color is not rgb code");
 			}
 			this.color = color;

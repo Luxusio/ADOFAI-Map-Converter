@@ -108,6 +108,16 @@ public class RecolorTrack extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.RECOLOR_TRACK;
+		}
+
+		/**
 		 * setter of startTileNum
 		 *
 		 * @param startTileNum startTileNum of RecolorTrack Event

@@ -31,26 +31,26 @@ public class CustomLevelFactory {
             throw new IllegalStateException("actions not found");
         }
 
+        LevelSetting.Builder levelSettingBuilder = LevelSettingFactory.read(settingsNode);
+
         List<Double> angleData = pathDataNode != null ?
                 FlowFactory.readPathData(pathDataNode) :
                 FlowFactory.readAngleData(angleDataNode);
         angleData.add(0, 0.0);
 
-        List<Tile> tiles = angleData.stream()
-                .map(Tile::new)
-                .collect(Collectors.toList());
-
-        LevelSetting levelSetting = LevelSettingFactory.read(settingsNode);
+        CustomLevel.Builder builder = new CustomLevel.Builder()
+                .levelSettingBuilder(levelSettingBuilder)
+                .tileFromAngles(angleData);
 
         Iterator<JsonNode> it = actionsNode.elements();
         while (it.hasNext()) {
             JsonNode jsonNode = it.next();
 
             final int floor = jsonNode.get("floor").asInt();
-            tiles.get(floor).addAction(ActionFactory.read(jsonNode));
+            builder.getTileBuilders().get(floor).addAction(ActionFactory.read(jsonNode));
         }
 
-        return new CustomLevel(levelSetting, tiles);
+        return builder.build();
     }
 
     public static String write(CustomLevel customLevel) {

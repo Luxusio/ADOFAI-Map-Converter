@@ -3,10 +3,10 @@ package io.luxus.adofai.converter.converters.effect;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.Tile;
 
 import java.util.Scanner;
-
-import static io.luxus.adofai.converter.MapConverterBase.copyTiles;
+import java.util.stream.Collectors;
 
 public class OnlyBpmSetMapConverter implements MapConverter {
     @Override
@@ -27,7 +27,10 @@ public class OnlyBpmSetMapConverter implements MapConverter {
     @Override
     public CustomLevel convert(CustomLevel customLevel, Object... args) {
         return MapConverterBase.convert(customLevel, false,
-                applyEach -> copyTiles(applyEach.getOneTimingTiles()));
+                applyEach -> applyEach.getOneTimingTiles()
+                        .stream()
+                        .map(tile -> new Tile.Builder().from(tile))
+                        .collect(Collectors.toList()));
     }
 
 }

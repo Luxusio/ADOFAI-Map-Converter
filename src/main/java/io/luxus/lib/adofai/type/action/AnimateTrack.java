@@ -67,6 +67,16 @@ public class AnimateTrack extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.ANIMATE_TRACK;
+		}
+
+		/**
 		 * setter of trackAnimation
 		 *
 		 * @param trackAnimation trackAnimation of AnimateTrack Event

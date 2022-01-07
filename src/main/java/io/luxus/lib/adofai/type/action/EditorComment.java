@@ -55,6 +55,16 @@ public class EditorComment extends Action {
         }
 
         /**
+         * return eventType of Action Builder
+         *
+         * @return eventType
+         */
+        @Override
+        public EventType getEventType() {
+            return EventType.EDITOR_COMMENT;
+        }
+
+        /**
          * setter of comment
          *
          * @param comment comment of EditorComment Event

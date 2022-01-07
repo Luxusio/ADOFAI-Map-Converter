@@ -67,6 +67,16 @@ public class PlaySound extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.PLAY_SOUND;
+		}
+
+		/**
 		 * setter of hitsound
 		 *
 		 * @param hitsound hitsound of PlaySound Event

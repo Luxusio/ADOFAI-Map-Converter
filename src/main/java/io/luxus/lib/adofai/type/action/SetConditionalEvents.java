@@ -73,6 +73,16 @@ public class SetConditionalEvents extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SET_CONDITIONAL_EVENTS;
+		}
+
+		/**
 		 * setter of perfectTag
 		 *
 		 * @param perfectTag perfectTag of SetConditionalEvents Event

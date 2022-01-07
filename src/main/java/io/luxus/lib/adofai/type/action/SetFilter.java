@@ -75,6 +75,16 @@ public class SetFilter extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SET_FILTER;
+		}
+
+		/**
 		 * setter of filter
 		 *
 		 * @param filter filter of SetFilter Event

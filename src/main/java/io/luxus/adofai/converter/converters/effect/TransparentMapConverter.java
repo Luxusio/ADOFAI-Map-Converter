@@ -4,16 +4,13 @@ import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.action.MoveTrack;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.TilePosition;
 
-import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import static io.luxus.adofai.converter.MapConverterBase.copyTiles;
 
 public class TransparentMapConverter implements MapConverter {
 
@@ -51,15 +48,15 @@ public class TransparentMapConverter implements MapConverter {
 
         int opacity = (int) args[0];
 
-        Tile zeroTile = customLevel.getTiles().get(0);
-        editOpacityEvents(zeroTile, opacity);
-        zeroTile.getActions(EventType.MOVE_TRACK).add(getTransparentMoveTrack(opacity));
-
         return MapConverterBase.convert(customLevel, false,
-                applyEach -> {
-                    List<Tile> newTiles = copyTiles(applyEach.getOneTimingTiles());
-                    newTiles.forEach(newTile -> editOpacityEvents(newTile, opacity));
-                    return newTiles;
+                applyEach -> applyEach.getOneTimingTiles().stream()
+                        .map(tile -> new Tile.Builder().from(tile))
+                        .peek(newTileBuilder -> editOpacityEvents(newTileBuilder, opacity))
+                        .collect(Collectors.toList()),
+                customLevelBuilder -> {
+                    Tile.Builder zeroTile = customLevelBuilder.getTileBuilders().get(0);
+                    editOpacityEvents(zeroTile, opacity);
+                    zeroTile.addAction(getTransparentMoveTrack(opacity));
                 });
     }
 
@@ -71,21 +68,11 @@ public class TransparentMapConverter implements MapConverter {
                 .build();
     }
 
-    private void editOpacityEvents(Tile tile, long opacity) {
-        tile.getActions(EventType.ANIMATE_TRACK).clear();
-        List<Action> actions = tile.getActions(EventType.MOVE_TRACK);
-
-        List<Action> newActions = actions.stream()
-                .map(action -> {
-                    MoveTrack a = (MoveTrack) action;
-                    return new MoveTrack.Builder().from(a)
-                            .opacity(a.getOpacity() == 0 ? 0 : opacity)
-                            .build();
-                })
-                .collect(Collectors.toList());
-
-        actions.clear();
-        actions.addAll(newActions);
+    private void editOpacityEvents(Tile.Builder tileBuilder, long opacity) {
+        tileBuilder.removeActions(EventType.ANIMATE_TRACK);
+        tileBuilder.<MoveTrack>editActions(EventType.MOVE_TRACK, a -> new MoveTrack.Builder().from(a)
+                .opacity(a.getOpacity() == 0 ? 0 : opacity)
+                .build());
     }
 
 }

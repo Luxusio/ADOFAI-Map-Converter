@@ -97,6 +97,16 @@ public class CustomBackground extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.CUSTOM_BACKGROUND;
+		}
+
+		/**
 		 * setter of color
 		 *
 		 * @param color color of CustomBackground Event
@@ -106,7 +116,7 @@ public class CustomBackground extends Action {
 		 */
 		public Builder color(String color) {
 			Objects.requireNonNull(color);
-			if (StringJsonUtil.isRGBCode(color)) {
+			if (!StringJsonUtil.isRGBCode(color)) {
 				throw new IllegalArgumentException("color is not rgb code");
 			}
 			this.color = color;
@@ -136,7 +146,7 @@ public class CustomBackground extends Action {
 		 */
 		public Builder imageColor(String imageColor) {
 			Objects.requireNonNull(imageColor);
-			if (StringJsonUtil.isRGBCode(imageColor)) {
+			if (!StringJsonUtil.isRGBCode(imageColor)) {
 				throw new IllegalArgumentException("imageColor is not rgb code");
 			}
 			this.imageColor = imageColor;

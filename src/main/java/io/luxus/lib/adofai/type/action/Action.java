@@ -19,7 +19,15 @@ public abstract class Action {
     public static abstract class Builder<T extends Builder<T>> {
 
         public abstract Action build();
+
         public abstract T self();
+
+        /**
+         * return eventType of Action Builder
+         *
+         * @return eventType
+         */
+        public abstract EventType getEventType();
 
     }
 

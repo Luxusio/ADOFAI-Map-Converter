@@ -86,6 +86,16 @@ public class MoveCamera extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.MOVE_CAMERA;
+		}
+
+		/**
 		 * setter of duration
 		 *
 		 * @param duration duration of MoveCamera Event

@@ -50,15 +50,10 @@ public class NoSpeedChangeMapConverter implements MapConverter {
     public CustomLevel convert(CustomLevel customLevel, Object... args) {
         double destBpm = (double) args[0];
 
-        customLevel.setLevelSetting(new LevelSetting.Builder().from(customLevel.getLevelSetting())
-                .bpm(destBpm)
-                .build());
-        CustomLevel result = MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
-                tile -> tile.getTileMeta().getTravelAngle() * destBpm /  tile.getTileMeta().getBpm());
-
-        result.getTiles().forEach(tile -> tile.getActions(EventType.SET_SPEED).clear());
-
-        return result;
+        return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
+                tile -> tile.getTileMeta().getTravelAngle() * destBpm /  tile.getTileMeta().getBpm(),
+                tileBuilder -> tileBuilder.removeActions(EventType.SET_SPEED),
+                customLevelBuilder -> customLevelBuilder.getLevelSettingBuilder().bpm(destBpm));
     }
 
     public static double getPossibleMaxBpm(List<Tile> tiles) {

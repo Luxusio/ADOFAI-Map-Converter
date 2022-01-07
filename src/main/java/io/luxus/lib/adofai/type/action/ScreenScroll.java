@@ -66,6 +66,16 @@ public class ScreenScroll extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SCREEN_SCROLL;
+		}
+
+		/**
 		 * setter of scroll
 		 *
 		 * @param scroll scroll of ScreenScroll Event

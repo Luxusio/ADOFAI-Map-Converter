@@ -63,6 +63,16 @@ public class RepeatEvents extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.REPEAT_EVENTS;
+		}
+
+		/**
 		 * setter of repetitions
 		 *
 		 * @param repetitions repetitions of RepeatEvents Event

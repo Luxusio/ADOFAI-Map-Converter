@@ -108,6 +108,16 @@ public class AddText extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.ADD_TEXT;
+		}
+
+		/**
 		 * setter of decText
 		 *
 		 * @throws NullPointerException when decText is null

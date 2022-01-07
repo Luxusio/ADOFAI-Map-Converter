@@ -99,6 +99,16 @@ public class ChangeTrack extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.CHANGE_TRACK;
+		}
+
+		/**
 		 * setter of trackColorType
 		 *
 		 * @param trackColorType trackColorType of ChangeTrack Event
@@ -121,7 +131,7 @@ public class ChangeTrack extends Action {
 		 */
 		public Builder trackColor(String trackColor) {
 			Objects.requireNonNull(trackColor);
-			if (StringJsonUtil.isRGBCode(trackColor)) {
+			if (!StringJsonUtil.isRGBCode(trackColor)) {
 				throw new IllegalArgumentException("color is not rgb code");
 			}
 			this.trackColor = trackColor;
@@ -138,7 +148,7 @@ public class ChangeTrack extends Action {
 		 */
 		public Builder secondaryTrackColor(String secondaryTrackColor) {
 			Objects.requireNonNull(secondaryTrackColor);
-			if (StringJsonUtil.isRGBCode(secondaryTrackColor)) {
+			if (!StringJsonUtil.isRGBCode(secondaryTrackColor)) {
 				throw new IllegalArgumentException("color is not rgb code");
 			}
 			this.secondaryTrackColor = secondaryTrackColor;

@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleExclude360;
+import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
 public class FlowFactory {
 
@@ -47,7 +47,7 @@ public class FlowFactory {
                 angleData.add(ANGLE_MID_TILE);
             } else {
                 if (angle.isRelative()) {
-                    staticAngle = generalizeAngleExclude360(staticAngle + 180 - angle.getSize());
+                    staticAngle = generalizeAngle(staticAngle + 180 - angle.getSize());
                 }
                 else staticAngle = angle.getSize();
                 angleData.add(staticAngle);
@@ -117,7 +117,7 @@ public class FlowFactory {
             return TileAngle.NONE;
         }
 
-        double relativeAngle = generalizeAngleExclude360(180 - nextAngle + currAngle);
+        double relativeAngle = generalizeAngle(180 - nextAngle + currAngle);
 
         for (TileAngle angle : TileAngle.values()) {
             if (NumberUtil.fuzzyEquals(

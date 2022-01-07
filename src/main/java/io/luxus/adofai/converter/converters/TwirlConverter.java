@@ -15,20 +15,6 @@ import java.util.Scanner;
 
 public class TwirlConverter implements MapConverter {
 
-	public static CustomLevel convert(String path, double rate, boolean useCameraOptimization) throws IOException {
-		CustomLevel customLevel = CustomLevelParser.readPath(path);
-
-		return MapConverterBase.convertBasedOnTravelAngle(customLevel, useCameraOptimization, tile -> {
-			List<Action> actionList = tile.getActions(EventType.TWIRL);
-			actionList.clear();
-			if (rate > Math.random()) {
-				actionList.add(new Twirl.Builder().build());
-			}
-
-			return tile.getTileMeta().getTravelAngle();
-		});
-	}
-
 	@Override
 	public Object[] prepareParameters(Scanner scanner) {
 		System.out.print("회전 넣을 비율(0.0~1.0):");
@@ -63,15 +49,12 @@ public class TwirlConverter implements MapConverter {
 	public CustomLevel convert(CustomLevel customLevel, Object... args) {
 		double twirlRate = (double) args[0];
 
-		return MapConverterBase.convertBasedOnTravelAngle(customLevel, false, tile -> {
-			List<Action> actionList = tile.getActions(EventType.TWIRL);
-			actionList.clear();
-
-			if (twirlRate > Math.random()) {
-				actionList.add(new Twirl.Builder().build());
-			}
-
-			return tile.getTileMeta().getTravelAngle();
-		});
+		return MapConverterBase
+				.convertBasedOnTravelAngle(customLevel, false, tile -> tile.getTileMeta().getTravelAngle(), tileBuilder -> {
+					tileBuilder.removeActions(EventType.TWIRL);
+					if (twirlRate > Math.random()) {
+						tileBuilder.addAction(new Twirl.Builder().build());
+					}
+				});
 	}
 }

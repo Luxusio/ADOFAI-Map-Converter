@@ -53,9 +53,10 @@ public class ActionFactory {
 
         Action action = null;
         try {
+            map.remove("floor");
             action = read(map);
         } catch (Throwable t) {
-            //t.printStackTrace();
+            t.printStackTrace();
         }
 
         if (action == null) {
@@ -69,12 +70,10 @@ public class ActionFactory {
     private static Action read(Map<String, JsonNode> map) {
         JsonPropertyReader reader = new JsonPropertyReader(map);
 
-        reader.readAndGet("floor", JsonNode::asLong);
         EventType eventType = reader.readO("eventType", o -> o
                         .map(JsonNode::asText)
                         .map(eventTypeMap::get))
                 .orElse(EventType.UNKNOWN);
-
 
         Action action = null;
         switch (eventType) {
@@ -121,6 +120,7 @@ public class ActionFactory {
                 break;
             }
             case COLOR_TRACK: {
+
                 ColorTrack.Builder builder = new ColorTrack.Builder();
                 reader.read("trackColorType", builder::trackColorType, JsonNode::asText, trackColorTypeMap::get);
                 reader.read("trackColor", builder::trackColor, JsonNode::asText);

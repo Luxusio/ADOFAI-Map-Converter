@@ -88,6 +88,16 @@ public class Flash extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.FLASH;
+		}
+
+		/**
 		 * setter of duration
 		 *
 		 * @param duration duration of Flash Event

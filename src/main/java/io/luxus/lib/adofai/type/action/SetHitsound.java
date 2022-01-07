@@ -63,6 +63,16 @@ public class SetHitsound extends Action {
 		}
 
 		/**
+		 * return eventType of Action Builder
+		 *
+		 * @return eventType
+		 */
+		@Override
+		public EventType getEventType() {
+			return EventType.SET_HITSOUND;
+		}
+
+		/**
 		 * setter of gameSound
 		 *
 		 * @param gameSound gameSound of SetHitsound Event
