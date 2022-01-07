@@ -23,6 +23,10 @@ public class AngleHelper {
 
         if (isMidAngle(nextAngle)) {
             currTravelAngle = 0.0;
+            if (isMidAngle(currAngle)) {
+                currStaticAngle += 180;
+                currStaticAngle = generalizeAngleExclude360(currStaticAngle);
+            }
         }
         else {
             currTravelAngle = currStaticAngle - nextAngle;
