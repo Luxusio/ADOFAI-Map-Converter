@@ -52,7 +52,7 @@ public class StringJsonUtil {
                     char strC = chars[idx];
                     sb.append(strC);
                     if (strC == '\\') {
-                        escape = true;
+                        escape = !escape;
                     }
                     else if (!escape && strC == '"') {
                         break; // string end
