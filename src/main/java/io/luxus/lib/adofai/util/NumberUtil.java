@@ -13,16 +13,16 @@ public class NumberUtil {
                 ;
     }
 
-    public static double generalizeAngleExclude360(double angle) {
-        return angle >= 360 ? angle - 360 :
-                angle < 0 ? angle + 360 :
-                        angle;
-    }
 
-    public static double generalizeAngleInclude360(double angle) {
-        return angle > 360 ? angle - 360 :
-                angle <= 0 ? angle + 360 :
-                        angle;
+    /**
+     * generalize angle exclude 360
+     *
+     * @param angle not generalized angle
+     * @return 0 <= angle < 360
+     */
+    public static double generalizeAngle(double angle) {
+        angle = angle - ((int) (angle / 360)) * 360;
+        return angle < 0 ? angle + 360 : angle;
     }
 
     /**

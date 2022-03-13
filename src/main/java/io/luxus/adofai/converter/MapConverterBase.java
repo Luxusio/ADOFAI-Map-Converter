@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 public class MapConverterBase {
 
@@ -32,42 +32,62 @@ public class MapConverterBase {
         private final List<Tile> oneTimingTiles;
     }
 
-    public static CustomLevel convertBasedOnTravelAngle(CustomLevel customLevel, boolean useCameraOptimization, Function<Tile, Double> travelAngleMapper) {
-        return convert(customLevel, useCameraOptimization, new Function<ApplyEach, List<Tile>>() {
+
+    public static CustomLevel convertBasedOnTravelAngle(CustomLevel customLevel, boolean useCameraOptimization,
+                                                        Function<Tile, Double> travelAngleMapper,
+                                                        Consumer<Tile.Builder> tileBuilderConsumer) {
+        return convertBasedOnTravelAngle(customLevel, useCameraOptimization, travelAngleMapper, tileBuilderConsumer, dummy -> {});
+    }
+
+    public static CustomLevel convertBasedOnTravelAngle(CustomLevel customLevel, boolean useCameraOptimization,
+                                                        Function<Tile, Double> travelAngleMapper,
+                                                        Consumer<Tile.Builder> tileBuilderConsumer,
+                                                        Consumer<CustomLevel.Builder> customLevelConsumer) {
+        return convert(customLevel, useCameraOptimization, new Function<ApplyEach, List<Tile.Builder>>() {
 
             private double currStaticAngle = AngleHelper.getNextStaticAngle(0.0, customLevel.getTiles().get(0).getTileMeta().getTravelAngle(), false);
             private boolean reversed = false;
 
             @Override
-            public List<Tile> apply(ApplyEach applyEach) {
+            public List<Tile.Builder> apply(ApplyEach applyEach) {
                 return applyEach.getOneTimingTiles()
                         .stream()
                         .map(tile -> {
                             Double travelAngle = travelAngleMapper.apply(tile);
 
-                            if (tile.getAngle() != ANGLE_MID_TILE) {
-                                tile.setAngle(currStaticAngle);
+                            Tile.Builder builder = new Tile.Builder().from(tile);
+                            tileBuilderConsumer.accept(builder);
+
+                            if (!AngleHelper.isMidAngle(builder.getAngle())) {
+                                builder.angle(currStaticAngle);
                             }
 
-                            if (tile.getActions(EventType.TWIRL).size() % 2 == 1) {
+                            if (builder.getActions(EventType.TWIRL).size() % 2 == 1) {
                                 reversed = !reversed;
                             }
 
                             currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, travelAngle, reversed);
-                            return new Tile(tile.getAngle(), new HashMap<>(tile.getActionMap()));
+
+                            return builder;
                         })
                         .collect(Collectors.toList());
             }
-        });
+        }, customLevelConsumer);
     }
 
     public static CustomLevel convert(CustomLevel customLevel, boolean useCameraOptimization,
-                                      Function<ApplyEach, List<Tile>> applyEachFunction)  {
+                                      Function<ApplyEach, List<Tile.Builder>> applyEachFunction) {
+        return convert(customLevel, useCameraOptimization, applyEachFunction, dummy -> {});
+    }
+
+    public static CustomLevel convert(CustomLevel customLevel, boolean useCameraOptimization,
+                                      Function<ApplyEach, List<Tile.Builder>> applyEachFunction,
+                                      Consumer<CustomLevel.Builder> customLevelConsumer)  {
 
         final List<Tile> tiles = customLevel.getTiles();
 
-        final List<Tile> newTiles = new ArrayList<>();
-        newTiles.add(new Tile(0.0, new HashMap<>(tiles.get(0).getActionMap())));
+        final List<Tile.Builder> newTileBuilders = new ArrayList<>();
+        newTileBuilders.add(new Tile.Builder().actionMap(tiles.get(0).getActionMap()));
 
         final List<List<Integer>> newTileAmounts = new ArrayList<>(tiles.size());
         newTileAmounts.add(Arrays.asList(0, 1));
@@ -75,26 +95,28 @@ public class MapConverterBase {
         for (int i = 1; i < tiles.size();) {
             List<Tile> oneTimingTiles = getSameTimingTiles(tiles, i);
 
-            List<Tile> newTilesResult = applyEachFunction.apply(new ApplyEach(i, oneTimingTiles));
+            List<Tile.Builder> newTilesResult = applyEachFunction.apply(new ApplyEach(i, oneTimingTiles));
             newTileAmounts.add(Arrays.asList(i, newTilesResult.size()));
-            newTiles.addAll(newTilesResult);
+            newTileBuilders.addAll(newTilesResult);
 
             i += oneTimingTiles.size();
         }
 
-        final LevelSetting newLevelSetting = customLevel.getLevelSetting()
-                .toBuilder().build();
-        final CustomLevel newCustomLevel = new CustomLevel(newLevelSetting, newTiles);
+        final CustomLevel.Builder newCustomLevelBuilder = new CustomLevel.Builder()
+                .levelSetting(customLevel.getLevelSetting())
+                .tileBuilders(newTileBuilders);
 
-        arrangeCustomLevelSync(customLevel, newCustomLevel, newTileAmounts);
-
-        return newCustomLevel;
+        customLevelConsumer.accept(newCustomLevelBuilder);
+        return arrangeCustomLevelSync(customLevel, newCustomLevelBuilder.build(), newTileAmounts);
     }
 
-    private static void arrangeCustomLevelSync(CustomLevel oldCustomLevel, CustomLevel newCustomLevel, List<List<Integer>> newTileAmountPairs) {
+    private static CustomLevel arrangeCustomLevelSync(CustomLevel oldCustomLevel, CustomLevel newCustomLevel, List<List<Integer>> newTileAmountPairs) {
+
+        CustomLevel.Builder newCustomLevelBuilder = new CustomLevel.Builder().from(newCustomLevel);
 
         List<Tile> oldTiles = oldCustomLevel.getTiles();
         List<Tile> newTiles = newCustomLevel.getTiles();
+        List<Tile.Builder> newTileBuilders = newCustomLevelBuilder.getTileBuilders();
 
         // perceivedBpm
         // temporaryBpm
@@ -108,14 +130,12 @@ public class MapConverterBase {
             int newTileAmount = newTileAmountPair.get(1);
 
             List<Tile> timingTiles = getSameTimingTiles(oldTiles, oldTileIdx);
-            List<Tile> newTimingTiles = newTiles.subList(newTileIdx, newTileIdx + newTileAmount);
+            List<Tile.Builder> newTimingTileBuilders = newTileBuilders.subList(newTileIdx, newTileIdx + newTileAmount);
 
             double timingTravelAngle = TileMeta.calculateTotalTravelAngle(timingTiles);
-            double newTravelAngle = TileMeta.calculateTotalTravelAngle(newTimingTiles);
+            double newTravelAngle = TileMeta.calculateTotalTravelAngle(newTiles.subList(newTileIdx, newTileIdx + newTileAmount));
 
-
-            List<Action> actionList = newTimingTiles.get(0).getActions(EventType.SET_SPEED);
-            actionList.clear();
+            newTimingTileBuilders.forEach(builder -> builder.removeActions(EventType.SET_SPEED));
 
             if (oldTileIdx == 0) {
                 double originalZeroTileTravelMs = TileHelper.calculateZeroTileTravelMs(oldCustomLevel);
@@ -125,7 +145,8 @@ public class MapConverterBase {
 
                 double additionalTravelMs = originalZeroTileTravelMs- newZeroTileTravelMs;
 
-                newCustomLevel.getLevelSetting().setOffset(originalStraightTravelMs + (long) additionalTravelMs);
+                newCustomLevelBuilder.getLevelSettingBuilder()
+                        .offset(originalStraightTravelMs + (long) additionalTravelMs);
             }
             else if (newTileIdx + newTileAmount < newTiles.size()) {
 
@@ -137,14 +158,19 @@ public class MapConverterBase {
                 // SetSpeed
                 if (!NumberUtil.fuzzyEquals(currBpm, prevBpm)) {
                     if (!Double.isFinite(currBpm) || NumberUtil.fuzzyEquals(currBpm, 0.0)) {
-                        System.err.println("Wrong TempBpm value (" + currBpm + ")");
+                        System.err.println("Wrong TempBpm value (" + currBpm + ", " + timingBpm + ", " +
+                                "multiplyValue=" + multiplyValue +
+                                ", newTravelAngle=" + newTravelAngle +
+                                ", timingTravelAngle=" + timingTravelAngle + ")");
                     }
-                    actionList.add(new SetSpeed(SpeedType.BPM, currBpm, 1.0));
+                    newTimingTileBuilders.get(0).addAction(
+                            new SetSpeed.Builder()
+                                    .beatsPerMinute(currBpm)
+                                    .build());
                 }
 
-                for (Tile newTile : newTimingTiles) {
-                    fixAction(newTile, multiplyValue);
-                }
+                newTimingTileBuilders
+                        .forEach(builder -> fixAction(builder, multiplyValue));
 
                 prevBpm = currBpm;
             }
@@ -153,7 +179,8 @@ public class MapConverterBase {
             newTileIdx += newTileAmount;
         }
 
-        fixFilterTiming(newCustomLevel);
+        return newCustomLevelBuilder.build();
+        //return fixFilterTiming(newCustomLevelBuilder.build());
     }
 
     /**
@@ -178,146 +205,83 @@ public class MapConverterBase {
     }
 
     /**
-     * fix tile's action timing
+     * fix tileBuilder's action timing
      *
-     * @param tile tile object to fix action timing
+     * @param tileBuilder tileBuilder object to fix action timing
      * @param multiplyValue multiply value about bpm duration, angle duration
      */
-    private static void fixAction(Tile tile, double multiplyValue) {
-
-        // CustomBackground
-        editAction(tile, EventType.CUSTOM_BACKGROUND, (action) -> {
-            CustomBackground a = (CustomBackground) action;
-            return new CustomBackground(a.getColor(), a.getBgImage(), a.getImageColor(), a.getParallax(),
-                    a.getBgDisplayMode(), a.getLockRot(), a.getLoopBG(), a.getUnscaledSize(),
-                    a.getAngleOffset() * multiplyValue, a.getEventTag());
-        });
-
-        // AnimateTrack
-        editAction(tile, EventType.ANIMATE_TRACK, (action) -> {
-            AnimateTrack a = (AnimateTrack) action;
-            return new AnimateTrack(a.getTrackAnimation(), a.getBeatsAhead() * multiplyValue,
-                    a.getTrackDisappearAnimation(), a.getBeatsBehind() * multiplyValue);
-        });
-
-        // Flash
-        editAction(tile, EventType.FLASH, (action) -> {
-            Flash a = (Flash) action;
-            return new Flash(a.getDuration() * multiplyValue, a.getPlane(), a.getStartColor(), a.getStartOpacity(),
-                    a.getEndColor(), a.getEndOpacity(), a.getAngleOffset() * multiplyValue, a.getEase(), a.getEventTag());
-        });
-
-        // MoveCamera
-        editAction(tile, EventType.MOVE_CAMERA, (action) -> {
-            MoveCamera a = (MoveCamera) action;
-            return new MoveCamera(a.getDuration() * multiplyValue, a.getRelativeTo(), a.getPosition(),
-                    a.getRotation(), a.getZoom(), a.getAngleOffset() * multiplyValue, a.getEase(),
-                    a.getEventTag());
-        });
-
-        // RecolorTrack
-        editAction(tile, EventType.RECOLOR_TRACK, (action) -> {
-            RecolorTrack a = (RecolorTrack) action;
-            return new RecolorTrack(a.getStartTileNum(), a.getStartTilePosition(), a.getEndTileNum(), a.getEndTilePosition(), a.getTrackColorType(), a.getTrackColor(),
-                    a.getSecondaryTrackColor(), a.getTrackColorAnimDuration(), a.getTrackColorPulse(),
-                    a.getTrackPulseLength(), a.getTrackStyle(), a.getAngleOffset() * multiplyValue,
-                    a.getEventTag());
-        });
-
-        // MoveTrack
-        editAction(tile, EventType.MOVE_TRACK, (action) -> {
-            MoveTrack a = (MoveTrack) action;
-            return new MoveTrack(a.getStartTileNum(), a.getStartTilePosition(), a.getEndTileNum(), a.getEndTilePosition(), a.getDuration() * multiplyValue,
-                    a.getPositionOffset(), a.getRotationOffset(), a.getScale(), a.getOpacity(),
-                    a.getAngleOffset() * multiplyValue, a.getEase(), a.getEventTag());
-        });
-
-        // SetFilter
-        editAction(tile, EventType.SET_FILTER, (action) -> {
-            SetFilter a = (SetFilter) action;
-            return new SetFilter(a.getFilter(), a.getEnabled(), a.getIntensity(), a.getDisableOthers(),
-                    a.getAngleOffset() * multiplyValue, a.getEventTag());
-        });
-
-        // HallOfMirrors
-        editAction(tile, EventType.HALL_OF_MIRRORS, (action) -> {
-            HallOfMirrors a = (HallOfMirrors) action;
-            return new HallOfMirrors(a.getEnabled(), a.getAngleOffset() * multiplyValue, a.getEventTag());
-        });
-
-        // ShakeScreen
-        editAction(tile, EventType.SHAKE_SCREEN, (action) -> {
-            ShakeScreen a = (ShakeScreen) action;
-            return new ShakeScreen(a.getDuration() * multiplyValue, a.getStrength(), a.getIntensity(),
-                    a.getFadeOut(), a.getAngleOffset() * multiplyValue, a.getEventTag());
-        });
-
-        // MoveDecorations
-        editAction(tile, EventType.MOVE_DECORATIONS, (action) -> {
-            MoveDecorations a = (MoveDecorations) action;
-            return new MoveDecorations(a.getDuration() * multiplyValue, a.getTag(), a.getPositionOffset(),
-                    a.getRotationOffset(), a.getScale(), a.getColor(), a.getOpacity(), a.getAngleOffset() * multiplyValue, a.getEase(),
-                    a.getEventTag());
-        });
-
-        // RepeatEvents
-        editAction(tile, EventType.REPEAT_EVENTS, (action) -> {
-            RepeatEvents a = (RepeatEvents) action;
-            return new RepeatEvents(a.getRepetitions(), a.getInterval() * multiplyValue, a.getTag());
-        });
-
-        // Bloom
-        editAction(tile, EventType.BLOOM, (action) -> {
-            Bloom a = (Bloom) action;
-            return new Bloom(a.getEnabled(), a.getThreshold(), a.getIntensity(), a.getColor(),
-                    a.getAngleOffset() * multiplyValue, a.getEventTag());
-        });
+    private static void fixAction(Tile.Builder tileBuilder, double multiplyValue) {
+        tileBuilder
+                .<CustomBackground>editActions(EventType.CUSTOM_BACKGROUND, a -> new CustomBackground.Builder().from(a)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<AnimateTrack>editActions(EventType.ANIMATE_TRACK, a -> new AnimateTrack.Builder().from(a)
+                        .beatsAhead(a.getBeatsAhead() * multiplyValue)
+                        .beatsBehind(a.getBeatsBehind() * multiplyValue)
+                        .build())
+                .<Flash>editActions(EventType.FLASH, a -> new Flash.Builder().from(a)
+                        .duration(a.getDuration() * multiplyValue)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<MoveCamera>editActions(EventType.MOVE_CAMERA, a -> new MoveCamera.Builder().from(a)
+                        .duration(a.getDuration() * multiplyValue)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<RecolorTrack>editActions(EventType.RECOLOR_TRACK, a -> new RecolorTrack.Builder().from(a)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<MoveTrack>editActions(EventType.MOVE_TRACK, a -> new MoveTrack.Builder().from(a)
+                        .duration(a.getDuration() * multiplyValue)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<SetFilter>editActions(EventType.SET_FILTER, a -> new SetFilter.Builder().from(a)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<HallOfMirrors>editActions(EventType.HALL_OF_MIRRORS, a -> new HallOfMirrors.Builder().from(a)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<ShakeScreen>editActions(EventType.SHAKE_SCREEN, a -> new ShakeScreen.Builder().from(a)
+                        .duration(a.getDuration() * multiplyValue)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<MoveDecorations>editActions(EventType.MOVE_DECORATIONS, a -> new MoveDecorations.Builder().from(a)
+                        .duration(a.getDuration() * multiplyValue)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<RepeatEvents>editActions(EventType.REPEAT_EVENTS, a -> new RepeatEvents.Builder().from(a)
+                        .interval(a.getInterval() * multiplyValue)
+                        .build())
+                .<Bloom>editActions(EventType.BLOOM, a -> new Bloom.Builder().from(a)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build())
+                .<PlaySound>editActions(EventType.PLAY_SOUND, a -> new PlaySound.Builder().from(a)
+                        .angleOffset(a.getAngleOffset() * multiplyValue)
+                        .build());
     }
 
-    /**
-     * edit action with given function
-     *
-     * @param tile The tile has action to edit
-     * @param eventType the eventType to edit
-     * @param function individual edit function
-     */
-    private static void editAction(Tile tile, EventType eventType, Function<Action, Action> function) {
-        List<Action> actions = tile.getActions(eventType);
-        List<Action> newActionList = new ArrayList<>();
+    public static CustomLevel fixFilterTiming(CustomLevel customLevel) {
 
-        for (Action action : actions) {
-            newActionList.add(function.apply(action));
-        }
+        CustomLevel.Builder customLevelBuilder = new CustomLevel.Builder().from(customLevel);
 
-        actions.clear();
-        actions.addAll(newActionList);
-    }
+        customLevel.getTiles().stream()
+                .map(Tile::getTileMeta)
+                .forEach(tileMeta -> customLevelBuilder.getTileBuilders().get(tileMeta.getFloor())
+                        .<SetFilter>editActions(EventType.SET_FILTER, a -> {
 
-    public static void fixFilterTiming(CustomLevel customLevel) {
+                            double angleOffset = a.getAngleOffset();
 
-        for (Tile tile : customLevel.getTiles()) {
-            TileMeta tileMeta = tile.getTileMeta();
+                            if (a.getDisableOthers() == Toggle.ENABLED &&
+                                    (angleOffset > tileMeta.getTravelAngle() ||
+                                            NumberUtil.fuzzyEquals(angleOffset, tileMeta.getTravelAngle()))) {
+                                angleOffset = Math.max(angleOffset - 0.0001, 0.0);
+                            }
 
-            editAction(tile, EventType.SET_FILTER, (action) -> {
-                SetFilter a = (SetFilter) action;
+                            return new SetFilter.Builder().from(a)
+                                    .angleOffset(angleOffset)
+                                    .build();
+                        }));
 
-                double angleOffset = a.getAngleOffset();
-
-                if (a.getDisableOthers() == Toggle.ENABLED &&
-                        NumberUtil.fuzzyEquals(tileMeta.getTravelAngle(), angleOffset)) {
-                    angleOffset = Math.max(angleOffset - 0.000001, 0.0);
-                }
-
-                return new SetFilter(a.getFilter(), a.getEnabled(), a.getIntensity(), a.getDisableOthers(),
-                        angleOffset, a.getEventTag());
-            });
-        }
-    }
-
-    public static List<Tile> copyTiles(List<Tile> tiles) {
-        return tiles.stream()
-                .map(tile -> new Tile(tile.getAngle(), tile.getActionMap()))
-                .collect(Collectors.toList());
+        return customLevelBuilder.build();
     }
 
 }

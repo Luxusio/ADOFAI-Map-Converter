@@ -27,7 +27,7 @@ public class CustomLevelParser {
         try {
             return CustomLevelFactory.read(node);
         } catch (Throwable throwable) {
-            System.err.println("Failed to read level");
+            System.err.println("Failed to read level (node=" + node + ")");
             throwable.printStackTrace();
             return null;
         }

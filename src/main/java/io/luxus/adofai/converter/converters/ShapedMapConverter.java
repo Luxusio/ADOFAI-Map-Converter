@@ -6,6 +6,7 @@ import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.helper.AngleHelper;
 import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.action.Twirl;
 import io.luxus.lib.adofai.type.EventType;
@@ -129,13 +130,13 @@ public class ShapedMapConverter implements MapConverter {
 		if (args[1] == null) {
 
 			@SuppressWarnings("unchecked")
-			List<Tile> tiles = ((List<Double>) args[2]).stream()
-					.map(angle -> angle == 999.0 ? ANGLE_MID_TILE : angle)
-					.map(Tile::new)
+			List<Tile.Builder> tiles = ((List<Double>) args[2]).stream()
+					.map(angle -> AngleHelper.isMidAngle(angle) ? ANGLE_MID_TILE : angle)
+					.map(angle -> new Tile.Builder().angle(angle))
 					.collect(Collectors.toList());
 
-			tiles.add(0, new Tile(0.0));
-			shapeLevel = new CustomLevel(new LevelSetting(), tiles);
+			tiles.add(0, new Tile.Builder());
+			shapeLevel = new CustomLevel.Builder().tileBuilders(tiles).build();
 		}
 		else {
 			shapeLevel = (CustomLevel) args[1];
@@ -146,34 +147,36 @@ public class ShapedMapConverter implements MapConverter {
 		shapeTiles.remove(0);
 
 		return MapConverterBase.convert(customLevel, false,
-				new Function<MapConverterBase.ApplyEach, List<Tile>>() {
+				new Function<MapConverterBase.ApplyEach, List<Tile.Builder>>() {
 
 					private int index = 0;
 
 					@Override
-					public List<Tile> apply(MapConverterBase.ApplyEach applyEach) {
+					public List<Tile.Builder> apply(MapConverterBase.ApplyEach applyEach) {
 
 						List<Tile> nowTimingTiles = applyEach.getOneTimingTiles();
 						List<Tile> nowShapeTiles = MapConverterBase.getSameTimingTiles(shapeTiles, index);
 
-						List<Tile> newTiles = nowShapeTiles.stream()
+						List<Tile.Builder> newTileBuilders = nowShapeTiles.stream()
 								.map(tile -> {
-									Tile newTile = new Tile(tile.getAngle());
+									Tile.Builder newTileBuilder = new Tile.Builder().angle(tile.getAngle());
 
 									tile.getActions(EventType.TWIRL)
-											.forEach(newTile::addAction);
+											.forEach(newTileBuilder::addAction);
 
-									return newTile;
+									return newTileBuilder;
 								}).collect(Collectors.toList());
 
 						int newTileIdx = 0;
 						for (Tile timingTile : nowTimingTiles) {
-							Tile newTile = newTiles.get(newTileIdx);
+							Tile.Builder newTileBuilder = newTileBuilders.get(newTileIdx);
 
-							timingTile.getActions(EventType.TWIRL).clear();
+							Tile.Builder mutableTimingTile = new Tile.Builder().from(timingTile);
+							mutableTimingTile.removeActions(EventType.TWIRL);
 
-							TileHelper.combineTile(newTile, timingTile);
-							if (++newTileIdx >= newTiles.size()) {
+							newTileBuilder.combineTile(mutableTimingTile);
+
+							if (++newTileIdx >= newTileBuilders.size()) {
 								newTileIdx--;
 							}
 						}
@@ -182,9 +185,9 @@ public class ShapedMapConverter implements MapConverter {
 						if (index >= shapeTiles.size()) {
 							index = 0;
 							if (shapeTiles.get(shapeTiles.size() - 1).getTileMeta().isReversed()) {
-								List<Action> twirls = newTiles.get(newTiles.size() - 1).getActions(EventType.TWIRL);
+								List<Action> twirls = newTileBuilders.get(newTileBuilders.size() - 1).getActions(EventType.TWIRL);
 								if (twirls.isEmpty()) {
-									twirls.add(new Twirl());
+									twirls.add(new Twirl.Builder().build());
 								}
 								else {
 									twirls.clear();
@@ -192,7 +195,7 @@ public class ShapedMapConverter implements MapConverter {
 							}
 						}
 
-						return newTiles;
+						return newTileBuilders;
 					}
 				});
 	}

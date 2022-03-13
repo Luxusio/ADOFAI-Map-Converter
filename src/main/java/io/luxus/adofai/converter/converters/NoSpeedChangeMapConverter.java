@@ -3,6 +3,7 @@ package io.luxus.adofai.converter.converters;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.type.EventType;
@@ -28,7 +29,12 @@ public class NoSpeedChangeMapConverter implements MapConverter {
         double possibleMaxBpm = getPossibleMaxBpm(customLevel.getTiles());
         if (destBpm > possibleMaxBpm) {
             System.err.println("destBpm이 너무 빠릅니다. " + possibleMaxBpm + "bpm 이하로 입력 해 주세요.");
-            return false;
+            return true;
+        }
+
+        if (destBpm <= 0) {
+            System.err.println("destBpm은 0보다 커야합니다.");
+            return true;
         }
 
         return false;
@@ -44,13 +50,10 @@ public class NoSpeedChangeMapConverter implements MapConverter {
     public CustomLevel convert(CustomLevel customLevel, Object... args) {
         double destBpm = (double) args[0];
 
-        customLevel.getLevelSetting().setBpm(destBpm);
-        CustomLevel result = MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
-                tile -> tile.getTileMeta().getTravelAngle() * destBpm /  tile.getTileMeta().getBpm());
-
-        result.getTiles().forEach(tile -> tile.getActions(EventType.SET_SPEED).clear());
-
-        return result;
+        return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
+                tile -> tile.getTileMeta().getTravelAngle() * destBpm /  tile.getTileMeta().getBpm(),
+                tileBuilder -> tileBuilder.removeActions(EventType.SET_SPEED),
+                customLevelBuilder -> customLevelBuilder.getLevelSettingBuilder().bpm(destBpm));
     }
 
     public static double getPossibleMaxBpm(List<Tile> tiles) {

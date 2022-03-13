@@ -10,6 +10,7 @@ import io.luxus.lib.adofai.helper.AngleHelper;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
@@ -66,7 +67,9 @@ public class PseudoMapConverter implements MapConverter {
         return MapConverterBase.convert(customLevel, false,
                 applyEach -> {
                     List<Tile> oneTimingTiles = applyEach.getOneTimingTiles();
-                    List<Tile> newTiles = MapConverterBase.copyTiles(oneTimingTiles);
+                    List<Tile.Builder> newTileBuilders = oneTimingTiles.stream()
+                            .map(tile -> new Tile.Builder().from(tile))
+                            .collect(Collectors.toList());
 
                     double travelAngle = TileMeta.calculateTotalTravelAngle(oneTimingTiles);
 
@@ -82,20 +85,20 @@ public class PseudoMapConverter implements MapConverter {
                     currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, eachHitTravelAngle, lastTileMeta.isReversed());
 
                     if (removeColorTrackEvents) {
-                        newTiles.forEach(newTile -> {
-                            newTile.getActions(EventType.RECOLOR_TRACK).clear();
-                            newTile.getActions(EventType.COLOR_TRACK).clear();
+                        newTileBuilders.forEach(newTileBuilder -> {
+                            newTileBuilder.removeActions(EventType.RECOLOR_TRACK);
+                            newTileBuilder.removeActions(EventType.COLOR_TRACK);
                         });
                     }
 
                     for (int i = 1; i < pseudo; i++) {
-                        newTiles.add(new Tile(currStaticAngle));
-                        newTiles.add(new Tile(ANGLE_MID_TILE));
+                        newTileBuilders.add(new Tile.Builder().angle(currStaticAngle));
+                        newTileBuilders.add(new Tile.Builder().angle(ANGLE_MID_TILE));
                         currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, eachHitTravelAngle, lastTileMeta.isReversed());
                         currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, 0, lastTileMeta.isReversed());
                     }
 
-                    return newTiles;
+                    return newTileBuilders;
                 });
     }
 }

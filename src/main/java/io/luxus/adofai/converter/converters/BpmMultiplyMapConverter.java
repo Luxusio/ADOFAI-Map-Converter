@@ -54,6 +54,7 @@ public class BpmMultiplyMapConverter implements MapConverter {
         double multiplier = (double) args[0];
 
         return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
-                tile -> tile.getTileMeta().getTravelAngle() * multiplier);
+                tile -> tile.getTileMeta().getTravelAngle() * multiplier,
+                noop -> {});
     }
 }

@@ -53,35 +53,34 @@ public class AllMidspinMapConverter implements MapConverter {
         int midspinAmount = (int) args[0];
 
         return MapConverterBase.convert(customLevel, false,
-                new Function<MapConverterBase.ApplyEach, List<Tile>>() {
+                new Function<MapConverterBase.ApplyEach, List<Tile.Builder>>() {
 
                     private double staticAngle = AngleHelper.getNextStaticAngle(0.0, TileMeta.calculateTotalTravelAngle(getSameTimingTiles(customLevel.getTiles(), 0)), false);
 
                     @Override
-                    public List<Tile> apply(MapConverterBase.ApplyEach applyEach) {
+                    public List<Tile.Builder> apply(MapConverterBase.ApplyEach applyEach) {
 
                         List<Tile> oneTimingTiles = applyEach.getOneTimingTiles();
                         TileMeta lastTileMeta = oneTimingTiles.get(oneTimingTiles.size() - 1).getTileMeta();
                         double travelAngle = TileMeta.calculateTotalTravelAngle(oneTimingTiles);
 
                         // create new tiles
-                        List<Tile> newTiles = new ArrayList<>(midspinAmount + 1);
-                        newTiles.add(new Tile(staticAngle));
+                        List<Tile.Builder> newTileBuilders = new ArrayList<>(midspinAmount + 1);
+                        newTileBuilders.add(new Tile.Builder().angle(staticAngle));
                         for (int i = 0; i < midspinAmount; i++) {
                             staticAngle = AngleHelper.getNextStaticAngle(staticAngle, 0.0, lastTileMeta.isReversed());
-                            newTiles.add(new Tile(ANGLE_MID_TILE));
+                            newTileBuilders.add(new Tile.Builder().angle(ANGLE_MID_TILE));
                         }
                         staticAngle = AngleHelper.getNextStaticAngle(staticAngle, travelAngle, lastTileMeta.isReversed());
 
                         // add events to new tiles
                         for (int i = 0; i < oneTimingTiles.size(); i++) {
                             Tile timingTile = oneTimingTiles.get(i);
-                            Tile newTile = newTiles.get(Math.min(i, newTiles.size() - 1));
-
-                            TileHelper.combineTile(newTile, timingTile);
+                            newTileBuilders.get(Math.min(i, newTileBuilders.size() - 1))
+                                    .combineTile(timingTile);
                         }
 
-                        return newTiles;
+                        return newTileBuilders;
                     }
                 });
     }

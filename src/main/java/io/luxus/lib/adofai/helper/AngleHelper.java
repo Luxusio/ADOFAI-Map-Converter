@@ -1,11 +1,11 @@
 package io.luxus.lib.adofai.helper;
 
+import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleExclude360;
-import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngleInclude360;
+import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
 public class AngleHelper {
 
@@ -16,17 +16,16 @@ public class AngleHelper {
         private final double currTravelAngle;
     }
 
-    public static Result convert(double prevStaticAngle, Double currAngle, Double nextAngle, boolean currReversed) {
-        return convert(prevStaticAngle, currAngle, nextAngle, currReversed, currAngle != ANGLE_MID_TILE);
-    }
-
-    public static Result convert(double prevStaticAngle, Double currAngle, Double nextAngle, boolean currReversed, boolean currNotNone) {
-
-        double currStaticAngle = currAngle == ANGLE_MID_TILE ? prevStaticAngle : currAngle;
+    public static Result calculateAngleData(double prevStaticAngle, Double currAngle, Double nextAngle, boolean currReversed) {
+        double currStaticAngle = isMidAngle(currAngle) ? prevStaticAngle : currAngle;
         double currTravelAngle;
 
-        if (nextAngle == ANGLE_MID_TILE) {
+        if (isMidAngle(nextAngle)) {
             currTravelAngle = 0.0;
+            if (isMidAngle(currAngle)) {
+                currStaticAngle += 180;
+                currStaticAngle = generalizeAngle(currStaticAngle);
+            }
         }
         else {
             currTravelAngle = currStaticAngle - nextAngle;
@@ -34,13 +33,13 @@ public class AngleHelper {
                 currTravelAngle = -currTravelAngle;
             }
 
-            if (currNotNone) {
+            if (!isMidAngle(currAngle)) {
                 currTravelAngle += 180;
             }
 
-            currTravelAngle = generalizeAngleInclude360(currTravelAngle);
+            currTravelAngle = generalizeAngle(currTravelAngle);
+            currTravelAngle = currTravelAngle == 0.0 ? 360.0 : currTravelAngle;
         }
-
         return new Result(currStaticAngle, currTravelAngle);
     }
 
@@ -51,7 +50,12 @@ public class AngleHelper {
             staticAngle = staticAngle - relativeAngle + 180;
         }
 
-        return generalizeAngleExclude360(staticAngle);
+        return generalizeAngle(staticAngle);
+    }
+
+    public static boolean isMidAngle(Double angle) {
+        return ANGLE_MID_TILE == null ? angle == null :
+                NumberUtil.fuzzyEquals(ANGLE_MID_TILE, angle);
     }
 
 }
