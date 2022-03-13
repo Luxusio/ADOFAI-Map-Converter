@@ -14,15 +14,15 @@ public class Flash extends Action {
 	private final Double duration;
 	private final Plane plane;
 	private final String startColor;
-	private final Long startOpacity;
+	private final Double startOpacity;
 	private final String endColor;
-	private final Long endOpacity;
+	private final Double endOpacity;
 	private final Double angleOffset;
 	private final Ease ease;
 	private final String eventTag;
 
-	private Flash(Double duration, Plane plane, String startColor, Long startOpacity, String endColor, Long endOpacity, Double angleOffset, Ease ease, String eventTag) {
-		super(EventType.FLASH);
+	private Flash(Boolean active, Double duration, Plane plane, String startColor, Double startOpacity, String endColor, Double endOpacity, Double angleOffset, Ease ease, String eventTag) {
+		super(EventType.FLASH, active);
 		this.duration = duration;
 		this.plane = plane;
 		this.startColor = startColor;
@@ -41,9 +41,9 @@ public class Flash extends Action {
 		private Double duration = 1.0;
 		private Plane plane = Plane.BACKGROUND;
 		private String startColor = "ffffff";
-		private Long startOpacity = 100L;
+		private Double startOpacity = 100.0;
 		private String endColor = "ffffff";
-		private Long endOpacity = 0L;
+		private Double endOpacity = 0.0;
 		private Double angleOffset = 0.0;
 		private Ease ease = Ease.LINEAR;
 		private String eventTag = "";
@@ -74,7 +74,7 @@ public class Flash extends Action {
 		 */
 		@Override
 		public Flash build() {
-			return new Flash(duration, plane, startColor, startOpacity, endColor, endOpacity, angleOffset, ease, eventTag);
+			return new Flash(active, duration, plane, startColor, startOpacity, endColor, endOpacity, angleOffset, ease, eventTag);
 		}
 
 		/**
@@ -143,7 +143,7 @@ public class Flash extends Action {
 		 * @return self
 		 * @throws NullPointerException when startOpacity is null
 		 */
-		public Builder startOpacity(Long startOpacity) {
+		public Builder startOpacity(Double startOpacity) {
 			Objects.requireNonNull(startOpacity);
 			this.startOpacity = startOpacity;
 			return self();
@@ -169,7 +169,7 @@ public class Flash extends Action {
 		 * @return self
 		 * @throws NullPointerException when endOpacity is null
 		 */
-		public Builder endOpacity(Long endOpacity) {
+		public Builder endOpacity(Double endOpacity) {
 			Objects.requireNonNull(endOpacity);
 			this.endOpacity = endOpacity;
 			return self();

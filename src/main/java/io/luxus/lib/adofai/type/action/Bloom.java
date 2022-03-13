@@ -1,5 +1,6 @@
 package io.luxus.lib.adofai.type.action;
 
+import io.luxus.lib.adofai.type.Ease;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.Toggle;
 import io.luxus.lib.adofai.util.StringJsonUtil;
@@ -13,18 +14,22 @@ import java.util.Objects;
 public class Bloom extends Action {
 
 	private final Toggle enabled;
-	private final Long threshold;
-	private final Long intensity;
+	private final Double threshold;
+	private final Double intensity;
 	private final String color;
+	private final Double duration;
+	private final Ease ease;
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private Bloom(Toggle enabled, Long threshold, Long intensity, String color, Double angleOffset, String eventTag) {
-		super(EventType.BLOOM);
+	private Bloom(Boolean active, Toggle enabled, Double threshold, Double intensity, String color, Double duration, Ease ease, Double angleOffset, String eventTag) {
+		super(EventType.BLOOM, active);
 		this.enabled = enabled;
 		this.threshold = threshold;
 		this.intensity = intensity;
 		this.color = color;
+		this.duration = duration;
+		this.ease = ease;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
 	}
@@ -34,9 +39,11 @@ public class Bloom extends Action {
 	public static final class Builder extends Action.Builder<Builder> {
 
 		private Toggle enabled = Toggle.ENABLED;
-		private Long threshold = 50L;
-		private Long intensity = 100L;
+		private Double threshold = 50.0;
+		private Double intensity = 100.0;
 		private String color = "ffffff";
+		private Double duration = 0.0;
+		private Ease ease = Ease.LINEAR;
 		private Double angleOffset = 0.0;
 		private String eventTag = "";
 
@@ -52,6 +59,8 @@ public class Bloom extends Action {
 					.threshold(src.threshold)
 					.intensity(src.intensity)
 					.color(src.color)
+					.duration(src.duration)
+					.ease(src.ease)
 					.angleOffset(src.angleOffset)
 					.eventTag(src.eventTag);
 		}
@@ -63,7 +72,7 @@ public class Bloom extends Action {
 		 */
 		@Override
 		public Bloom build() {
-			return new Bloom(enabled, threshold, intensity, color, angleOffset, eventTag);
+			return new Bloom(active, enabled, threshold, intensity, color, duration, ease, angleOffset, eventTag);
 		}
 
 		/**
@@ -106,7 +115,7 @@ public class Bloom extends Action {
 		 * @return self
 		 * @throws NullPointerException when threshold is null
 		 */
-		public Builder threshold(Long threshold) {
+		public Builder threshold(Double threshold) {
 			Objects.requireNonNull(threshold);
 			this.threshold = threshold;
 			return self();
@@ -119,7 +128,7 @@ public class Bloom extends Action {
 		 * @return self
 		 * @throws NullPointerException when intensity is null
 		 */
-		public Builder intensity(Long intensity) {
+		public Builder intensity(Double intensity) {
 			Objects.requireNonNull(intensity);
 			this.intensity = intensity;
 			return self();
@@ -152,6 +161,32 @@ public class Bloom extends Action {
 		public Builder angleOffset(Double angleOffset) {
 			Objects.requireNonNull(angleOffset);
 			this.angleOffset = angleOffset;
+			return self();
+		}
+
+		/**
+		 * setter of duration
+		 *
+		 * @param duration duration of Bloom Event
+		 * @return self
+		 * @throws NullPointerException when duration is null
+		 */
+		public Builder duration(Double duration) {
+			Objects.requireNonNull(duration);
+			this.duration = duration;
+			return self();
+		}
+
+		/**
+		 * setter of ease
+		 *
+		 * @param ease ease of Bloom Event
+		 * @return self
+		 * @throws NullPointerException when ease is null
+		 */
+		public Builder ease(Ease ease) {
+			Objects.requireNonNull(ease);
+			this.ease = ease;
 			return self();
 		}
 

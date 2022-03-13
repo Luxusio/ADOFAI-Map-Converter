@@ -13,8 +13,8 @@ public class SetSpeed extends Action {
 	private final Double beatsPerMinute;
 	private final Double bpmMultiplier;
 	
-	private SetSpeed(SpeedType speedType, Double beatsPerMinute, Double bpmMultiplier) {
-		super(EventType.SET_SPEED);
+	private SetSpeed(Boolean active, SpeedType speedType, Double beatsPerMinute, Double bpmMultiplier) {
+		super(EventType.SET_SPEED, active);
 		this.speedType = speedType;
 		this.beatsPerMinute = beatsPerMinute;
 		this.bpmMultiplier = bpmMultiplier;
@@ -48,7 +48,7 @@ public class SetSpeed extends Action {
 		 */
 		@Override
 		public SetSpeed build() {
-			return new SetSpeed(speedType, beatsPerMinute, bpmMultiplier);
+			return new SetSpeed(active, speedType, beatsPerMinute, bpmMultiplier);
 		}
 
 		/**

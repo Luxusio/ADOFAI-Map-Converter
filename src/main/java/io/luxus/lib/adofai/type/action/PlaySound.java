@@ -18,8 +18,8 @@ public class PlaySound extends Action {
 	private final Long hitsoundVolume;
 	private final Double angleOffset;
 
-	private PlaySound(HitSound hitsound, Long hitsoundVolume, Double angleOffset) {
-		super(EventType.PLAY_SOUND);
+	private PlaySound(Boolean active, HitSound hitsound, Long hitsoundVolume, Double angleOffset) {
+		super(EventType.PLAY_SOUND, active);
 		this.hitsound = hitsound;
 		this.hitsoundVolume = hitsoundVolume;
 		this.angleOffset = angleOffset;
@@ -53,7 +53,7 @@ public class PlaySound extends Action {
 		 */
 		@Override
 		public PlaySound build() {
-			return new PlaySound(hitsound, hitsoundVolume, angleOffset);
+			return new PlaySound(active, hitsound, hitsoundVolume, angleOffset);
 		}
 
 		/**

@@ -14,8 +14,8 @@ public class RepeatEvents extends Action {
 	private final Double interval;
 	private final String tag;
 
-	private RepeatEvents(Long repetitions, Double interval, String tag) {
-		super(EventType.REPEAT_EVENTS);
+	private RepeatEvents(Boolean active, Long repetitions, Double interval, String tag) {
+		super(EventType.REPEAT_EVENTS, active);
 		this.repetitions = repetitions;
 		this.interval = interval;
 		this.tag = tag;
@@ -49,7 +49,7 @@ public class RepeatEvents extends Action {
 		 */
 		@Override
 		public RepeatEvents build() {
-			return new RepeatEvents(repetitions, interval, tag);
+			return new RepeatEvents(active, repetitions, interval, tag);
 		}
 
 		/**

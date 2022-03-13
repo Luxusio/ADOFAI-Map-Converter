@@ -15,8 +15,8 @@ public class AnimateTrack extends Action {
 	private final TrackDisappearAnimation trackDisappearAnimation;
 	private final Double beatsBehind;
 
-	private AnimateTrack(TrackAnimation trackAnimation, Double beatsAhead, TrackDisappearAnimation trackDisappearAnimation, Double beatsBehind) {
-		super(EventType.ANIMATE_TRACK);
+	private AnimateTrack(Boolean active, TrackAnimation trackAnimation, Double beatsAhead, TrackDisappearAnimation trackDisappearAnimation, Double beatsBehind) {
+		super(EventType.ANIMATE_TRACK, active);
 		this.trackAnimation = trackAnimation;
 		this.beatsAhead = beatsAhead;
 		this.trackDisappearAnimation = trackDisappearAnimation;
@@ -53,7 +53,7 @@ public class AnimateTrack extends Action {
 		 */
 		@Override
 		public AnimateTrack build() {
-			return new AnimateTrack(trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
+			return new AnimateTrack(active, trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
 		}
 
 		/**

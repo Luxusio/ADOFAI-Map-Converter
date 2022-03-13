@@ -45,7 +45,7 @@ class MapDataTest {
     @Test
     void testWriteLevel() throws Exception {
         // given
-        String path = "./src/test/resources/test/r77-AllEffects.adofai";
+        String path = "./src/test/resources/level/all-r84.adofai";
         JsonNode node = new ObjectMapper().readTree(StringJsonUtil.fixJsonString(CustomLevelParser.readString(new File(path))));
 
         // when
@@ -53,6 +53,7 @@ class MapDataTest {
         assert customLevel != null;
         String result = CustomLevelFactory.write(customLevel);
 
+        System.out.println("result = " + result);
         // then
         assertEquals(node, new ObjectMapper().readTree(result));
 

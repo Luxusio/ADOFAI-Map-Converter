@@ -21,9 +21,9 @@ public class ColorTrack extends Action {
 	private final String trackTexture;
 	private final Double trackTextureScale;
 
-	public ColorTrack(TrackColorType trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration, TrackColorPulse trackColorPulse, Long trackPulseLength, TrackStyle trackStyle,
+	public ColorTrack(Boolean active, TrackColorType trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration, TrackColorPulse trackColorPulse, Long trackPulseLength, TrackStyle trackStyle,
 					  String trackTexture, Double trackTextureScale) {
-		super(EventType.COLOR_TRACK);
+		super(EventType.COLOR_TRACK, active);
 		this.trackColorType = trackColorType;
 		this.trackColor = trackColor;
 		this.secondaryTrackColor = secondaryTrackColor;
@@ -75,7 +75,7 @@ public class ColorTrack extends Action {
 		 */
 		@Override
 		public ColorTrack build() {
-			return new ColorTrack(trackColorType, trackColor, secondaryTrackColor, trackColorAnimDuration, trackColorPulse,
+			return new ColorTrack(active, trackColorType, trackColor, secondaryTrackColor, trackColorAnimDuration, trackColorPulse,
 					trackPulseLength, trackStyle, trackTexture, trackTextureScale);
 		}
 

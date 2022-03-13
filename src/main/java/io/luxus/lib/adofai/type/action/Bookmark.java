@@ -12,8 +12,8 @@ import java.util.Objects;
 @ToString
 public class Bookmark extends Action {
 
-	private Bookmark() {
-		super(EventType.BOOKMARK);
+	private Bookmark(Boolean active) {
+		super(EventType.BOOKMARK, active);
 	}
 
 	@Getter
@@ -42,7 +42,7 @@ public class Bookmark extends Action {
 		 */
 		@Override
 		public Bookmark build() {
-			return new Bookmark();
+			return new Bookmark(active);
 		}
 
 		/**

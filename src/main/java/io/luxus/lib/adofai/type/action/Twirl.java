@@ -8,8 +8,8 @@ import lombok.ToString;
 @ToString
 public class Twirl extends Action {
 	
-	private Twirl() {
-		super(EventType.TWIRL);
+	private Twirl(Boolean active) {
+		super(EventType.TWIRL, active);
 	}
 
 	@Getter
@@ -33,7 +33,7 @@ public class Twirl extends Action {
 		 */
 		@Override
 		public Twirl build() {
-			return new Twirl();
+			return new Twirl(active);
 		}
 
 		/**

@@ -15,14 +15,14 @@ import java.util.Objects;
 public class ShakeScreen extends Action {
 
 	private final Double duration;
-	private final Long strength;
-	private final Long intensity;
+	private final Double strength;
+	private final Double intensity;
 	private final Toggle fadeOut;
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private ShakeScreen(Double duration, Long strength, Long intensity, Toggle fadeOut, Double angleOffset, String eventTag) {
-		super(EventType.SHAKE_SCREEN);
+	private ShakeScreen(Boolean active, Double duration, Double strength, Double intensity, Toggle fadeOut, Double angleOffset, String eventTag) {
+		super(EventType.SHAKE_SCREEN, active);
 		this.duration = duration;
 		this.strength = strength;
 		this.intensity = intensity;
@@ -36,8 +36,8 @@ public class ShakeScreen extends Action {
 	public static final class Builder extends Action.Builder<Builder> {
 
 		private Double duration = 1.0;
-		private Long strength = 100L;
-		private Long intensity = 100L;
+		private Double strength = 100.0;
+		private Double intensity = 100.0;
 		private Toggle fadeOut = Toggle.ENABLED;
 		private Double angleOffset = 0.0;
 		private String eventTag = "";
@@ -65,7 +65,7 @@ public class ShakeScreen extends Action {
 		 */
 		@Override
 		public ShakeScreen build() {
-			return new ShakeScreen(duration, strength, intensity, fadeOut, angleOffset, eventTag);
+			return new ShakeScreen(active, duration, strength, intensity, fadeOut, angleOffset, eventTag);
 		}
 
 		/**
@@ -107,7 +107,7 @@ public class ShakeScreen extends Action {
 		 * @return self
 		 * @throws NullPointerException when strength is null
 		 */
-		public Builder strength(Long strength) {
+		public Builder strength(Double strength) {
 			Objects.requireNonNull(strength);
 			this.strength = strength;
 			return this;
@@ -119,7 +119,7 @@ public class ShakeScreen extends Action {
 		 * @return self
 		 * @throws NullPointerException when intensity is null
 		 */
-		public Builder intensity(Long intensity) {
+		public Builder intensity(Double intensity) {
 			Objects.requireNonNull(intensity);
 			this.intensity = intensity;
 			return this;

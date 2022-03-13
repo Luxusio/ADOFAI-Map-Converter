@@ -23,10 +23,10 @@ public class ChangeTrack extends Action {
 	private final TrackDisappearAnimation trackDisappearAnimation;
 	private final Double beatsBehind;
 
-	private ChangeTrack(TrackColorType trackColorType, String trackColor, String secondaryTrackColor,
+	private ChangeTrack(Boolean active, TrackColorType trackColorType, String trackColor, String secondaryTrackColor,
 					   Double trackColorAnimDuration, TrackColorPulse trackColorPulse, Long trackPulseLength, TrackStyle trackStyle,
 					   TrackAnimation trackAnimation, Double beatsAhead, TrackDisappearAnimation trackDisappearAnimation, Double beatsBehind) {
-		super(EventType.CHANGE_TRACK);
+		super(EventType.CHANGE_TRACK, active);
 		this.trackColorType = trackColorType;
 		this.trackColor = trackColor;
 		this.secondaryTrackColor = secondaryTrackColor;
@@ -84,7 +84,7 @@ public class ChangeTrack extends Action {
 		 */
 		@Override
 		public ChangeTrack build() {
-			return new ChangeTrack(trackColorType, trackColor, secondaryTrackColor, trackColorAnimDuration, trackColorPulse,
+			return new ChangeTrack(active, trackColorType, trackColor, secondaryTrackColor, trackColorAnimDuration, trackColorPulse,
 					trackPulseLength, trackStyle, trackAnimation, beatsAhead, trackDisappearAnimation, beatsBehind);
 		}
 

@@ -20,8 +20,8 @@ public class ScreenTile extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private ScreenTile(List<Double> tile, Double angleOffset, String eventTag) {
-		super(EventType.SCREEN_TILE);
+	private ScreenTile(Boolean active, List<Double> tile, Double angleOffset, String eventTag) {
+		super(EventType.SCREEN_TILE, active);
 		this.tile = tile;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
@@ -55,7 +55,7 @@ public class ScreenTile extends Action {
 		 */
 		@Override
 		public ScreenTile build() {
-			return new ScreenTile(tile, angleOffset, eventTag);
+			return new ScreenTile(active, tile, angleOffset, eventTag);
 		}
 
 		/**

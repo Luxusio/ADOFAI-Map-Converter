@@ -12,8 +12,8 @@ public class EditorComment extends Action {
 
     private final String comment;
 
-    private EditorComment(String comment) {
-        super(EventType.EDITOR_COMMENT);
+    private EditorComment(Boolean active, String comment) {
+        super(EventType.EDITOR_COMMENT, active);
         this.comment = comment;
     }
 
@@ -41,7 +41,7 @@ public class EditorComment extends Action {
          */
         @Override
         public EditorComment build() {
-            return new EditorComment(comment);
+            return new EditorComment(active, comment);
         }
 
         /**

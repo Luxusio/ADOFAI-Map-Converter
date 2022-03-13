@@ -17,9 +17,9 @@ public class SetConditionalEvents extends Action {
 	private final String missTag;
 	private final String lossTag;
 
-	private SetConditionalEvents(String perfectTag, String hitTag, String barelyTag, String missTag,
+	private SetConditionalEvents(Boolean active, String perfectTag, String hitTag, String barelyTag, String missTag,
 			String lossTag) {
-		super(EventType.SET_CONDITIONAL_EVENTS);
+		super(EventType.SET_CONDITIONAL_EVENTS, active);
 		this.perfectTag = perfectTag;
 		this.hitTag = hitTag;
 		this.barelyTag = barelyTag;
@@ -59,7 +59,7 @@ public class SetConditionalEvents extends Action {
 		 */
 		@Override
 		public SetConditionalEvents build() {
-			return new SetConditionalEvents(perfectTag, hitTag, barelyTag, missTag, lossTag);
+			return new SetConditionalEvents(active, perfectTag, hitTag, barelyTag, missTag, lossTag);
 		}
 
 		/**

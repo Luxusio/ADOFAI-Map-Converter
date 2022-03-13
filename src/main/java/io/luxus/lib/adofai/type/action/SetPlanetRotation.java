@@ -16,8 +16,8 @@ public class SetPlanetRotation extends Action {
 	private final Ease ease;
 	private final Long easeParts;
 
-	private SetPlanetRotation(Ease ease, Long easeParts) {
-		super(EventType.SET_PLANET_ROTATION);
+	private SetPlanetRotation(Boolean active, Ease ease, Long easeParts) {
+		super(EventType.SET_PLANET_ROTATION, active);
 		this.ease = ease;
 		this.easeParts = easeParts;
 	}
@@ -48,7 +48,7 @@ public class SetPlanetRotation extends Action {
 		 */
 		@Override
 		public SetPlanetRotation build() {
-			return new SetPlanetRotation(ease, easeParts);
+			return new SetPlanetRotation(active, ease, easeParts);
 		}
 
 		/**

@@ -62,7 +62,12 @@ public class FlowFactory {
         Iterator<JsonNode> it = node.elements();
         while (it.hasNext()) {
             JsonNode next = it.next();
-            angleData.add(next.asDouble());
+            double angleValue = next.asDouble();
+            if (NumberUtil.fuzzyEquals(angleValue, 999.0)) {
+                angleData.add(ANGLE_MID_TILE);
+            } else {
+                angleData.add(angleValue);
+            }
         }
         return angleData;
     }

@@ -25,10 +25,10 @@ public class RecolorTrack extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private RecolorTrack(Long startTileNum, TilePosition startTilePosition, Long endTileNum, TilePosition endTilePosition,
+	private RecolorTrack(Boolean active, Long startTileNum, TilePosition startTilePosition, Long endTileNum, TilePosition endTilePosition,
 						TrackColorType trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration,
 						TrackColorPulse trackColorPulse, Long trackPulseLength, TrackStyle trackStyle, Double angleOffset, String eventTag) {
-		super(EventType.RECOLOR_TRACK);
+		super(EventType.RECOLOR_TRACK, active);
 		this.startTileNum = startTileNum;
 		this.startTilePosition = startTilePosition;
 		this.endTileNum = endTileNum;
@@ -92,7 +92,7 @@ public class RecolorTrack extends Action {
 		 */
 		@Override
 		public RecolorTrack build() {
-			return new RecolorTrack(startTileNum, startTilePosition, endTileNum, endTilePosition, trackColorType, trackColor,
+			return new RecolorTrack(active, startTileNum, startTilePosition, endTileNum, endTilePosition, trackColorType, trackColor,
 					secondaryTrackColor, trackColorAnimDuration, trackColorPulse, trackPulseLength, trackStyle,
 					angleOffset, eventTag);
 		}

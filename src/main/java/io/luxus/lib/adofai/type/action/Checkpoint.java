@@ -9,8 +9,8 @@ import lombok.ToString;
 @ToString
 public class Checkpoint extends Action {
 	
-	private Checkpoint() {
-		super(EventType.CHECK_POINT);
+	private Checkpoint(Boolean active) {
+		super(EventType.CHECK_POINT, active);
 	}
 
 	@Getter
@@ -34,7 +34,7 @@ public class Checkpoint extends Action {
 		 */
 		@Override
 		public Checkpoint build() {
-			return new Checkpoint();
+			return new Checkpoint(active);
 		}
 
 		/**

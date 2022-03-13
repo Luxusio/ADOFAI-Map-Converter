@@ -23,16 +23,16 @@ public class AddText extends Action {
 	private final DecorationRelativeTo relativeTo;
 	private final List<Double> pivotOffset;
 	private final Double rotation;
-	private final List<Long> scale;
+	private final List<Double> scale;
 	private final String color;
-	private final Long opacity;
+	private final Double opacity;
 	private final Long depth;
-	private final Long parallax;
+	private final List<Double> parallax;
 	private final String tag;
 
-	private AddText(String decText, Font font, List<Double> position, DecorationRelativeTo relativeTo, List<Double> pivotOffset,
-				   Double rotation, List<Long> scale, String color, Long opacity, Long depth, Long parallax, String tag) {
-		super(EventType.ADD_TEXT);
+	private AddText(Boolean active, String decText, Font font, List<Double> position, DecorationRelativeTo relativeTo, List<Double> pivotOffset,
+				   Double rotation, List<Double> scale, String color, Double opacity, Long depth, List<Double> parallax, String tag) {
+		super(EventType.ADD_TEXT, active);
 		this.decText = decText;
 		this.font = font;
 		this.position = position;
@@ -57,11 +57,11 @@ public class AddText extends Action {
 		private DecorationRelativeTo relativeTo = DecorationRelativeTo.TILE;
 		private List<Double> pivotOffset = Arrays.asList(0.0, 0.0);
 		private Double rotation = 0.0;
-		private List<Long> scale = Arrays.asList(100L, 100L);
+		private List<Double> scale = Arrays.asList(100.0, 100.0);
 		private String color = "ffffff";
-		private Long opacity = 100L;
+		private Double opacity = 100.0;
 		private Long depth = -1L;
-		private Long parallax = -1L;
+		private List<Double> parallax = Arrays.asList(-1.0, -1.0);
 		private String tag = "";
 
 		/**
@@ -93,7 +93,7 @@ public class AddText extends Action {
 		 */
 		@Override
 		public AddText build() {
-			return new AddText(decText, font, position, relativeTo, pivotOffset, rotation,
+			return new AddText(active, decText, font, position, relativeTo, pivotOffset, rotation,
 					scale, color, opacity, depth, parallax, tag);
 		}
 
@@ -211,7 +211,7 @@ public class AddText extends Action {
 		 * @param scale scale of AddText Event
 		 * @return self
 		 */
-		public Builder scale(List<Long> scale) {
+		public Builder scale(List<Double> scale) {
 			Objects.requireNonNull(scale);
 			if (scale.size() != 2) {
 				throw new IllegalArgumentException("size of scale must be 2");
@@ -244,7 +244,7 @@ public class AddText extends Action {
 		 * @param opacity opacity of AddText Event
 		 * @return self
 		 */
-		public Builder opacity(Long opacity) {
+		public Builder opacity(Double opacity) {
 			Objects.requireNonNull(opacity);
 			this.opacity = opacity;
 			return self();
@@ -270,8 +270,11 @@ public class AddText extends Action {
 		 * @param parallax parallax of AddText Event
 		 * @return self
 		 */
-		public Builder parallax(Long parallax) {
+		public Builder parallax(List<Double> parallax) {
 			Objects.requireNonNull(parallax);
+			if (parallax.size() != 2) {
+				throw new IllegalArgumentException("size of scale must be 2");
+			}
 			this.parallax = parallax;
 			return self();
 		}

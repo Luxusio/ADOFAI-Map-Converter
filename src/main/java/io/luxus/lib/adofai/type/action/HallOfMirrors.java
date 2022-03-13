@@ -15,8 +15,8 @@ public class HallOfMirrors extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private HallOfMirrors(Toggle enabled, Double angleOffset, String eventTag) {
-		super(EventType.HALL_OF_MIRRORS);
+	private HallOfMirrors(Boolean active, Toggle enabled, Double angleOffset, String eventTag) {
+		super(EventType.HALL_OF_MIRRORS, active);
 		this.enabled = enabled;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
@@ -50,7 +50,7 @@ public class HallOfMirrors extends Action {
 		 */
 		@Override
 		public HallOfMirrors build() {
-			return new HallOfMirrors(enabled, angleOffset, eventTag);
+			return new HallOfMirrors(active, enabled, angleOffset, eventTag);
 		}
 
 		/**

@@ -22,8 +22,8 @@ public class MoveCamera extends Action {
 	private final Ease ease;
 	private final String eventTag;
 
-	private MoveCamera(Double duration, CameraRelativeTo relativeTo, List<Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, String eventTag) {
-		super(EventType.MOVE_CAMERA);
+	private MoveCamera(Boolean active, Double duration, CameraRelativeTo relativeTo, List<Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, String eventTag) {
+		super(EventType.MOVE_CAMERA, active);
 		this.duration = duration;
 		this.relativeTo = relativeTo;
 		this.position = position;
@@ -72,7 +72,7 @@ public class MoveCamera extends Action {
 		 */
 		@Override
 		public MoveCamera build() {
-			return new MoveCamera(duration, relativeTo, position, rotation, zoom, angleOffset, ease, eventTag);
+			return new MoveCamera(active, duration, relativeTo, position, rotation, zoom, angleOffset, ease, eventTag);
 		}
 
 		/**

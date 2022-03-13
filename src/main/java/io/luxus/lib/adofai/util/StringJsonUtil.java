@@ -148,6 +148,7 @@ public class StringJsonUtil {
     public static void writeVar(StringBuilder sb, Object value) {
         if (value instanceof String) {
             sb.append('"').append(((String) value)
+                    .replace("\\", "\\\\")
                     .replace("\n", "\\n")
                     .replace("\"", "\\\"")).append('"');
         }
@@ -155,7 +156,7 @@ public class StringJsonUtil {
             sb.append(value);
         }
         else if (value instanceof Number) {
-            writeNumber(sb, (Number) value);
+            sb.append(toCompactString((Number) value));
         }
         else if (value instanceof List<?>) {
             writeIt(sb, ((List<?>) value).iterator());
@@ -213,23 +214,25 @@ public class StringJsonUtil {
         sb.append(" }");
     }
 
-    public static void writeNumber(StringBuilder sb, Number number) {
-        if (number instanceof Long || number instanceof Integer || number instanceof Byte) {
-            sb.append(number);
-        }
-        else if (number instanceof Double || number instanceof Float) {
-            double doubleNumber = number instanceof Double ? (double) number :
-                    (float) number;
-            long longNumber = (long) doubleNumber;
-            if(NumberUtil.fuzzyEquals(doubleNumber, longNumber)) {
-                sb.append(longNumber);
-            } else {
-                sb.append(String.format("%.6f", doubleNumber));
+    public static String toCompactString(Number number) {
+        String formatNumber = String.format("%.6f", number.doubleValue());
+
+        int subStringTo = formatNumber.length();
+
+        // find not 0 index
+        for (; subStringTo >= 1; subStringTo--) {
+            char c = formatNumber.charAt(subStringTo - 1);
+            if (c != '0') {
+                break;
             }
         }
-        else {
-            throw new IllegalStateException("Unknown number type : (" + number + ")" + number.getClass().getSimpleName());
+
+        // remove . if there's no decimal point
+        if (formatNumber.charAt(subStringTo - 1) == '.') {
+            subStringTo--;
         }
+
+        return formatNumber.substring(0, subStringTo);
     }
 
     public static boolean isRGBCode(String color) {

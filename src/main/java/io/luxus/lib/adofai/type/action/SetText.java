@@ -16,8 +16,8 @@ public class SetText extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private SetText(String decText, String tag, Double angleOffset, String eventTag) {
-		super(EventType.SET_TEXT);
+	private SetText(Boolean active, String decText, String tag, Double angleOffset, String eventTag) {
+		super(EventType.SET_TEXT, active);
 		this.decText = decText;
 		this.tag = tag;
 		this.angleOffset = angleOffset;
@@ -55,7 +55,7 @@ public class SetText extends Action {
 		 */
 		@Override
 		public SetText build() {
-			return new SetText(decText, tag, angleOffset, eventTag);
+			return new SetText(active, decText, tag, angleOffset, eventTag);
 		}
 
 		/**

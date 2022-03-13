@@ -14,8 +14,8 @@ public class SetHitsound extends Action {
 	private final HitSound hitsound;
 	private final Long hitsoundVolume;
 
-	private SetHitsound(GameSound gameSound, HitSound hitsound, Long hitsoundVolume) {
-		super(EventType.SET_HITSOUND);
+	private SetHitsound(Boolean active, GameSound gameSound, HitSound hitsound, Long hitsoundVolume) {
+		super(EventType.SET_HITSOUND, active);
 		this.gameSound = gameSound;
 		this.hitsound = hitsound;
 		this.hitsoundVolume = hitsoundVolume;
@@ -49,7 +49,7 @@ public class SetHitsound extends Action {
 		 */
 		@Override
 		public SetHitsound build() {
-			return new SetHitsound(gameSound, hitsound, hitsoundVolume);
+			return new SetHitsound(active, gameSound, hitsound, hitsoundVolume);
 		}
 
 		/**

@@ -17,8 +17,8 @@ public class ScreenScroll extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	public ScreenScroll(List<Double> scroll, Double angleOffset, String eventTag) {
-		super(EventType.SCREEN_SCROLL);
+	public ScreenScroll(Boolean active, List<Double> scroll, Double angleOffset, String eventTag) {
+		super(EventType.SCREEN_SCROLL, active);
 		this.scroll = scroll;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
@@ -52,7 +52,7 @@ public class ScreenScroll extends Action {
 		 */
 		@Override
 		public ScreenScroll build() {
-			return new ScreenScroll(scroll, angleOffset, eventTag);
+			return new ScreenScroll(active, scroll, angleOffset, eventTag);
 		}
 
 		/**

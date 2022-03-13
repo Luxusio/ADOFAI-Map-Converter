@@ -18,14 +18,14 @@ public class JsonPropertyReader {
     private final Map<String, JsonNode> propertyMap;
 
     public <T1, T2> void read(String name, Consumer<T2> consumer, Function<JsonNode, T1> mapper1, Function<T1, T2> mapper2) {
-        readO(name, o -> o.map(mapper1).map(mapper2)).ifPresent(consumer);
+        read(name, o -> o.map(mapper1).map(mapper2)).ifPresent(consumer);
     }
 
     public <T> void read(String name, Consumer<T> consumer, Function<JsonNode, T> mapper) {
-        readO(name, o -> o.map(mapper)).ifPresent(consumer);
+        read(name, o -> o.map(mapper)).ifPresent(consumer);
     }
 
-    public <T> Optional<T> readO(String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
+    public <T> Optional<T> read(String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
         JsonNode node = propertyMap.remove(name);
         Optional<JsonNode> optional = Optional.ofNullable(node);
         try {
@@ -36,9 +36,12 @@ public class JsonPropertyReader {
             return o;
         } catch (Throwable t) {
             propertyMap.put(name, node);
-            t.printStackTrace();
             throw t;
         }
+    }
+
+    public <T> void readO(String name, Consumer<T> consumer, Function<JsonNode, T> mapper) {
+        consumer.accept(read(name, o -> o.map(mapper)).orElse(null));
     }
 
     public boolean isEmpty() {

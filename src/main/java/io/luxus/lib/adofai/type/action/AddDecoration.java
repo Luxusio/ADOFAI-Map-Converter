@@ -2,6 +2,7 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.DecorationRelativeTo;
 import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.Toggle;
 import io.luxus.lib.adofai.util.ListUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import lombok.Getter;
@@ -15,25 +16,26 @@ public final class AddDecoration extends Action {
 	
 	private final String decorationImage;
 	private final List<Double> position;
-	private final DecorationRelativeTo decorationRelativeTo;
+	private final DecorationRelativeTo relativeTo;
 	private final List<Double> pivotOffset;
 	private final Double rotation;
 	private final List<Double> scale;
 	private final List<Long> tile;
 	private final String color;
-	private final Long opacity;
+	private final Double opacity;
 	private final Long depth;
-	private final Long parallax;
+	private final List<Double> parallax;
 	private final String tag;
+	private final Toggle imageSmoothing;
 	private final String components;
 
-	private AddDecoration(String decorationImage, List<Double> position, DecorationRelativeTo decorationRelativeTo,
+	private AddDecoration(Boolean active, String decorationImage, List<Double> position, DecorationRelativeTo relativeTo,
 						 List<Double> pivotOffset, Double rotation, List<Double> scale, List<Long> tile, String color,
-						 Long opacity, Long depth, Long parallax, String tag, String components) {
-		super(EventType.ADD_DECORATION);
+						  Double opacity, Long depth, List<Double> parallax, String tag, Toggle imageSmoothing, String components) {
+		super(EventType.ADD_DECORATION, active);
 		this.decorationImage = decorationImage;
 		this.position = position;
-		this.decorationRelativeTo = decorationRelativeTo;
+		this.relativeTo = relativeTo;
 		this.pivotOffset = pivotOffset;
 		this.rotation = rotation;
 		this.scale = scale;
@@ -43,6 +45,7 @@ public final class AddDecoration extends Action {
 		this.depth = depth;
 		this.parallax = parallax;
 		this.tag = tag;
+		this.imageSmoothing = imageSmoothing;
 		this.components = components;
 	}
 
@@ -52,16 +55,17 @@ public final class AddDecoration extends Action {
 
 		private String decorationImage = "";
 		private List<Double> position = Arrays.asList(0.0, 0.0);
-		private DecorationRelativeTo decorationRelativeTo = DecorationRelativeTo.TILE;
+		private DecorationRelativeTo relativeTo = DecorationRelativeTo.TILE;
 		private List<Double> pivotOffset = Arrays.asList(0.0, 0.0);
 		private Double rotation = 0.0;
 		private List<Double> scale = Arrays.asList(100.0, 100.0);
 		private List<Long> tile = Arrays.asList(1L, 1L);
 		private String color = "ffffff";
-		private Long opacity = 100L;
+		private Double opacity = 100.0;
 		private Long depth = 0L;
-		private Long parallax = 0L;
+		private List<Double> parallax = Arrays.asList(0.0, 0.0);
 		private String tag = "";
+		private Toggle imageSmoothing = Toggle.ENABLED;
 		private String components = "";
 
 		/**
@@ -74,7 +78,7 @@ public final class AddDecoration extends Action {
 			return self()
 					.decorationImage(src.decorationImage)
 					.position(src.position)
-					.decorationRelativeTo(src.decorationRelativeTo)
+					.relativeTo(src.relativeTo)
 					.pivotOffset(src.pivotOffset)
 					.rotation(src.rotation)
 					.scale(src.scale)
@@ -84,6 +88,7 @@ public final class AddDecoration extends Action {
 					.depth(src.depth)
 					.parallax(src.parallax)
 					.tag(src.tag)
+					.imageSmoothing(src.imageSmoothing)
 					.components(src.components);
 		}
 
@@ -94,8 +99,8 @@ public final class AddDecoration extends Action {
 		 */
 		@Override
 		public AddDecoration build() {
-			return new AddDecoration(decorationImage, position, decorationRelativeTo, pivotOffset, rotation,
-					scale, tile, color, opacity, depth, parallax, tag, components);
+			return new AddDecoration(active, decorationImage, position, relativeTo, pivotOffset, rotation,
+					scale, tile, color, opacity, depth, parallax, tag, imageSmoothing, components);
 		}
 
 		/**
@@ -149,15 +154,15 @@ public final class AddDecoration extends Action {
 		}
 
 		/**
-		 * setter of decorationRelativeTo
+		 * setter of relativeTo
 		 *
 		 * @throws NullPointerException when position is null
-		 * @param decorationRelativeTo decorationRelativeTo of addDecoration event
+		 * @param relativeTo relativeTo of addDecoration event
 		 * @return self
 		 */
-		public Builder decorationRelativeTo(DecorationRelativeTo decorationRelativeTo) {
-			Objects.requireNonNull(decorationRelativeTo);
-			this.decorationRelativeTo = decorationRelativeTo;
+		public Builder relativeTo(DecorationRelativeTo relativeTo) {
+			Objects.requireNonNull(relativeTo);
+			this.relativeTo = relativeTo;
 			return self();
 		}
 
@@ -249,8 +254,8 @@ public final class AddDecoration extends Action {
 		 * @param opacity opacity of addDecoration event
 		 * @return self
 		 */
-		public Builder opacity(Long opacity) {
-			Objects.requireNonNull(depth);
+		public Builder opacity(Double opacity) {
+			Objects.requireNonNull(opacity);
 			this.opacity = opacity;
 			return self();
 		}
@@ -275,8 +280,8 @@ public final class AddDecoration extends Action {
 		 * @param parallax parallax of addDecoration event
 		 * @return self
 		 */
-		public Builder parallax(Long parallax) {
-			Objects.requireNonNull(depth);
+		public Builder parallax(List<Double> parallax) {
+			Objects.requireNonNull(parallax);
 			this.parallax = parallax;
 			return self();
 		}
@@ -289,8 +294,21 @@ public final class AddDecoration extends Action {
 		 * @return self
 		 */
 		public Builder tag(String tag) {
-			Objects.requireNonNull(depth);
+			Objects.requireNonNull(tag);
 			this.tag = tag;
+			return self();
+		}
+
+		/**
+		 * setter of imageSmoothing
+		 *
+		 * @throws NullPointerException when imageSmoothing is null
+		 * @param imageSmoothing imageSmoothing of addDecoration event
+		 * @return self
+		 */
+		public Builder imageSmoothing(Toggle imageSmoothing) {
+			Objects.requireNonNull(imageSmoothing);
+			this.imageSmoothing = imageSmoothing;
 			return self();
 		}
 
@@ -302,7 +320,7 @@ public final class AddDecoration extends Action {
 		 * @return self
 		 */
 		public Builder components(String components) {
-			Objects.requireNonNull(depth);
+			Objects.requireNonNull(components);
 			this.components = components;
 			return self();
 		}

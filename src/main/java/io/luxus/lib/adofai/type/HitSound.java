@@ -27,6 +27,9 @@ public enum HitSound implements JsonParsable {
     HAT_HOUSE("HatHouse"),
     SNARE_HOUSE("SnareHouse"),
     SNARE_VAPOR("SnareVapor"),
+    CLAP_HIT("ClapHit"),
+    CLAP_HIT_ECHO("ClapHitEcho"),
+    REVERB_CLAP("ReverbClap"),
     ;
 
     private final String jsonName;

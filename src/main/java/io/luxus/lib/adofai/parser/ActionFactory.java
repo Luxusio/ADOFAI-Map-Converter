@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static io.luxus.lib.adofai.util.StringJsonUtil.*;
+import static io.luxus.lib.adofai.util.StringJsonUtil.writeVar;
 
 public class ActionFactory {
 
@@ -70,7 +71,7 @@ public class ActionFactory {
     private static Action read(Map<String, JsonNode> map) {
         JsonPropertyReader reader = new JsonPropertyReader(map);
 
-        EventType eventType = reader.readO("eventType", o -> o
+        EventType eventType = reader.read("eventType", o -> o
                         .map(JsonNode::asText)
                         .map(eventTypeMap::get))
                 .orElse(EventType.UNKNOWN);
@@ -79,6 +80,7 @@ public class ActionFactory {
         switch (eventType) {
             case SET_SPEED: {
                 SetSpeed.Builder builder = new SetSpeed.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("speedType", builder::speedType, JsonNode::asText, speedTypeMap::get);
                 reader.read("beatsPerMinute", builder::beatsPerMinute, JsonNode::asDouble);
                 reader.read("bpmMultiplier", builder::bpmMultiplier, JsonNode::asDouble);
@@ -86,25 +88,33 @@ public class ActionFactory {
                 break;
             }
             case TWIRL: {
-                action = new Twirl.Builder().build();
+                Twirl.Builder builder = new Twirl.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
+                action = builder.build();
                 break;
             }
             case BOOKMARK: {
-                action = new Bookmark.Builder().build();
+                Bookmark.Builder builder = new Bookmark.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
+                action = builder.build();
                 break;
             }
             case CHECK_POINT: {
-                action = new Checkpoint.Builder().build();
+                Checkpoint.Builder builder = new Checkpoint.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
+                action = builder.build();
                 break;
             }
             case EDITOR_COMMENT: {
                 EditorComment.Builder builder = new EditorComment.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("comment", builder::comment, JsonNode::asText);
                 action = builder.build();
                 break;
             }
             case CUSTOM_BACKGROUND: {
                 CustomBackground.Builder builder = new CustomBackground.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("color", builder::color, JsonNode::asText);
                 reader.read("bgImage", builder::bgImage, JsonNode::asText);
                 reader.read("imageColor", builder::imageColor, JsonNode::asText);
@@ -120,8 +130,8 @@ public class ActionFactory {
                 break;
             }
             case COLOR_TRACK: {
-
                 ColorTrack.Builder builder = new ColorTrack.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("trackColorType", builder::trackColorType, JsonNode::asText, trackColorTypeMap::get);
                 reader.read("trackColor", builder::trackColor, JsonNode::asText);
                 reader.read("secondaryTrackColor", builder::secondaryTrackColor, JsonNode::asText);
@@ -137,6 +147,7 @@ public class ActionFactory {
             }
             case ANIMATE_TRACK: {
                 AnimateTrack.Builder builder = new AnimateTrack.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("trackAnimation", builder::trackAnimation, JsonNode::asText, trackAnimationMap::get);
                 reader.read("beatsAhead", builder::beatsAhead, JsonNode::asDouble);
                 reader.read("trackDisappearAnimation", builder::trackDisappearAnimation, JsonNode::asText, trackDisappearAnimationMap::get);
@@ -147,23 +158,25 @@ public class ActionFactory {
             }
             case ADD_DECORATION: {
                 AddDecoration.Builder builder = new AddDecoration.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
 
                 // parameter를 읽기 쉽게 해주는 class만들어서 사용하기
-                Stream.of(reader.readO("decorationImage", o -> o.map(JsonNode::asText)),
-                                reader.readO("decText", o -> o.map(JsonNode::asText)))
+                Stream.of(reader.read("decorationImage", o -> o.map(JsonNode::asText)),
+                                reader.read("decText", o -> o.map(JsonNode::asText)))
                         .filter(Optional::isPresent).map(Optional::get)
                         .findFirst().ifPresent(builder::decorationImage);
                 reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
-                reader.read("relativeTo", builder::decorationRelativeTo, JsonNode::asText, decorationRelativeToMap::get);
+                reader.read("relativeTo", builder::relativeTo, JsonNode::asText, decorationRelativeToMap::get);
                 reader.read("pivotOffset", builder::pivotOffset, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
                 reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("tile", builder::tile, nodeToXYListFunc(JsonNode::asLong));
                 reader.read("color", builder::color, JsonNode::asText);
-                reader.read("opacity", builder::opacity, JsonNode::asLong);
+                reader.read("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("depth", builder::depth, JsonNode::asLong);
-                reader.read("parallax", builder::parallax, JsonNode::asLong);
+                reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("tag", builder::tag, JsonNode::asText);
+                reader.read("imageSmoothing", builder::imageSmoothing, JsonNode::asText, toggleMap::get);
                 reader.read("components", builder::components, JsonNode::asText);
 
                 action = builder.build();
@@ -171,12 +184,13 @@ public class ActionFactory {
             }
             case FLASH: {
                 Flash.Builder builder = new Flash.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("duration", builder::duration, JsonNode::asDouble);
                 reader.read("plane", builder::plane, JsonNode::asText, planeMap::get);
                 reader.read("startColor", builder::startColor, JsonNode::asText);
-                reader.read("startOpacity", builder::startOpacity, JsonNode::asLong);
+                reader.read("startOpacity", builder::startOpacity, JsonNode::asDouble);
                 reader.read("endColor", builder::endColor, JsonNode::asText);
-                reader.read("endOpacity", builder::endOpacity, JsonNode::asLong);
+                reader.read("endOpacity", builder::endOpacity, JsonNode::asDouble);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -186,6 +200,7 @@ public class ActionFactory {
             }
             case MOVE_CAMERA: {
                 MoveCamera.Builder builder = new MoveCamera.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("duration", builder::duration, JsonNode::asDouble);
                 reader.read("relativeTo", builder::relativeTo, JsonNode::asText, cameraRelativeToMap::get);
                 reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
@@ -200,6 +215,7 @@ public class ActionFactory {
             }
             case SET_HITSOUND: {
                 SetHitsound.Builder builder = new SetHitsound.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("gameSound", builder::gameSound, JsonNode::asText, gameSoundMap::get);
                 reader.read("hitsound", builder::hitsound, JsonNode::asText, hitSoundMap::get);
                 reader.read("hitsoundVolume", builder::hitsoundVolume, JsonNode::asLong);
@@ -209,6 +225,7 @@ public class ActionFactory {
             }
             case PLAY_SOUND: {
                 PlaySound.Builder builder = new PlaySound.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("hitsound", builder::hitsound, JsonNode::asText, hitSoundMap::get);
                 reader.read("hitsoundVolume", builder::hitsoundVolume, JsonNode::asLong);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
@@ -218,6 +235,7 @@ public class ActionFactory {
             }
             case RECOLOR_TRACK: {
                 RecolorTrack.Builder builder = new RecolorTrack.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
 
                 reader.read("startTile", startTile -> {
                             builder.startTileNum((Long) startTile.get(0));
@@ -248,6 +266,7 @@ public class ActionFactory {
             }
             case MOVE_TRACK: {
                 MoveTrack.Builder builder = new MoveTrack.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
 
                 reader.read("startTile", startTile -> {
                     builder.startTileNum((Long) startTile.get(0));
@@ -264,10 +283,10 @@ public class ActionFactory {
                                 tilePositionMap.get(jsonNode.get(1).asText())));
 
                 reader.read("duration", builder::duration, JsonNode::asDouble);
-                reader.read("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
-                reader.read("rotationOffset", builder::rotationOffset, JsonNode::asDouble);
-                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asLong));
-                reader.read("opacity", builder::opacity, JsonNode::asLong);
+                reader.readO("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("rotationOffset", builder::rotationOffset, JsonNode::asDouble);
+                reader.readO("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -277,9 +296,12 @@ public class ActionFactory {
             }
             case SET_FILTER: {
                 SetFilter.Builder builder = new SetFilter.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("filter", builder::filter, JsonNode::asText, filterMap::get);
                 reader.read("enabled", builder::enabled, JsonNode::asText, toggleMap::get);
                 reader.read("intensity", builder::intensity, JsonNode::asLong);
+                reader.read("duration", builder::duration, JsonNode::asDouble);
+                reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
                 reader.read("disableOthers", builder::disableOthers, JsonNode::asText, toggleMap::get);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -289,6 +311,7 @@ public class ActionFactory {
             }
             case HALL_OF_MIRRORS: {
                 HallOfMirrors.Builder builder = new HallOfMirrors.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("enabled", builder::enabled, JsonNode::asText, toggleMap::get);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -298,9 +321,10 @@ public class ActionFactory {
             }
             case SHAKE_SCREEN: {
                 ShakeScreen.Builder builder = new ShakeScreen.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("duration", builder::duration, JsonNode::asDouble);
-                reader.read("strength", builder::strength, JsonNode::asLong);
-                reader.read("intensity", builder::intensity, JsonNode::asLong);
+                reader.read("strength", builder::strength, JsonNode::asDouble);
+                reader.read("intensity", builder::intensity, JsonNode::asDouble);
                 reader.read("fadeOut", builder::fadeOut, JsonNode::asText, toggleMap::get);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -310,6 +334,7 @@ public class ActionFactory {
             }
             case SET_PLANET_ROTATION: {
                 SetPlanetRotation.Builder builder = new SetPlanetRotation.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
                 reader.read("easeParts", builder::easeParts, JsonNode::asLong);
 
@@ -318,13 +343,17 @@ public class ActionFactory {
             }
             case MOVE_DECORATIONS: {
                 MoveDecorations.Builder builder = new MoveDecorations.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("duration", builder::duration, JsonNode::asDouble);
                 reader.read("tag", builder::tag, JsonNode::asText);
-                reader.read("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
-                reader.read("rotationOffset", builder::rotationOffset, JsonNode::asDouble);
-                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asLong));
-                reader.read("color", builder::color, JsonNode::asText);
-                reader.read("opacity", builder::opacity, JsonNode::asLong);
+                reader.readO("decorationImage", builder::decorationImage, JsonNode::asText);
+                reader.readO("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("rotationOffset", builder::rotationOffset, JsonNode::asDouble);
+                reader.readO("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("color", builder::color, JsonNode::asText);
+                reader.readO("opacity", builder::opacity, JsonNode::asDouble);
+                reader.readO("depth", builder::depth, JsonNode::asLong);
+                reader.readO("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -334,6 +363,7 @@ public class ActionFactory {
             }
             case POSITION_TRACK: {
                 PositionTrack.Builder builder = new PositionTrack.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("editorOnly", builder::editorOnly, JsonNode::asText, toggleMap::get);
 
@@ -342,6 +372,7 @@ public class ActionFactory {
             }
             case REPEAT_EVENTS: {
                 RepeatEvents.Builder builder = new RepeatEvents.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("repetitions", builder::repetitions, JsonNode::asLong);
                 reader.read("interval", builder::interval, JsonNode::asDouble);
                 reader.read("tag", builder::tag, JsonNode::asText);
@@ -351,10 +382,13 @@ public class ActionFactory {
             }
             case BLOOM: {
                 Bloom.Builder builder = new Bloom.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("enabled", builder::enabled, JsonNode::asText, toggleMap::get);
-                reader.read("threshold", builder::threshold, JsonNode::asLong);
-                reader.read("intensity", builder::intensity, JsonNode::asLong);
+                reader.read("threshold", builder::threshold, JsonNode::asDouble);
+                reader.read("intensity", builder::intensity, JsonNode::asDouble);
                 reader.read("color", builder::color, JsonNode::asText);
+                reader.read("duration", builder::duration, JsonNode::asDouble);
+                reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
 
@@ -363,6 +397,7 @@ public class ActionFactory {
             }
             case SET_CONDITIONAL_EVENTS: {
                 SetConditionalEvents.Builder builder = new SetConditionalEvents.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("perfectTag", builder::perfectTag, JsonNode::asText);
                 reader.read("hitTag", builder::hitTag, JsonNode::asText);
                 reader.read("barelyTag", builder::barelyTag, JsonNode::asText);
@@ -374,6 +409,7 @@ public class ActionFactory {
             }
             case SCREEN_TILE: {
                 ScreenTile.Builder builder = new ScreenTile.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("tile", builder::tile, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -383,6 +419,7 @@ public class ActionFactory {
             }
             case SCREEN_SCROLL: {
                 ScreenScroll.Builder builder = new ScreenScroll.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("scroll", builder::scroll, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -392,6 +429,7 @@ public class ActionFactory {
             }
             case ADD_TEXT: {
                 AddText.Builder builder = new AddText.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("decText", builder::decText, JsonNode::asText);
                 reader.read("decText", builder::decText, JsonNode::asText);
                 reader.read("font", builder::font, JsonNode::asText, fontMap::get);
@@ -399,11 +437,11 @@ public class ActionFactory {
                 reader.read("relativeTo", builder::relativeTo, JsonNode::asText, decorationRelativeToMap::get);
                 reader.read("pivotOffset", builder::pivotOffset, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
-                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asLong));
+                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("color", builder::color, JsonNode::asText);
-                reader.read("opacity", builder::opacity, JsonNode::asLong);
+                reader.read("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("depth", builder::depth, JsonNode::asLong);
-                reader.read("parallax", builder::parallax, JsonNode::asLong);
+                reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
                 reader.read("tag", builder::tag, JsonNode::asText);
 
                 action = builder.build();
@@ -411,6 +449,7 @@ public class ActionFactory {
             }
             case SET_TEXT: {
                 SetText.Builder builder = new SetText.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("decText", builder::decText, JsonNode::asText);
                 reader.read("tag", builder::tag, JsonNode::asText);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
@@ -421,6 +460,7 @@ public class ActionFactory {
             }
             case CHANGE_TRACK: {
                 ChangeTrack.Builder builder = new ChangeTrack.Builder();
+                reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("trackColorType", builder::trackColorType, JsonNode::asText, trackColorTypeMap::get);
                 reader.read("trackColor", builder::trackColor, JsonNode::asText);
                 reader.read("secondaryTrackColor", builder::secondaryTrackColor, JsonNode::asText);
@@ -453,6 +493,8 @@ public class ActionFactory {
         startWrite(sb, floor, action.getEventType() != EventType.UNKNOWN ?
                 action.getEventType().getJsonName() :
                 ((UnknownAction) action).getRawData().get("eventType").asText());
+
+        writeVar(sb, "active", action.getActive());
 
         switch (action.getEventType()) {
             case SET_SPEED: {
@@ -511,7 +553,7 @@ public class ActionFactory {
                 AddDecoration e = (AddDecoration) action;
                 writeVar(sb, "decorationImage", e.getDecorationImage());
                 writeVar(sb, "position", e.getPosition());
-                writeVar(sb, "relativeTo", e.getDecorationRelativeTo(), DecorationRelativeTo::getJsonName);
+                writeVar(sb, "relativeTo", e.getRelativeTo(), DecorationRelativeTo::getJsonName);
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
@@ -521,6 +563,7 @@ public class ActionFactory {
                 writeVar(sb, "depth", e.getDepth());
                 writeVar(sb, "parallax", e.getParallax());
                 writeVar(sb, "tag", e.getTag());
+                writeVar(sb, "imageSmoothing", e.getImageSmoothing(), Toggle::getJsonName);
                 writeVar(sb, "components", e.getComponents());
                 break;
             }
@@ -597,6 +640,8 @@ public class ActionFactory {
                 writeVar(sb, "filter", e.getFilter(), Filter::getJsonName);
                 writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
                 writeVar(sb, "intensity", e.getIntensity());
+                writeVar(sb, "duration", e.getDuration());
+                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "disableOthers", e.getDisableOthers(), Toggle::getJsonName);
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
@@ -629,11 +674,14 @@ public class ActionFactory {
                 MoveDecorations e = (MoveDecorations) action;
                 writeVar(sb, "duration", e.getDuration());
                 writeVar(sb, "tag", e.getTag());
+                writeVar(sb, "decorationImage", e.getDecorationImage());
                 writeVar(sb, "positionOffset", e.getPositionOffset());
                 writeVar(sb, "rotationOffset", e.getRotationOffset());
                 writeVar(sb, "scale", e.getScale());
                 writeVar(sb, "color", e.getColor());
                 writeVar(sb, "opacity", e.getOpacity());
+                writeVar(sb, "depth", e.getDepth());
+                writeVar(sb, "parallax", e.getParallax());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "eventTag", e.getEventTag());
@@ -658,6 +706,8 @@ public class ActionFactory {
                 writeVar(sb, "threshold", e.getThreshold());
                 writeVar(sb, "intensity", e.getIntensity());
                 writeVar(sb, "color", e.getColor());
+                writeVar(sb, "duration", e.getDuration());
+                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
@@ -743,3 +793,36 @@ public class ActionFactory {
     }
 
 }
+
+
+/*
+Failed to read action rest={enabled=false}, {"floor":5,"eventType":"SetSpeed","enabled":false,"speedType":"Multiplier","beatsPerMinute":100,"bpmMultiplier":1.1}
+Failed to read action rest={enabled=false}, {"floor":10,"eventType":"Twirl","enabled":false}
+Failed to read action rest={enabled=false}, {"floor":15,"eventType":"Checkpoint","enabled":false}
+Failed to read action rest={enabled=false}, {"floor":42,"eventType":"SetHitsound","enabled":false,"gameSound":"Hitsound","hitsound":"ReverbClap","hitsoundVolume":100}
+Failed to read action rest={enabled=false}, {"floor":47,"eventType":"PlaySound","enabled":false,"hitsound":"Hat","hitsoundVolume":10,"angleOffset":1.1}
+Failed to read action rest={enabled=false}, {"floor":85,"eventType":"SetPlanetRotation","enabled":false,"ease":"InOutFlash","easeParts":1}
+Failed to read action rest={enabled=false}, {"floor":95,"eventType":"ColorTrack","enabled":false,"trackColorType":"Volume","trackColor":"debb7b","secondaryTrackColor":"ffffff","trackColorAnimDuration":2,"trackColorPulse":"None","trackPulseLength":10,"trackStyle":"Standard","trackTexture":"","trackTextureScale":1}
+Failed to read action rest={enabled=false}, {"floor":108,"eventType":"AnimateTrack","enabled":false,"trackAnimation":"Rise","beatsAhead":3,"trackDisappearAnimation":"Scatter_Far","beatsBehind":4}
+Failed to read action rest={enabled=false}, {"floor":124,"eventType":"RecolorTrack","enabled":false,"startTile":[0,"ThisTile"],"endTile":[0,"ThisTile"],"trackColorType":"Single","trackColor":"debb7b","secondaryTrackColor":"ffffff","trackColorAnimDuration":2,"trackColorPulse":"None","trackPulseLength":10,"trackStyle":"Standard","angleOffset":0,"eventTag":""}
+Failed to read action rest={enabled=false}, {"floor":130,"eventType":"MoveTrack","enabled":false,"startTile":[0,"End"],"endTile":[0,"End"],"duration":1,"positionOffset":[0,99.1],"rotationOffset":2.2,"opacity":1.1,"angleOffset":0,"ease":"Linear","eventTag":""}
+Failed to read action rest={enabled=false}, {"floor":135,"eventType":"PositionTrack","enabled":false,"positionOffset":[0.1,0.1],"editorOnly":"Enabled"}
+Failed to read action rest={enabled=false}, {"floor":144,"eventType":"AddDecoration","enabled":false,"decorationImage":"","position":[0,0],"relativeTo":"CameraAspect","pivotOffset":[0,0],"rotation":0,"scale":[100,100],"tile":[1,1],"color":"ffffff","opacity":100,"depth":0,"parallax":[0,0],"tag":"","imageSmoothing":"Enabled","components":""}
+Failed to read action rest={enabled=false}, {"floor":149,"eventType":"MoveDecorations","enabled":false,"duration":1.1,"tag":"asdfasd \" 123b \" bw\"","decorationImage":"1px.png","positionOffset":[1.1,1.1],"rotationOffset":1.1,"scale":[1.1,1.1],"color":"ff0000b7","opacity":1.1,"depth":-3,"parallax":[1.1,1.1],"angleOffset":1.1,"ease":"OutSine","eventTag":"asdb\\\" b\" wcd"}
+Failed to read action rest={enabled=false}, {"floor":159,"eventType":"AddText","enabled":false,"decText":"텍스트","font":"TimesNewRoman","position":[0,0],"relativeTo":"Tile","pivotOffset":[0,0],"rotation":0,"scale":[100,100],"color":"ffffff","opacity":100,"depth":-1,"parallax":[-1,-1],"tag":""}
+Failed to read action rest={enabled=false}, {"floor":164,"eventType":"SetText","enabled":false,"decText":"ffasbwef","tag":"123b\"cw weg\\w\\ca","angleOffset":1.1,"eventTag":"ASCasdc\"ef\\"}
+Failed to read action rest={enabled=false}, {"floor":172,"eventType":"CustomBackground","enabled":false,"color":"000000","bgImage":"1px.png","imageColor":"ffffff","parallax":[100,100],"bgDisplayMode":"Tiled","lockRot":"Disabled","loopBG":"Disabled","unscaledSize":100,"angleOffset":1.1,"eventTag":""}
+Failed to read action rest={enabled=false}, {"floor":177,"eventType":"Flash","enabled":false,"duration":1.1,"plane":"Foreground","startColor":"ffffffff","startOpacity":1.1,"endColor":"ffffffff","endOpacity":1.1,"angleOffset":1.1,"ease":"InSine","eventTag":"asdfasdf123"}
+Failed to read action rest={enabled=false}, {"floor":184,"eventType":"MoveCamera","enabled":false,"duration":1,"relativeTo":"LastPosition","position":[0,0],"rotation":0,"zoom":100,"angleOffset":1.1,"ease":"Linear","eventTag":""}
+Failed to read action rest={enabled=false}, {"floor":224,"eventType":"ShakeScreen","enabled":false,"duration":1.1,"strength":1.1,"intensity":1.1,"fadeOut":"Disabled","angleOffset":1.1,"eventTag":"asdf12"}
+Failed to read action rest={enabled=false}, {"floor":234,"eventType":"ScreenTile","enabled":false,"tile":[1.1,1.1],"angleOffset":1.1,"eventTag":"asfvbw"}
+Failed to read action rest={enabled=false}, {"floor":239,"eventType":"ScreenScroll","enabled":false,"scroll":[1.1,1.1],"angleOffset":1.1,"eventTag":"asdfasdbvwe123"}
+Failed to read action rest={enabled=false}, {"floor":244,"eventType":"RepeatEvents","enabled":false,"repetitions":12,"interval":1.1,"tag":"asdfasdf"}
+Failed to read action rest={enabled=false}, {"floor":249,"eventType":"SetConditionalEvents","enabled":false,"perfectTag":"1231r2vadvasd","hitTag":"wfhy4hrtr","barelyTag":"eg5u5gt\\\\","missTag":"af///ewf\\","lossTag":"asdfb//"}
+Failed to read action rest={enabled=false}, {"floor":254,"eventType":"EditorComment","enabled":false,"comment":"gawefwiofjsoibhaoifowofosad;fos\n<green>asdfasdf</green>\n\n\n\nasbwef\\\\\"\n\n\\\n\\"}
+Failed to read action rest={enabled=false}, {"floor":259,"eventType":"Bookmark","enabled":false}
+SetSpeed, Twirl, Checkpoint, SetHitsound, PlaySound, SetPlanetRotation, ColorTrack, AnimateTrack, RecolorTrack, MoveTrack, PositionTrack, AddDecoration, MoveDecorations, AddText, SetText, CustomBackground, Flash, MoveCamera, ShakeScreen, ScreenTile, ScreenScroll, RepeatEvents, SetConditionalEvents, EditorComment, Bookmark
+
+*/
+
+

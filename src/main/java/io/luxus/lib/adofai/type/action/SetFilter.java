@@ -13,15 +13,19 @@ public class SetFilter extends Action {
 	private final Filter filter;
 	private final Toggle enabled;
 	private final Long intensity;
+	private final Double duration;
+	private final Ease ease;
 	private final Toggle disableOthers;
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private SetFilter(Filter filter, Toggle enabled, Long intensity, Toggle disableOthers, Double angleOffset, String eventTag) {
-		super(EventType.SET_FILTER);
+	private SetFilter(Boolean active, Filter filter, Toggle enabled, Long intensity, Double duration, Ease ease, Toggle disableOthers, Double angleOffset, String eventTag) {
+		super(EventType.SET_FILTER, active);
 		this.filter = filter;
 		this.enabled = enabled;
 		this.intensity = intensity;
+		this.duration = duration;
+		this.ease = ease;
 		this.disableOthers = disableOthers;
 		this.angleOffset = angleOffset;
 		this.eventTag = eventTag;
@@ -34,6 +38,8 @@ public class SetFilter extends Action {
 		private Filter filter = Filter.GRAYSCALE;
 		private Toggle enabled = Toggle.ENABLED;
 		private Long intensity = 100L;
+		private Double duration = 0.0;
+		private Ease ease = Ease.LINEAR;
 		private Toggle disableOthers = Toggle.DISABLED;
 		private Double angleOffset = 0.0;
 		private String eventTag = "";
@@ -49,6 +55,8 @@ public class SetFilter extends Action {
 					.filter(src.filter)
 					.enabled(src.enabled)
 					.intensity(src.intensity)
+					.duration(src.duration)
+					.ease(src.ease)
 					.disableOthers(src.disableOthers)
 					.angleOffset(src.angleOffset)
 					.eventTag(src.eventTag);
@@ -61,7 +69,7 @@ public class SetFilter extends Action {
 		 */
 		@Override
 		public SetFilter build() {
-			return new SetFilter(filter, enabled, intensity, disableOthers, angleOffset, eventTag);
+			return new SetFilter(active, filter, enabled, intensity, duration, ease, disableOthers, angleOffset, eventTag);
 		}
 
 		/**
@@ -120,6 +128,32 @@ public class SetFilter extends Action {
 		public Builder intensity(Long intensity) {
 			Objects.requireNonNull(intensity);
 			this.intensity = intensity;
+			return self();
+		}
+
+		/**
+		 * setter of duration
+		 *
+		 * @param duration duration of SetFilter Event
+		 * @return self
+		 * @throws NullPointerException when duration is null
+		 */
+		public Builder duration(Double duration) {
+			Objects.requireNonNull(duration);
+			this.duration = duration;
+			return self();
+		}
+
+		/**
+		 * setter of intensity
+		 *
+		 * @param ease ease of SetFilter Event
+		 * @return self
+		 * @throws NullPointerException when ease is null
+		 */
+		public Builder ease(Ease ease) {
+			Objects.requireNonNull(ease);
+			this.ease = ease;
 			return self();
 		}
 

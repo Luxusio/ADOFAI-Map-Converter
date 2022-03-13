@@ -11,7 +11,7 @@ public class UnknownAction extends Action {
     private final JsonNode rawData;
 
     public UnknownAction(JsonNode rawData) {
-        super(EventType.UNKNOWN);
+        super(EventType.UNKNOWN, null);
 
         this.rawData = rawData;
     }

@@ -26,8 +26,8 @@ public class CustomBackground extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private CustomBackground(String color, String bgImage, String imageColor, List<Double> parallax, BGDisplayModeType bgDisplayMode, Toggle lockRot, Toggle loopBG, Long unscaledSize, Double angleOffset, String eventTag) {
-		super(EventType.CUSTOM_BACKGROUND);
+	private CustomBackground(Boolean active, String color, String bgImage, String imageColor, List<Double> parallax, BGDisplayModeType bgDisplayMode, Toggle lockRot, Toggle loopBG, Long unscaledSize, Double angleOffset, String eventTag) {
+		super(EventType.CUSTOM_BACKGROUND, active);
 		this.color = color;
 		this.bgImage = bgImage;
 		this.imageColor = imageColor;
@@ -82,7 +82,7 @@ public class CustomBackground extends Action {
 		 */
 		@Override
 		public CustomBackground build() {
-			return new CustomBackground(color, bgImage, imageColor, parallax, bgDisplayMode, lockRot, loopBG,
+			return new CustomBackground(active, color, bgImage, imageColor, parallax, bgDisplayMode, lockRot, loopBG,
 					unscaledSize, angleOffset, eventTag);
 		}
 

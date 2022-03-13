@@ -17,8 +17,8 @@ public class PositionTrack extends Action {
 	private final List<Double> positionOffset;
 	private final Toggle editorOnly;
 
-	private PositionTrack(List<Double> positionOffset, Toggle editorOnly) {
-		super(EventType.POSITION_TRACK);
+	private PositionTrack(Boolean active, List<Double> positionOffset, Toggle editorOnly) {
+		super(EventType.POSITION_TRACK, active);
 		this.positionOffset = positionOffset;
 		this.editorOnly = editorOnly;
 	}
@@ -49,7 +49,7 @@ public class PositionTrack extends Action {
 		 */
 		@Override
 		public PositionTrack build() {
-			return new PositionTrack(positionOffset, editorOnly);
+			return new PositionTrack(active, positionOffset, editorOnly);
 		}
 
 		/**

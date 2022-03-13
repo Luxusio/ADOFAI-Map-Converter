@@ -10,6 +10,8 @@ public enum DecorationRelativeTo implements JsonParsable {
     GLOBAL("Global"),
     RED_PLANET("RedPlanet"),
     BLUE_PLANET("BluePlanet"),
+    CAMERA("Camera"),
+    CAMERA_ASPECT("CameraAspect"),
     ;
 
     private final String jsonName;

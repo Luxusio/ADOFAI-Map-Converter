@@ -34,14 +34,15 @@ public class ListUtil {
      * creates new unmodifiable list.
      * only use to immutable type
      *
-     * @throws NullPointerException when src is null
      * @param src source list of immutable object
      * @param <T> type of list
      * @return created new unmodifiable list
      */
     public static <T> List<T> createNewUnmodifiableList(List<T> src) {
-        Objects.requireNonNull(src);
-        return Collections.unmodifiableList(new ArrayList<>(src));
+        if (src != null) {
+            return Collections.unmodifiableList(new ArrayList<>(src));
+        }
+        return null;
     }
 
     /**
