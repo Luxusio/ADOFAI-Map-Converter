@@ -1,10 +1,14 @@
 package io.luxus.lib.adofai.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ListUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ListUtil {
 
     /**
      * copy array as unmodifiable XY List

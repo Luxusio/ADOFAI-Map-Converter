@@ -1,8 +1,12 @@
 package io.luxus.lib.adofai.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import static io.luxus.lib.adofai.Constants.EPSILON;
 
-public class NumberUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class NumberUtil {
 
     // from google-guava
     public static boolean fuzzyEquals(double a, double b) {

@@ -1,11 +1,14 @@
 package io.luxus.lib.adofai.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.*;
 import java.util.function.Function;
 
-public class StringJsonUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class StringJsonUtil {
 
     public static String fixJsonString(String jsonStr) {
         StringBuilder sb = new StringBuilder(jsonStr.length());
