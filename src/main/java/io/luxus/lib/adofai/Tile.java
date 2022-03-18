@@ -152,11 +152,10 @@ public class Tile {
          * @param eventType the eventType to edit
          * @param function individual edit function
          */
-        @SuppressWarnings("unchecked")
-        public <T extends Action> Builder editActions(EventType eventType, Function<? super T, ? extends T> function) {
+        public <T extends Action> Builder editActions(EventType eventType, Class<T> clazz, Function<? super T, ? extends T> function) {
             List<Action> actions = getActionsModifiable(eventType);
             List<Action> newActionList = actions.stream()
-                    .map(a -> function.apply((T) a))
+                    .map(a -> function.apply(clazz.cast(a)))
                     .collect(Collectors.toList());
 
             actions.clear();

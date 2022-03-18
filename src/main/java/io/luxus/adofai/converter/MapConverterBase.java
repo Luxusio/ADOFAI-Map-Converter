@@ -1,12 +1,11 @@
 package io.luxus.adofai.converter;
 
 import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
+import io.luxus.lib.adofai.type.TilePosition;
 import io.luxus.lib.adofai.type.action.*;
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.type.SpeedType;
 import io.luxus.lib.adofai.type.Toggle;
 import io.luxus.lib.adofai.helper.AngleHelper;
 import io.luxus.lib.adofai.helper.TileHelper;
@@ -16,12 +15,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class MapConverterBase {
 
@@ -118,6 +118,8 @@ public class MapConverterBase {
         List<Tile> newTiles = newCustomLevel.getTiles();
         List<Tile.Builder> newTileBuilders = newCustomLevelBuilder.getTileBuilders();
 
+        List<Integer> oldTileNewTileMap = getOldTileNewTileMap(newTileAmountPairs, oldTiles);
+
         // perceivedBpm
         // temporaryBpm
         // bpm
@@ -132,8 +134,6 @@ public class MapConverterBase {
             List<Tile> timingTiles = getSameTimingTiles(oldTiles, oldTileIdx);
             List<Tile.Builder> newTimingTileBuilders = newTileBuilders.subList(newTileIdx, newTileIdx + newTileAmount);
 
-            double timingTravelAngle = TileMeta.calculateTotalTravelAngle(timingTiles);
-            double newTravelAngle = TileMeta.calculateTotalTravelAngle(newTiles.subList(newTileIdx, newTileIdx + newTileAmount));
 
             newTimingTileBuilders.forEach(builder -> builder.removeActions(EventType.SET_SPEED));
 
@@ -151,6 +151,9 @@ public class MapConverterBase {
             else if (newTileIdx + newTileAmount < newTiles.size()) {
 
                 double timingBpm = timingTiles.get(timingTiles.size() - 1).getTileMeta().getBpm();
+
+                double timingTravelAngle = TileMeta.calculateTotalTravelAngle(timingTiles);
+                double newTravelAngle = TileMeta.calculateTotalTravelAngle(newTiles.subList(newTileIdx, newTileIdx + newTileAmount));
 
                 double multiplyValue = newTravelAngle / timingTravelAngle;
                 double currBpm = timingBpm * multiplyValue;
@@ -175,12 +178,50 @@ public class MapConverterBase {
                 prevBpm = currBpm;
             }
 
+            for (int i = 0; i < newTimingTileBuilders.size(); i++) {
+                final int oldTileNum = oldTileIdx + i;
+                newTimingTileBuilders.get(i)
+                        .editActions(EventType.RECOLOR_TRACK, RecolorTrack.class, a -> new RecolorTrack.Builder().from(a)
+                                .startTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), oldTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
+                                .endTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), oldTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .build());
+            }
 
             newTileIdx += newTileAmount;
         }
 
         return newCustomLevelBuilder.build();
-        //return fixFilterTiming(newCustomLevelBuilder.build());
+    }
+
+    private static List<Integer> getOldTileNewTileMap(List<List<Integer>> newTileAmountPairs, List<Tile> oldTiles) {
+        List<Integer> oldTileNewTileMap = new ArrayList<>(oldTiles.size());
+        int newTileIdx = 0;
+
+        for (List<Integer> newTileAmountPair : newTileAmountPairs) {
+            int oldTileIdx = newTileAmountPair.get(0);
+            int newTileAmount = newTileAmountPair.get(1);
+
+            List<Tile> timingTiles = getSameTimingTiles(oldTiles, oldTileIdx);
+
+            for (int i = 0; i < timingTiles.size(); i++) {
+                oldTileNewTileMap.add(min(newTileIdx + i, newTileIdx + newTileAmount));
+            }
+
+            newTileIdx += newTileAmount;
+        }
+
+        return oldTileNewTileMap;
+    }
+
+    private static Long getTileNum(List<Integer> oldTileNewTileMap, int maxTileNum, int oldTileNum, int relativeTileNum, TilePosition tilePosition) {
+        if (tilePosition == TilePosition.THIS_TILE) {
+            return (long) oldTileNewTileMap.get(max(oldTileNum + relativeTileNum, 0));
+        } else if (tilePosition == TilePosition.START) {
+            return (long) oldTileNewTileMap.get(max(relativeTileNum, 0));
+        } else if (tilePosition == TilePosition.END) {
+            return (long) oldTileNewTileMap.get(min(maxTileNum + relativeTileNum, maxTileNum - 1));
+        }
+        throw new AssertionError();
     }
 
     /**
@@ -212,49 +253,49 @@ public class MapConverterBase {
      */
     private static void fixAction(Tile.Builder tileBuilder, double multiplyValue) {
         tileBuilder
-                .<CustomBackground>editActions(EventType.CUSTOM_BACKGROUND, a -> new CustomBackground.Builder().from(a)
+                .editActions(EventType.CUSTOM_BACKGROUND, CustomBackground.class, a -> new CustomBackground.Builder().from(a)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<AnimateTrack>editActions(EventType.ANIMATE_TRACK, a -> new AnimateTrack.Builder().from(a)
+                .editActions(EventType.ANIMATE_TRACK, AnimateTrack.class, a -> new AnimateTrack.Builder().from(a)
                         .beatsAhead(a.getBeatsAhead() * multiplyValue)
                         .beatsBehind(a.getBeatsBehind() * multiplyValue)
                         .build())
-                .<Flash>editActions(EventType.FLASH, a -> new Flash.Builder().from(a)
+                .editActions(EventType.FLASH, Flash.class, a -> new Flash.Builder().from(a)
                         .duration(a.getDuration() * multiplyValue)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<MoveCamera>editActions(EventType.MOVE_CAMERA, a -> new MoveCamera.Builder().from(a)
+                .editActions(EventType.MOVE_CAMERA, MoveCamera.class, a -> new MoveCamera.Builder().from(a)
                         .duration(a.getDuration() * multiplyValue)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<RecolorTrack>editActions(EventType.RECOLOR_TRACK, a -> new RecolorTrack.Builder().from(a)
+                .editActions(EventType.RECOLOR_TRACK, RecolorTrack.class, a -> new RecolorTrack.Builder().from(a)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<MoveTrack>editActions(EventType.MOVE_TRACK, a -> new MoveTrack.Builder().from(a)
+                .editActions(EventType.MOVE_TRACK, MoveTrack.class, a -> new MoveTrack.Builder().from(a)
                         .duration(a.getDuration() * multiplyValue)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<SetFilter>editActions(EventType.SET_FILTER, a -> new SetFilter.Builder().from(a)
+                .editActions(EventType.SET_FILTER, SetFilter.class, a -> new SetFilter.Builder().from(a)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<HallOfMirrors>editActions(EventType.HALL_OF_MIRRORS, a -> new HallOfMirrors.Builder().from(a)
+                .editActions(EventType.HALL_OF_MIRRORS, HallOfMirrors.class, a -> new HallOfMirrors.Builder().from(a)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<ShakeScreen>editActions(EventType.SHAKE_SCREEN, a -> new ShakeScreen.Builder().from(a)
+                .editActions(EventType.SHAKE_SCREEN, ShakeScreen.class, a -> new ShakeScreen.Builder().from(a)
                         .duration(a.getDuration() * multiplyValue)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<MoveDecorations>editActions(EventType.MOVE_DECORATIONS, a -> new MoveDecorations.Builder().from(a)
+                .editActions(EventType.MOVE_DECORATIONS, MoveDecorations.class, a -> new MoveDecorations.Builder().from(a)
                         .duration(a.getDuration() * multiplyValue)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<RepeatEvents>editActions(EventType.REPEAT_EVENTS, a -> new RepeatEvents.Builder().from(a)
+                .editActions(EventType.REPEAT_EVENTS, RepeatEvents.class, a -> new RepeatEvents.Builder().from(a)
                         .interval(a.getInterval() * multiplyValue)
                         .build())
-                .<Bloom>editActions(EventType.BLOOM, a -> new Bloom.Builder().from(a)
+                .editActions(EventType.BLOOM, Bloom.class, a -> new Bloom.Builder().from(a)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build())
-                .<PlaySound>editActions(EventType.PLAY_SOUND, a -> new PlaySound.Builder().from(a)
+                .editActions(EventType.PLAY_SOUND, PlaySound.class, a -> new PlaySound.Builder().from(a)
                         .angleOffset(a.getAngleOffset() * multiplyValue)
                         .build());
     }
@@ -266,14 +307,14 @@ public class MapConverterBase {
         customLevel.getTiles().stream()
                 .map(Tile::getTileMeta)
                 .forEach(tileMeta -> customLevelBuilder.getTileBuilders().get(tileMeta.getFloor())
-                        .<SetFilter>editActions(EventType.SET_FILTER, a -> {
+                        .editActions(EventType.SET_FILTER, SetFilter.class, a -> {
 
                             double angleOffset = a.getAngleOffset();
 
                             if (a.getDisableOthers() == Toggle.ENABLED &&
                                     (angleOffset > tileMeta.getTravelAngle() ||
                                             NumberUtil.fuzzyEquals(angleOffset, tileMeta.getTravelAngle()))) {
-                                angleOffset = Math.max(angleOffset - 0.0001, 0.0);
+                                angleOffset = max(angleOffset - 0.0001, 0.0);
                             }
 
                             return new SetFilter.Builder().from(a)
