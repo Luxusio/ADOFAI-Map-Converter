@@ -70,9 +70,10 @@ public class TransparentMapConverter implements MapConverter {
 
     private void editOpacityEvents(Tile.Builder tileBuilder, double opacity) {
         tileBuilder.removeActions(EventType.ANIMATE_TRACK);
-        tileBuilder.<MoveTrack>editActions(EventType.MOVE_TRACK, a -> new MoveTrack.Builder().from(a)
-                .opacity(a.getOpacity() == 0 ? 0 : opacity)
-                .build());
+        tileBuilder.editActions(EventType.MOVE_TRACK, MoveTrack.class, a ->
+                new MoveTrack.Builder().from(a)
+                        .opacity(a.getOpacity() == 0 ? 0 : opacity)
+                        .build());
     }
 
 }
