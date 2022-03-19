@@ -243,7 +243,23 @@ class StringJsonUtilTest {
         String result = StringJsonUtil.fixJsonString(wrongJsonStr);
 
         // then
+        JsonNode nodeResult = new ObjectMapper().readTree(result);
+        assertThat(nodeResult).isNotNull();
+    }
 
+
+    @Test
+    public void testComplexEscapeStringJsonTest() throws JsonProcessingException {
+        // given
+        String jsonStr = "[\n" +
+                "\t{ \"eventTag\": \"ASCasdc\\\"ef\\\\\" },\n" +
+                "\t{ \"floor\": 168, }\n" +
+                "]\n";
+
+        // when
+        String result = StringJsonUtil.fixJsonString(jsonStr);
+
+        // then
         JsonNode nodeResult = new ObjectMapper().readTree(result);
         assertThat(nodeResult).isNotNull();
     }

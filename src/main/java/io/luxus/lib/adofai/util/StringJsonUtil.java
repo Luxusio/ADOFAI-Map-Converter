@@ -1,11 +1,14 @@
 package io.luxus.lib.adofai.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.*;
 import java.util.function.Function;
 
-public class StringJsonUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class StringJsonUtil {
 
     public static String fixJsonString(String jsonStr) {
         StringBuilder sb = new StringBuilder(jsonStr.length());
@@ -52,7 +55,7 @@ public class StringJsonUtil {
                     char strC = chars[idx];
                     sb.append(strC);
                     if (strC == '\\') {
-                        escape = true;
+                        escape = !escape;
                     }
                     else if (!escape && strC == '"') {
                         break; // string end
@@ -90,37 +93,6 @@ public class StringJsonUtil {
         }
 
         return sb.toString();
-    }
-
-    public static <T> Function<String, T> getOrThrowFunc(Map<String, T> map) {
-        return name -> {
-            T result = map.get(name);
-            if (result == null) throw new IllegalStateException("Property not found!(" + name + ")");
-            return result;
-        };
-    }
-
-    public static <T1, T2> T2 readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T1> mapper, Function<T1, T2> mapper2) {
-        return readPropertyO(map, name, jsonNode -> jsonNode.map(mapper).map(mapper2)).orElse(null);
-    }
-
-    public static <T> T readProperty(Map<String, JsonNode> map, String name, Function<JsonNode, T> mapper) {
-        return readPropertyO(map, name, jsonNode -> jsonNode.map(mapper)).orElse(null);
-    }
-
-    public static <T> Optional<T> readPropertyO(Map<String, JsonNode> map, String name, Function<Optional<JsonNode>, Optional<T>> mapper) {
-        JsonNode node = map.remove(name);
-        Optional<JsonNode> optional = Optional.ofNullable(node);
-        try {
-            Optional<T> o = mapper.apply(optional);
-            if (node != null && !o.isPresent()) {
-                map.put(name, node);
-            }
-            return o;
-        } catch (Throwable t) {
-            map.put(name, node);
-            throw t;
-        }
     }
 
     public static <R> Function<JsonNode, List<R>> nodeToXYListFunc(Function<? super JsonNode, ? extends R> mapper) {
@@ -179,6 +151,7 @@ public class StringJsonUtil {
     public static void writeVar(StringBuilder sb, Object value) {
         if (value instanceof String) {
             sb.append('"').append(((String) value)
+                    .replace("\\", "\\\\")
                     .replace("\n", "\\n")
                     .replace("\"", "\\\"")).append('"');
         }
@@ -186,7 +159,7 @@ public class StringJsonUtil {
             sb.append(value);
         }
         else if (value instanceof Number) {
-            writeNumber(sb, (Number) value);
+            sb.append(toCompactString((Number) value));
         }
         else if (value instanceof List<?>) {
             writeIt(sb, ((List<?>) value).iterator());
@@ -244,23 +217,33 @@ public class StringJsonUtil {
         sb.append(" }");
     }
 
-    public static void writeNumber(StringBuilder sb, Number number) {
-        if (number instanceof Long || number instanceof Integer || number instanceof Byte) {
-            sb.append(number);
-        }
-        else if (number instanceof Double || number instanceof Float) {
-            double doubleNumber = number instanceof Double ? (double) number :
-                    (float) number;
-            long longNumber = (long) doubleNumber;
-            if(NumberUtil.fuzzyEquals(doubleNumber, longNumber)) {
-                sb.append(longNumber);
-            } else {
-                sb.append(String.format("%.6f", doubleNumber));
+    public static String toCompactString(Number number) {
+        String formatNumber = String.format("%.6f", number.doubleValue());
+
+        int subStringTo = formatNumber.length();
+
+        // find not 0 index
+        for (; subStringTo >= 1; subStringTo--) {
+            char c = formatNumber.charAt(subStringTo - 1);
+            if (c != '0') {
+                break;
             }
         }
-        else {
-            throw new IllegalStateException("Unknown number type : (" + number + ")" + number.getClass().getSimpleName());
+
+        // remove . if there's no decimal point
+        if (formatNumber.charAt(subStringTo - 1) == '.') {
+            subStringTo--;
         }
+
+        return formatNumber.substring(0, subStringTo);
+    }
+
+    public static boolean isRGBCode(String color) {
+        return true;
+    }
+
+    public static boolean isARGBCode(String color) {
+        return true;
     }
 
 }

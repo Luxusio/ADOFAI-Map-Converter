@@ -2,11 +2,8 @@ package io.luxus.lib.adofai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.action.Action;
-import io.luxus.lib.adofai.action.UnknownAction;
-import io.luxus.lib.adofai.action.type.EventType;
+import io.luxus.lib.adofai.type.action.Action;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.ActionFactory;
 import io.luxus.lib.adofai.parser.CustomLevelFactory;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
@@ -16,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,7 +45,7 @@ class MapDataTest {
     @Test
     void testWriteLevel() throws Exception {
         // given
-        String path = "./src/test/resources/test/r77-AllEffects.adofai";
+        String path = "./src/test/resources/level/all-r84.adofai";
         JsonNode node = new ObjectMapper().readTree(StringJsonUtil.fixJsonString(CustomLevelParser.readString(new File(path))));
 
         // when
@@ -57,6 +53,7 @@ class MapDataTest {
         assert customLevel != null;
         String result = CustomLevelFactory.write(customLevel);
 
+        System.out.println("result = " + result);
         // then
         assertEquals(node, new ObjectMapper().readTree(result));
 

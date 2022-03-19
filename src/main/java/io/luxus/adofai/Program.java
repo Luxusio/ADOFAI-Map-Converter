@@ -1,34 +1,32 @@
 package io.luxus.adofai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.luxus.adofai.converter.*;
-import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.parser.CustomLevelParser;
-import io.luxus.lib.adofai.parser.FlowFactory;
-import io.luxus.lib.adofai.util.NumberUtil;
+import io.luxus.adofai.converter.ConverterType;
+import io.luxus.adofai.converter.MapConverterDispatcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Program {
 
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             Program.program(scanner);
-            System.out.println("계속하시려면 엔터키를 눌러주세요.");
-            int read = System.in.read();
         } catch (Throwable t) {
             t.printStackTrace();
         }
+
+        try {
+            System.out.println("계속하시려면 엔터키를 눌러주세요.");
+            int read = System.in.read();
+        } catch (IOException ignored) { }
     }
 
     private static void program(Scanner scanner) {
         System.out.println("A Dance of Fire and Ice 맵 변환기");
-        System.out.println("ver 1.3.1");
+        System.out.println("ver 1.4.0");
         System.out.println("개발자 : Luxus io");
         System.out.println("YouTube : https://www.youtube.com/c/Luxusio");
         System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
@@ -44,123 +42,37 @@ public class Program {
         System.out.println("8. 무변속 맵 변환");
         System.out.println("9. 맵 전체 bpm *배수 변환");
         System.out.println("10. 모든 타일 무작위 bpm 변환");
-        System.out.println("11. 종료");
+        System.out.println("11. 미드스핀 변환");
+        System.out.println("12. 동타 변환");
+        System.out.println("13. 종료");
         System.out.print("입력 : ");
 
         int mode = scanner.nextInt();
         scanner.nextLine();
-        // 3
-        List<Double> angleData = null;
-        CustomLevel patternLevel = null;
-        // 2 3 4 5
-        boolean useCameraOptimization = false;
-        // 4
-        double twirlRate = 0.0;
-        // 6
-        boolean removeDecoration = false;
-        boolean removeTileMove = false;
-        boolean removeCameraEvents = false;
-        boolean removeFlash = false;
-        // 7
-        int opacity = 0;
-        // 8
-        double destBpm = 0.0;
-        // 9
-        double multiplier = 0.0;
 
+        ConverterType converterType =
+                mode == 1 ? ConverterType.OUTER :
+                mode == 2 ? ConverterType.LINEAR :
+                mode == 3 ? ConverterType.SHAPED :
+                mode == 4 ? ConverterType.TWIRL_RATIO :
+                mode == 5 ? ConverterType.NO_EFFECT :
+                mode == 6 ? ConverterType.TRANSPARENCY :
+                mode == 7 ? ConverterType.BPM_VALUE_ONLY :
+                mode == 8 ? ConverterType.NO_SPEED_CHANGE :
+                mode == 9 ? ConverterType.BPM_MULTIPLIER :
+                mode == 10 ? ConverterType.CHAOS :
+                mode == 11 ? ConverterType.MIDSPIN :
+                mode == 12 ? ConverterType.PSEUDO :
+                        null;
 
-        if (mode == 3) {
-            System.out.println("*.adofai 파일 내의 pathData 혹은 angleData 형식으로 입력하여야 합니다*");
-            System.out.print("패턴(혹은 .adofai 파일) : ");
-            String patternStr = scanner.nextLine().trim();
-
-            if (patternStr.endsWith(".adofai")) {
-                File file = new File(patternStr);
-                if (!file.exists()) {
-                    System.err.println("파일이 존재하지 않습니다");
-                    return;
-                }
-
-                try {
-                    patternLevel = CustomLevelParser.read(file);
-                    angleData = patternLevel.getTiles().stream()
-                            .map(Tile::getAngle)
-                            .collect(Collectors.toList());
-                } catch (Throwable t) {
-                    System.err.println("파일 불러오기에 실패했습니다");
-                    t.printStackTrace();
-                    return;
-                }
-            }
-            else {
-
-                angleData = FlowFactory.readPathData(patternStr);
-                if (angleData == null) {
-                    if (patternStr.charAt(0) != '[') {
-                        patternStr = "[" + patternStr;
-                    }
-                    if (patternStr.charAt(patternStr.length() - 1) != ']') {
-                        patternStr = patternStr + "]";
-                    }
-                    try {
-                        angleData = FlowFactory.readAngleData(new ObjectMapper().readTree(patternStr));
-                    } catch (Throwable throwable) {
-                        System.err.println("패턴 읽어오기에 실패했습니다.");
-                        throwable.printStackTrace();
-                        return;
-                    }
-                }
-
-            }
-
-            if (angleData.isEmpty()) {
-                System.err.println("패턴은 비어있을 수 없습니다. 프로그램을 종료합니다.");
-                return;
-            }
-
-        }
-//		else if(mode == 2 || mode == 3 || mode == 4 || mode == 5) {
-//			System.out.print("카메라 최적화 사용(y, n):");
-//			useCameraOptimization = scanner.nextLine().trim().equalsIgnoreCase("y");
-//		}
-        else if (mode == 4) {
-            System.out.print("회전 넣을 비율(0.0~1.0):");
-            twirlRate = scanner.nextDouble();
-            scanner.nextLine();
-        }
-        else if (mode == 5) {
-            System.out.print("장식 제거(y, n):");
-            removeDecoration = scanner.nextLine().trim().equalsIgnoreCase("y");
-            System.out.print("타일이동 제거(y, n):");
-            removeTileMove = scanner.nextLine().trim().equalsIgnoreCase("y");
-            System.out.print("카메라이벤트 제거(y, n):");
-            removeCameraEvents = scanner.nextLine().trim().equalsIgnoreCase("y");
-            System.out.print("플래시 제거(y, n):");
-            removeFlash = scanner.nextLine().trim().equalsIgnoreCase("y");
-        }
-        else if (mode == 6) {
-            System.out.print("투명도(0~100):");
-            opacity = scanner.nextInt();
-            scanner.nextLine();
-        }
-        else if (mode == 8) {
-            System.out.print("목표 BPM:");
-            destBpm = scanner.nextDouble();
-            scanner.nextLine();
-        }
-        else if (mode == 9) {
-            System.out.print("배수:");
-            multiplier = scanner.nextDouble();
-            scanner.nextLine();
-        }
-        else if (mode == 11) {
+        if (converterType == null) {
             System.out.println("프로그램을 종료합니다.");
             return;
         }
-        else if (mode <= 0 || mode > 11) {
-            System.out.println("잘못된 모드입니다. 프로그램을 종료합니다.");
-            return;
-        }
+
+        MapConverterDispatcher dispatcher = new MapConverterDispatcher();
+
+        Object[] args = dispatcher.prepareParameters(converterType, scanner);
 
         System.out.println();
         System.out.println("*all 시 backup.adofai 를 제외한 모든 하위 폴더의 파일을 변환합니다*");
@@ -185,76 +97,8 @@ public class Program {
                 continue;
             }
 
-            try {
-                CustomLevel result;
-                String outPath = path.replace(".adofai", "");
+            dispatcher.convertMapAndSave(path, converterType, args);
 
-                if (mode == 1) {
-                    result = OuterMapConverter.convert(path);
-                    outPath += " Outer.adofai";
-                }
-                else if (mode == 2) {
-                    result = LinearMapConverter.convert(path, useCameraOptimization);
-                    outPath += " Linear.adofai";
-                }
-                else if (mode == 3) {
-                    if (patternLevel == null) {
-                        result = ShapedMapConverter.convert(path, angleData, useCameraOptimization);
-                    } else {
-                        result = MapShapedMapConverter.convert(path, patternLevel, useCameraOptimization);
-                    }
-                    outPath += " Shape.adofai";
-                }
-                else if (mode == 4) {
-
-                    result = TwirlConverter.convert(path, twirlRate, useCameraOptimization);
-
-                    if (NumberUtil.fuzzyEquals(twirlRate, 0.0)) {
-                        outPath += " No Twirl.adofai";
-                    }
-                    else if (NumberUtil.fuzzyEquals(twirlRate, 1.0)) {
-                        outPath += " All Twirl.adofai";
-                    }
-                    else {
-                        outPath += " Twirl rate " + twirlRate + ".adofai";
-                    }
-
-                }
-                else if (mode == 5) {
-                    result = NonEffectConverter.convert(path, removeDecoration, removeTileMove, removeCameraEvents, removeFlash);
-                    outPath +=  "Non-Effect.adofai";
-                }
-                else if (mode == 6) {
-                    result = TransposeMapConverter.convert(path, opacity);
-                    outPath += " Transpose.adofai";
-                }
-                else if (mode == 7) {
-                    result = OnlyBpmSetSpeedConverter.convert(path);
-                    outPath += " OnlyBpm.adofai";
-                }
-                else if (mode == 8) {
-                    result = NoSpeedChangeMapConverter.convert(path, destBpm);
-                    outPath += " NoSpeedChange " + destBpm + "BPM.adofai";
-                }
-                else if (mode == 9) {
-                    result = BpmMultiplyMapConverter.convert(path, multiplier);
-                    outPath += " BpmMultiply x" + multiplier + ".adofai";
-                }
-                else if (mode == 10) {
-                    result = ChaosBpmMapConverter.convert(path);
-                    outPath += " Chaos Bpm.adofai";
-                }
-                else {
-                    System.err.println("잘못된 변환 모드.(" + mode + ")");
-                    return;
-                }
-
-                CustomLevelParser.write(result, outPath);
-
-            } catch (Throwable t) {
-                System.out.println("E> 오류 발생(" + path + ")");
-                t.printStackTrace();
-            }
         }
         System.out.println("complete");
 
