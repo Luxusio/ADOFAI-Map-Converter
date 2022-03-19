@@ -185,12 +185,14 @@ public class ShapedMapConverter implements MapConverter {
 						if (index >= shapeTiles.size()) {
 							index = 0;
 							if (shapeTiles.get(shapeTiles.size() - 1).getTileMeta().isReversed()) {
-								List<Action> twirls = newTileBuilders.get(newTileBuilders.size() - 1).getActions(EventType.TWIRL);
+								Tile.Builder newTileBuilder = newTileBuilders.get(newTileBuilders.size() - 1);
+
+								List<Action> twirls = newTileBuilder.getActions(EventType.TWIRL);
 								if (twirls.isEmpty()) {
-									twirls.add(new Twirl.Builder().build());
+									newTileBuilder.addAction(new Twirl.Builder().build());
 								}
 								else {
-									twirls.clear();
+									newTileBuilder.removeActions(EventType.TWIRL);
 								}
 							}
 						}
