@@ -180,10 +180,11 @@ public class MapConverterBase {
 
             for (int i = 0; i < newTimingTileBuilders.size(); i++) {
                 final int oldTileNum = oldTileIdx + i;
+                final int newTileNum = newTileIdx + i;
                 newTimingTileBuilders.get(i)
                         .editActions(EventType.RECOLOR_TRACK, RecolorTrack.class, a -> new RecolorTrack.Builder().from(a)
-                                .startTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), oldTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
-                                .endTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), oldTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .startTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
+                                .endTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
                                 .build());
             }
 
@@ -213,13 +214,14 @@ public class MapConverterBase {
         return oldTileNewTileMap;
     }
 
-    private static Long getTileNum(List<Integer> oldTileNewTileMap, int maxTileNum, int oldTileNum, int relativeTileNum, TilePosition tilePosition) {
+    private static Long getTileNum(List<Integer> oldTileNewTileMap, int maxOldTileNum, int maxNewTileNum,
+                                   int oldTileNum, int newTileNum, int relativeTileNum, TilePosition tilePosition) {
         if (tilePosition == TilePosition.THIS_TILE) {
-            return (long) oldTileNewTileMap.get(max(oldTileNum + relativeTileNum, 0));
+            return (long) oldTileNewTileMap.get(max(oldTileNum + relativeTileNum, 0)) - newTileNum;
         } else if (tilePosition == TilePosition.START) {
             return (long) oldTileNewTileMap.get(max(relativeTileNum, 0));
         } else if (tilePosition == TilePosition.END) {
-            return (long) oldTileNewTileMap.get(min(maxTileNum + relativeTileNum, maxTileNum - 1));
+            return (long) oldTileNewTileMap.get(min(maxOldTileNum + relativeTileNum, maxOldTileNum - 1)) + maxNewTileNum - maxOldTileNum;
         }
         throw new AssertionError();
     }
