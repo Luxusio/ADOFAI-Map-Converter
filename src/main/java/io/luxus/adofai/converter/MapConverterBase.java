@@ -118,7 +118,8 @@ public class MapConverterBase {
         List<Tile> newTiles = newCustomLevel.getTiles();
         List<Tile.Builder> newTileBuilders = newCustomLevelBuilder.getTileBuilders();
 
-        List<Integer> oldTileNewTileMap = getOldTileNewTileMap(newTileAmountPairs, oldTiles);
+        List<Integer> minimumBoundOldTileNewTileMap = getOldTileNewTileMap(newTileAmountPairs, oldTiles, minimumBoundFunction());
+        List<Integer> maximumBoundOldTileNewTileMap = getOldTileNewTileMap(newTileAmountPairs, oldTiles, maximumBoundFunction());
 
         // perceivedBpm
         // temporaryBpm
@@ -178,13 +179,18 @@ public class MapConverterBase {
                 prevBpm = currBpm;
             }
 
+            // fix tile number based events
             for (int i = 0; i < newTimingTileBuilders.size(); i++) {
                 final int oldTileNum = oldTileIdx + i;
                 final int newTileNum = newTileIdx + i;
                 newTimingTileBuilders.get(i)
                         .editActions(EventType.RECOLOR_TRACK, RecolorTrack.class, a -> new RecolorTrack.Builder().from(a)
-                                .startTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
-                                .endTileNum(getTileNum(oldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .startTileNum(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
+                                .endTileNum(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .build())
+                        .editActions(EventType.MOVE_TRACK, MoveTrack.class, a -> new MoveTrack.Builder().from(a)
+                                .startTileNum(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
+                                .endTileNum(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
                                 .build());
             }
 
@@ -194,7 +200,7 @@ public class MapConverterBase {
         return newCustomLevelBuilder.build();
     }
 
-    private static List<Integer> getOldTileNewTileMap(List<List<Integer>> newTileAmountPairs, List<Tile> oldTiles) {
+    private static List<Integer> getOldTileNewTileMap(List<List<Integer>> newTileAmountPairs, List<Tile> oldTiles, TriFunction<Integer, Integer, Integer, Integer> boundFunction) {
         List<Integer> oldTileNewTileMap = new ArrayList<>(oldTiles.size());
         int newTileIdx = 0;
 
@@ -204,8 +210,10 @@ public class MapConverterBase {
 
             List<Tile> timingTiles = getSameTimingTiles(oldTiles, oldTileIdx);
 
+            int oldTileAmount = timingTiles.size();
+
             for (int i = 0; i < timingTiles.size(); i++) {
-                oldTileNewTileMap.add(min(newTileIdx + i, newTileIdx + newTileAmount));
+                oldTileNewTileMap.add(newTileIdx + boundFunction.apply(oldTileAmount, newTileAmount, i));
             }
 
             newTileIdx += newTileAmount;
@@ -214,16 +222,30 @@ public class MapConverterBase {
         return oldTileNewTileMap;
     }
 
+    private static TriFunction<Integer, Integer, Integer, Integer> minimumBoundFunction() {
+        return (oldTileAmount, newTileAmount, index) ->
+                index * newTileAmount / oldTileAmount;
+    }
+
+    private static TriFunction<Integer, Integer, Integer, Integer> maximumBoundFunction() {
+        return (oldTileAmount, newTileAmount, index) ->
+                (int) Math.ceil(((double) (index + 1) * newTileAmount / oldTileAmount) - 1);
+    }
+
     private static Long getTileNum(List<Integer> oldTileNewTileMap, int maxOldTileNum, int maxNewTileNum,
                                    int oldTileNum, int newTileNum, int relativeTileNum, TilePosition tilePosition) {
         if (tilePosition == TilePosition.THIS_TILE) {
-            return (long) oldTileNewTileMap.get(max(oldTileNum + relativeTileNum, 0)) - newTileNum;
+            return (long) oldTileNewTileMap.get(limitTileNum(oldTileNum + relativeTileNum, maxOldTileNum)) - newTileNum;
         } else if (tilePosition == TilePosition.START) {
-            return (long) oldTileNewTileMap.get(max(relativeTileNum, 0));
+            return (long) oldTileNewTileMap.get(limitTileNum(relativeTileNum, maxOldTileNum));
         } else if (tilePosition == TilePosition.END) {
-            return (long) oldTileNewTileMap.get(min(maxOldTileNum + relativeTileNum, maxOldTileNum - 1)) + maxNewTileNum - maxOldTileNum;
+            return (long) oldTileNewTileMap.get(limitTileNum(maxOldTileNum + relativeTileNum, maxOldTileNum)) + maxNewTileNum - maxOldTileNum;
         }
         throw new AssertionError();
+    }
+
+    private static int limitTileNum(int rawTileNum, int maxTileNum) {
+        return min(max(rawTileNum, 0), maxTileNum - 1);
     }
 
     /**
