@@ -47,10 +47,16 @@ class MapDataTest {
 
     }
 
-    @Test
-    void testWriteLevel() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "src/test/resources/level/all-r77.adofai",
+            "src/test/resources/level/all-r83.adofai",
+            "src/test/resources/level/all-r84.adofai",
+            "src/test/resources/level/all-r91.adofai",
+    })
+    void testWriteLevel(String path) throws Exception {
         // given
-        String path = "./src/test/resources/test/test.adofai";
+        // path
         JsonNode node = new ObjectMapper().readTree(StringJsonUtil.fixJsonString(CustomLevelParser.readString(new File(path))));
 
         // when
@@ -58,10 +64,8 @@ class MapDataTest {
         assert customLevel != null;
         String result = CustomLevelFactory.write(customLevel);
 
-        System.out.println("result = " + result);
         // then
         assertEquals(node, new ObjectMapper().readTree(result));
-
     }
 
 
