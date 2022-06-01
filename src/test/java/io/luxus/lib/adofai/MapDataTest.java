@@ -9,6 +9,8 @@ import io.luxus.lib.adofai.parser.CustomLevelFactory;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.util.Collection;
@@ -18,16 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MapDataTest {
 
-    @Test
-    void testReadLevel() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "src/test/resources/level/all-r77.adofai",
+            "src/test/resources/level/all-r83.adofai",
+            "src/test/resources/level/all-r84.adofai",
+            "src/test/resources/level/all-r91.adofai",
+    })
+    void testReadLevel(String path) throws Exception {
         // given
-        String path = "./src/test/resources/test/test.adofai";
-        JsonNode node = new ObjectMapper().readTree(new File(path));
+        // path
 
         // when
         CustomLevel customLevel = CustomLevelParser.readPath(path);
-        CustomLevel customLevel2 = CustomLevelParser.readPath("./src/test/resources/test/sb.adofai");
-        CustomLevel customLevel3 = CustomLevelParser.readPath("./src/test/resources/test/r77-AllEffects.adofai");
 
         // then
         assertNotNull(customLevel);
@@ -45,7 +50,7 @@ class MapDataTest {
     @Test
     void testWriteLevel() throws Exception {
         // given
-        String path = "./src/test/resources/level/all-r84.adofai";
+        String path = "./src/test/resources/test/test.adofai";
         JsonNode node = new ObjectMapper().readTree(StringJsonUtil.fixJsonString(CustomLevelParser.readString(new File(path))));
 
         // when
