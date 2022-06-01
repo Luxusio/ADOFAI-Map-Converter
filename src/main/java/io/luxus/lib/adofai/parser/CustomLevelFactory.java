@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.EventType;
 
@@ -33,10 +34,10 @@ public class CustomLevelFactory {
 
         LevelSetting.Builder levelSettingBuilder = LevelSettingFactory.read(settingsNode);
 
-        List<Double> angleData = pathDataNode != null ?
+        List<TileAngle> angleData = pathDataNode != null ?
                 FlowFactory.readPathData(pathDataNode) :
                 FlowFactory.readAngleData(angleDataNode);
-        angleData.add(0, 0.0);
+        angleData.add(0, TileAngle.ZERO);
 
         CustomLevel.Builder builder = new CustomLevel.Builder()
                 .levelSettingBuilder(levelSettingBuilder)
@@ -57,7 +58,7 @@ public class CustomLevelFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
 
-        List<Double> angleData = customLevel.getTiles().stream()
+        List<TileAngle> angleData = customLevel.getTiles().stream()
                 .map(Tile::getAngle)
                 .collect(Collectors.toList());
         LevelSetting levelSetting = customLevel.getLevelSetting();

@@ -7,12 +7,11 @@ import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.helper.AngleHelper;
+import io.luxus.lib.adofai.type.TileAngle;
 
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 public class PseudoMapConverter implements MapConverter {
 
@@ -92,8 +91,8 @@ public class PseudoMapConverter implements MapConverter {
                     }
 
                     for (int i = 1; i < pseudo; i++) {
-                        newTileBuilders.add(new Tile.Builder().angle(currStaticAngle));
-                        newTileBuilders.add(new Tile.Builder().angle(ANGLE_MID_TILE));
+                        newTileBuilders.add(new Tile.Builder().angle(TileAngle.createNormal(currStaticAngle)));
+                        newTileBuilders.add(new Tile.Builder().angle(TileAngle.MIDSPIN));
                         currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, eachHitTravelAngle, lastTileMeta.isReversed());
                         currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, 0, lastTileMeta.isReversed());
                     }

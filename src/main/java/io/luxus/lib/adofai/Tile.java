@@ -1,6 +1,7 @@
 package io.luxus.lib.adofai;
 
 import io.luxus.lib.adofai.helper.AngleHelper;
+import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.action.Twirl;
@@ -14,10 +15,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
-import static io.luxus.lib.adofai.helper.AngleHelper.isMidAngle;
-import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
 @ToString
@@ -25,7 +22,7 @@ import static java.util.Collections.unmodifiableList;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Tile {
 
-    private final Double angle;
+    private final TileAngle angle;
     private final Map<EventType, List<Action>> actionMap;
     private final TileMeta tileMeta;
 
@@ -37,7 +34,7 @@ public class Tile {
     @ToString
     public static class Builder {
 
-        private Double angle = 0.0;
+        private TileAngle angle = TileAngle.ZERO;
         private final Map<EventType, List<Action>> actionMap = new EnumMap<>(EventType.class);
 
         public Builder() {
@@ -53,14 +50,9 @@ public class Tile {
                     .actionMap(tile.actionMap);
         }
 
-        public Builder angle(Double angle) {
-            if (isMidAngle(angle)) {
-                this.angle = ANGLE_MID_TILE;
-            }
-            else {
-                Objects.requireNonNull(angle);
-                this.angle = generalizeAngle(angle);
-            }
+        public Builder angle(TileAngle angle) {
+            Objects.requireNonNull(angle);
+            this.angle = angle;
             return self();
         }
 
@@ -171,20 +163,20 @@ public class Tile {
             return actionMap.computeIfAbsent(eventType, k -> new ArrayList<>());
         }
 
-        public Tile buildFirst(LevelSetting levelSetting, Double nextAngle) {
+        public Tile buildFirst(LevelSetting levelSetting, TileAngle nextAngle) {
             TileMeta tileMeta = TileMeta.createFirstTileMeta(actionMap, levelSetting, nextAngle);
             fillActionMapWithEmptyList();
             return new Tile(angle, Collections.unmodifiableMap(actionMap), tileMeta);
         }
 
-        public Tile build(TileMeta prevTileMeta, Double nextAngle) {
+        public Tile build(TileMeta prevTileMeta, TileAngle nextAngle) {
             TileMeta tileMeta = TileMeta.createTileMeta(actionMap, prevTileMeta, angle, nextAngle);
             fillActionMapWithEmptyList();
             return new Tile(angle, Collections.unmodifiableMap(actionMap), tileMeta);
         }
 
         public Tile buildLast(TileMeta prevTileMeta) {
-            TileMeta tileMeta = TileMeta.createTileMeta(actionMap, prevTileMeta, angle, AngleHelper.isMidAngle(angle) ? prevTileMeta.getStaticAngle() : angle);
+            TileMeta tileMeta = TileMeta.createTileMeta(actionMap, prevTileMeta, angle, angle.isMidspin() ? TileAngle.createNormal(prevTileMeta.getStaticAngle()) : angle);
             fillActionMapWithEmptyList();
             return new Tile(angle, Collections.unmodifiableMap(actionMap), tileMeta);
         }
@@ -195,7 +187,7 @@ public class Tile {
             }
         }
 
-        public Double getAngle() {
+        public TileAngle getAngle() {
             return this.angle;
         }
 

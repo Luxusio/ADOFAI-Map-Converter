@@ -3,6 +3,7 @@ package io.luxus.adofai.converter;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
+import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.type.TilePosition;
 import io.luxus.lib.adofai.type.action.*;
 import io.luxus.lib.adofai.type.EventType;
@@ -58,8 +59,8 @@ public class MapConverterBase {
                             Tile.Builder builder = new Tile.Builder().from(tile);
                             tileBuilderConsumer.accept(builder);
 
-                            if (!AngleHelper.isMidAngle(builder.getAngle())) {
-                                builder.angle(currStaticAngle);
+                            if (!builder.getAngle().isMidspin()) {
+                                builder.angle(TileAngle.createNormal(currStaticAngle));
                             }
 
                             if (builder.getActions(EventType.TWIRL).size() % 2 == 1) {

@@ -1,5 +1,6 @@
 package io.luxus.lib.adofai;
 
+import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.action.PositionTrack;
 import io.luxus.lib.adofai.type.action.SetSpeed;
@@ -33,11 +34,11 @@ public class TileMeta {
     private final double editorX;
     private final double editorY;
 
-    public static TileMeta createFirstTileMeta(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, Double nextAngle) {
+    public static TileMeta createFirstTileMeta(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, TileAngle nextAngle) {
         return new TileMeta.Builder(actionMap, levelSetting, nextAngle).build();
     }
 
-    public static TileMeta createTileMeta(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, Double currAngle, Double nextAngle) {
+    public static TileMeta createTileMeta(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, TileAngle currAngle, TileAngle nextAngle) {
         return new TileMeta.Builder(actionMap, prevTileMeta, currAngle, nextAngle).build();
     }
 
@@ -106,7 +107,7 @@ public class TileMeta {
         private double editorX;
         private double editorY;
 
-        private Builder(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, Double nextAngle) {
+        private Builder(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, TileAngle nextAngle) {
             this.floor = 0;
             this.bpm = levelSetting.getBpm();
             this.travelAngle = 360.0;
@@ -118,10 +119,10 @@ public class TileMeta {
             this.editorX = 0.0;
             this.editorY = 0.0;
 
-            update(actionMap, 0.0, 0.0, nextAngle);
+            update(actionMap, 0.0, TileAngle.ZERO, nextAngle);
         }
 
-        private Builder(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, Double currAngle, Double nextAngle) {
+        private Builder(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, TileAngle currAngle, TileAngle nextAngle) {
             this.floor = prevTileMeta.floor + 1;
             this.bpm = prevTileMeta.bpm;
             this.staticAngle = prevTileMeta.staticAngle;
@@ -144,7 +145,7 @@ public class TileMeta {
             this.editorY += y;
         }
 
-        private void update(Map<EventType, List<Action>> actionMap, double staticAngle, Double currAngle, Double nextAngle) {
+        private void update(Map<EventType, List<Action>> actionMap, double staticAngle, TileAngle currAngle, TileAngle nextAngle) {
             List<Action> actions;
 
             actions = actionMap.get(EventType.SET_SPEED);

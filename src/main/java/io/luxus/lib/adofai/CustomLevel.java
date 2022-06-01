@@ -1,6 +1,7 @@
 package io.luxus.lib.adofai;
 
 import io.luxus.lib.adofai.helper.AngleHelper;
+import io.luxus.lib.adofai.type.TileAngle;
 import lombok.*;
 
 import java.util.*;
@@ -50,7 +51,7 @@ public class CustomLevel {
 
             // build first tile
             Tile firstTile = bIt.next()
-                    .buildFirst(levelSetting, tileBuilders.size() == 1 ? 0.0 : tileBuilders.get(1).getAngle());
+                    .buildFirst(levelSetting, tileBuilders.size() == 1 ? TileAngle.ZERO : tileBuilders.get(1).getAngle());
 
             results.add(firstTile);
 
@@ -91,7 +92,7 @@ public class CustomLevel {
             return self();
         }
 
-        public Builder tileFromAngles(List<Double> angles) {
+        public Builder tileFromAngles(List<TileAngle> angles) {
             this.tileBuilders = angles.stream()
                     .map(angle -> new Tile.Builder().angle(angle))
                     .collect(Collectors.toList());

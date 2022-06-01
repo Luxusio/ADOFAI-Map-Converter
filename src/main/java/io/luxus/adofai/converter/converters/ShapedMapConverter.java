@@ -4,23 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.helper.AngleHelper;
-import io.luxus.lib.adofai.type.action.Action;
-import io.luxus.lib.adofai.type.action.Twirl;
-import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.helper.TileHelper;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import io.luxus.lib.adofai.parser.FlowFactory;
+import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.TileAngle;
+import io.luxus.lib.adofai.type.action.Action;
+import io.luxus.lib.adofai.type.action.Twirl;
 
 import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 
 public class ShapedMapConverter implements MapConverter {
@@ -52,7 +48,7 @@ public class ShapedMapConverter implements MapConverter {
 			return new Object[] { sourceStr, patternLevel, null };
 		}
 		else {
-			List<Double> angleData = FlowFactory.readPathData(sourceStr);
+			List<TileAngle> angleData = FlowFactory.readPathData(sourceStr);
 			if (angleData == null) {
 				if (sourceStr.charAt(0) != '[') {
 					sourceStr = "[" + sourceStr;
@@ -75,9 +71,10 @@ public class ShapedMapConverter implements MapConverter {
 
 	@Override
 	public boolean impossible(CustomLevel customLevel, Object... args) {
+		String sourceStr = (String) args[0];
 		CustomLevel shapeLevel = (CustomLevel) args[1];
 		@SuppressWarnings("unchecked")
-		List<Double> shapeAngles = (List<Double>) args[2];
+		List<TileAngle> shapeAngles = (List<TileAngle>) args[2];
 
 		if (shapeLevel != null) {
 			if (shapeLevel.getTiles().size() <= 1) {
@@ -102,6 +99,9 @@ public class ShapedMapConverter implements MapConverter {
 	@Override
 	public String getLevelPostfix(CustomLevel customLevel, Object... args) {
 		String sourceStr = (String) args[0];
+		CustomLevel shapeLevel = (CustomLevel) args[1];
+		@SuppressWarnings("unchecked")
+		List<TileAngle> shapeAngles = (List<TileAngle>) args[2];
 
 		String shapeStr;
 		if (sourceStr != null) {
@@ -110,11 +110,9 @@ public class ShapedMapConverter implements MapConverter {
 					sourceStr;
 		}
 		else {
-			@SuppressWarnings("unchecked")
-			List<Double> angles = (List<Double>) args[2];
-			String angleStr = angles.toString();
-
-			shapeStr = angleStr.substring(1, angleStr.length() - 1);
+			shapeStr = shapeAngles.stream()
+					.map(angle -> angle.isMidspin() ? "!" : String.valueOf(angle.getAngle()))
+					.collect(Collectors.joining(","));
 		}
 
 		return shapeStr + " Shape";
@@ -125,21 +123,19 @@ public class ShapedMapConverter implements MapConverter {
 		if (impossible(customLevel, args)) {
 			return null;
 		}
+		String sourceStr = (String) args[0];
+		CustomLevel shapeLevel = (CustomLevel) args[1];
+		@SuppressWarnings("unchecked")
+		List<TileAngle> shapeAngles = (List<TileAngle>) args[2];
 
-		CustomLevel shapeLevel;
-		if (args[1] == null) {
+		if (shapeLevel == null) {
 
-			@SuppressWarnings("unchecked")
-			List<Tile.Builder> tiles = ((List<Double>) args[2]).stream()
-					.map(angle -> AngleHelper.isMidAngle(angle) ? ANGLE_MID_TILE : angle)
+			List<Tile.Builder> tiles = shapeAngles.stream()
 					.map(angle -> new Tile.Builder().angle(angle))
 					.collect(Collectors.toList());
 
 			tiles.add(0, new Tile.Builder());
 			shapeLevel = new CustomLevel.Builder().tileBuilders(tiles).build();
-		}
-		else {
-			shapeLevel = (CustomLevel) args[1];
 		}
 
 

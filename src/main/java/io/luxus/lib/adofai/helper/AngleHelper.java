@@ -1,10 +1,9 @@
 package io.luxus.lib.adofai.helper;
 
-import io.luxus.lib.adofai.util.NumberUtil;
+import io.luxus.lib.adofai.type.TileAngle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
 public class AngleHelper {
@@ -16,24 +15,24 @@ public class AngleHelper {
         private final double currTravelAngle;
     }
 
-    public static Result calculateAngleData(double prevStaticAngle, Double currAngle, Double nextAngle, boolean currReversed) {
-        double currStaticAngle = isMidAngle(currAngle) ? prevStaticAngle : currAngle;
+    public static Result calculateAngleData(double prevStaticAngle, TileAngle currAngle, TileAngle nextAngle, boolean currReversed) {
+        double currStaticAngle = currAngle.isMidspin() ? prevStaticAngle : currAngle.getAngle();
         double currTravelAngle;
 
-        if (isMidAngle(nextAngle)) {
+        if (nextAngle.isMidspin()) {
             currTravelAngle = 0.0;
-            if (isMidAngle(currAngle)) {
+            if (currAngle.isMidspin()) {
                 currStaticAngle += 180;
                 currStaticAngle = generalizeAngle(currStaticAngle);
             }
         }
         else {
-            currTravelAngle = currStaticAngle - nextAngle;
+            currTravelAngle = currStaticAngle - nextAngle.getAngle();
             if (currReversed) {
                 currTravelAngle = -currTravelAngle;
             }
 
-            if (!isMidAngle(currAngle)) {
+            if (!currAngle.isMidspin()) {
                 currTravelAngle += 180;
             }
 
@@ -51,11 +50,6 @@ public class AngleHelper {
         }
 
         return generalizeAngle(staticAngle);
-    }
-
-    public static boolean isMidAngle(Double angle) {
-        return ANGLE_MID_TILE == null ? angle == null :
-                NumberUtil.fuzzyEquals(ANGLE_MID_TILE, angle);
     }
 
 }
