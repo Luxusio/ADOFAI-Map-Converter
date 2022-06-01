@@ -1,50 +1,34 @@
 package io.luxus.lib.adofai.util;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class NumberUtilTest {
 
-    @Test
-    void generalizeAngleTestNormalRange() {
+    @ParameterizedTest
+    @CsvSource({
+            "0,0",
+            "150,150",
+            "359.99,359.99",
+            "360,0",
+            "480,120",
+            "720,0",
+            "-1,359",
+            "-360,0",
+            "-360.45,359.55",
+    })
+    void generalizeAngleTestNormalRange(double input, double expect) {
         // given
-        double in1 = 0;
-        double in2 = 150;
-        double in3 = 359.99;
+        // input
 
         // when
-        double out1 = NumberUtil.generalizeAngle(in1);
-        double out2 = NumberUtil.generalizeAngle(in2);
-        double out3 = NumberUtil.generalizeAngle(in3);
+        double output = NumberUtil.generalizeAngle(input);
 
         // then
-        Assertions.assertThat(out1).isEqualTo(in1);
-        Assertions.assertThat(out2).isEqualTo(in2);
-        Assertions.assertThat(out3).isEqualTo(in3);
-    }
-
-    @Test
-    void generalizeAngleTestOtherRange() {
-        // given
-        double in1 = -1;
-        double in2 = 360.0;
-        double in3 = 720.0;
-        double in4 = -360.0;
-
-        // when
-        double out1 = NumberUtil.generalizeAngle(in1);
-        double out2 = NumberUtil.generalizeAngle(in2);
-        double out3 = NumberUtil.generalizeAngle(in3);
-        double out4 = NumberUtil.generalizeAngle(in4);
-
-        // then
-        Assertions.assertThat(out1).isEqualTo(in1 + 360.0);
-        Assertions.assertThat(out2).isEqualTo(in2 - 360.0);
-        Assertions.assertThat(out3).isEqualTo(in3 - 720.0);
-        Assertions.assertThat(out4).isEqualTo(in4 + 360.0);
+        assertThat(output).isEqualTo(expect);
     }
 
     @RepeatedTest(100)
@@ -57,7 +41,7 @@ class NumberUtilTest {
         double value = NumberUtil.random(min, range);
 
         // then
-        Assertions.assertThat(value).isGreaterThanOrEqualTo(min)
+        assertThat(value).isGreaterThanOrEqualTo(min)
                 .isLessThan(min + range);
     }
 
@@ -71,7 +55,7 @@ class NumberUtilTest {
         double value = NumberUtil.randomMinMax(min, max);
 
         // then
-        Assertions.assertThat(value).isGreaterThanOrEqualTo(min)
+        assertThat(value).isGreaterThanOrEqualTo(min)
                 .isLessThan(max);
     }
 
