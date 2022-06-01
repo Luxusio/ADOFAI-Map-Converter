@@ -18,7 +18,7 @@ public final class StringJsonUtil {
         boolean keyMode = true;
 
         char[] chars = jsonStr.toCharArray();
-        for (int idx = 0;idx < chars.length; idx++) {
+        for (int idx = 0; idx < chars.length; idx++) {
             char c = chars[idx];
 
             if (c == '{' || c == '[') {

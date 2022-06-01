@@ -20,11 +20,6 @@ public class Bookmark extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private TrackAnimation trackAnimation = TrackAnimation.NONE;
-		private Double beatsAhead = 3.0;
-		private TrackDisappearAnimation trackDisappearAnimation = TrackDisappearAnimation.NONE;
-		private Double beatsBehind = 4.0;
-
 		/**
 		 * set all parameter with given action
 		 *
