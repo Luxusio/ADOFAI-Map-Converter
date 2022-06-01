@@ -1,7 +1,7 @@
 package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.luxus.lib.adofai.type.TileAngle;
+import io.luxus.lib.adofai.type.LegacyTileAngle;
 import io.luxus.lib.adofai.util.NumberUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 
@@ -13,10 +13,10 @@ import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
 public class FlowFactory {
 
-    private static final Map<Character, TileAngle> angleCharMap = new HashMap<>();
+    private static final Map<Character, LegacyTileAngle> angleCharMap = new HashMap<>();
 
     static {
-        for (TileAngle value : TileAngle.values()) angleCharMap.put(value.getCode(), value);
+        for (LegacyTileAngle value : LegacyTileAngle.values()) angleCharMap.put(value.getCode(), value);
     }
 
     public static List<Double> readPathData(JsonNode node) {
@@ -24,12 +24,12 @@ public class FlowFactory {
     }
 
     public static List<Double> readPathData(String nodeText) {
-        List<TileAngle> pathData = nodeText.chars()
+        List<LegacyTileAngle> pathData = nodeText.chars()
                 .mapToObj(c -> (char) c)
                 .map(angleCharMap::get)
                 .collect(Collectors.toList());
 
-        for (TileAngle angle : pathData) {
+        for (LegacyTileAngle angle : pathData) {
             if (angle == null) {
                 return null;
             }
@@ -38,12 +38,12 @@ public class FlowFactory {
         return pathDataToAngleData(pathData);
     }
 
-    public static List<Double> pathDataToAngleData(List<TileAngle> pathData) {
+    public static List<Double> pathDataToAngleData(List<LegacyTileAngle> pathData) {
         double staticAngle = 0;
         List<Double> angleData = new ArrayList<>(pathData.size() + 1);
 
-        for (TileAngle angle : pathData) {
-            if (angle == TileAngle.NONE) {
+        for (LegacyTileAngle angle : pathData) {
+            if (angle == LegacyTileAngle.NONE) {
                 angleData.add(ANGLE_MID_TILE);
             } else {
                 if (angle.isRelative()) {
@@ -89,16 +89,16 @@ public class FlowFactory {
 
         while (it.hasNext()) {
             Double nextAngle = it.next();
-            TileAngle tileAngle = getCurrTileAngle(currAngle, nextAngle);
-            if (tileAngle == null) return false;
+            LegacyTileAngle legacyTileAngle = getCurrTileAngle(currAngle, nextAngle);
+            if (legacyTileAngle == null) return false;
 
-            tempSb.append(tileAngle.getCode());
+            tempSb.append(legacyTileAngle.getCode());
 
             currAngle = nextAngle;
         }
-        TileAngle tileAngle = getCurrTileAngle(currAngle, 999.0);
-        if (tileAngle == null) return false;
-        tempSb.append(tileAngle.getCode());
+        LegacyTileAngle legacyTileAngle = getCurrTileAngle(currAngle, 999.0);
+        if (legacyTileAngle == null) return false;
+        tempSb.append(legacyTileAngle.getCode());
 
         tempSb.append("\"");
         sb.append(tempSb);
@@ -116,15 +116,15 @@ public class FlowFactory {
     }
 
 
-    private static TileAngle getCurrTileAngle(Double currAngle, Double nextAngle) {
+    private static LegacyTileAngle getCurrTileAngle(Double currAngle, Double nextAngle) {
 
         if (NumberUtil.fuzzyEquals(currAngle, 999.0)) {
-            return TileAngle.NONE;
+            return LegacyTileAngle.NONE;
         }
 
         double relativeAngle = generalizeAngle(180 - nextAngle + currAngle);
 
-        for (TileAngle angle : TileAngle.values()) {
+        for (LegacyTileAngle angle : LegacyTileAngle.values()) {
             if (NumberUtil.fuzzyEquals(
                     angle.isRelative() ? relativeAngle : currAngle,
                     angle.getSize()))

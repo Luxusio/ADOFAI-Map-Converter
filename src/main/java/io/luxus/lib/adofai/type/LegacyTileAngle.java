@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum TileAngle {
+public enum LegacyTileAngle {
 	_0('R', 0, false),
 	_15('p', 15, false),
 	_30('J', 30, false),
