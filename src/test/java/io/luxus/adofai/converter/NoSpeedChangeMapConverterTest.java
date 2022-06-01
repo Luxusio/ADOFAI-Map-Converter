@@ -27,7 +27,7 @@ class NoSpeedChangeMapConverterTest {
         double targetBpm = 55;
 
         // when
-        CustomLevel result = new NoSpeedChangeMapConverter().convert(CustomLevelParser.readPath(path), targetBpm);
+        CustomLevel result = new NoSpeedChangeMapConverter().convert(CustomLevelParser.readPath(path), new NoSpeedChangeMapConverter.Parameters(targetBpm));
         CustomLevelParser.write(result, path.substring(0, path.length() - 7) + " " + targetBpm + "bpm.adofai");
 
         // then

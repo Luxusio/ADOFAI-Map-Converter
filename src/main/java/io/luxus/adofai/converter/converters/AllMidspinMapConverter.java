@@ -6,7 +6,7 @@ import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.helper.AngleHelper;
-import io.luxus.lib.adofai.type.TileAngle;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,22 +17,22 @@ import static io.luxus.adofai.converter.MapConverterBase.getSameTimingTiles;
 import static io.luxus.lib.adofai.type.TileAngle.MIDSPIN;
 import static io.luxus.lib.adofai.type.TileAngle.createNormal;
 
-public class AllMidspinMapConverter implements MapConverter {
+public class AllMidspinMapConverter implements MapConverter<AllMidspinMapConverter.Parameters> {
 
     @Override
-    public Object[] prepareParameters(Scanner scanner) {
+    public Parameters prepareParameters(Scanner scanner) {
 
         System.out.print("미드스핀 개수:");
         int midspinAmount = scanner.nextInt();
         scanner.nextLine();
 
-        return new Object[] { midspinAmount };
+        return new Parameters(midspinAmount);
     }
 
     @Override
-    public boolean impossible(CustomLevel customLevel, Object... args) {
+    public boolean impossible(CustomLevel customLevel, Parameters parameters) {
 
-        if ((int) args[0] < 0) {
+        if (parameters.midspinAmount < 0) {
             System.err.println("midspinAmount 가 너무 작습니다! 0 이상의 값을 입력해주세요!");
             return true;
         }
@@ -41,17 +41,15 @@ public class AllMidspinMapConverter implements MapConverter {
     }
 
     @Override
-    public String getLevelPostfix(CustomLevel result, Object... args) {
-        return "all " + args[0] + " midspin";
+    public String getLevelPostfix(CustomLevel result, Parameters parameters) {
+        return "all " + parameters.midspinAmount + " midspin";
     }
 
     @Override
-    public CustomLevel convert(CustomLevel customLevel, Object... args) {
-        if (impossible(customLevel, args)) {
+    public CustomLevel convert(CustomLevel customLevel, Parameters parameters) {
+        if (impossible(customLevel, parameters)) {
             return null;
         }
-
-        int midspinAmount = (int) args[0];
 
         return MapConverterBase.convert(customLevel, false,
                 new Function<MapConverterBase.ApplyEach, List<Tile.Builder>>() {
@@ -66,9 +64,9 @@ public class AllMidspinMapConverter implements MapConverter {
                         double travelAngle = TileMeta.calculateTotalTravelAngle(oneTimingTiles);
 
                         // create new tiles
-                        List<Tile.Builder> newTileBuilders = new ArrayList<>(midspinAmount + 1);
+                        List<Tile.Builder> newTileBuilders = new ArrayList<>(parameters.midspinAmount + 1);
                         newTileBuilders.add(new Tile.Builder().angle(createNormal(staticAngle)));
-                        for (int i = 0; i < midspinAmount; i++) {
+                        for (int i = 0; i < parameters.midspinAmount; i++) {
                             staticAngle = AngleHelper.getNextStaticAngle(staticAngle, 0.0, lastTileMeta.isReversed());
                             newTileBuilders.add(new Tile.Builder().angle(MIDSPIN));
                         }
@@ -84,6 +82,11 @@ public class AllMidspinMapConverter implements MapConverter {
                         return newTileBuilders;
                     }
                 });
+    }
+
+    @RequiredArgsConstructor
+    public static class Parameters {
+        private final int midspinAmount;
     }
 
 }

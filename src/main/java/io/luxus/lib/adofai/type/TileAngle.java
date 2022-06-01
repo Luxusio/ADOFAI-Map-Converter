@@ -1,13 +1,14 @@
 package io.luxus.lib.adofai.type;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class TileAngle {
 
-    public enum Type {
+    private enum Type {
         NORMAL,
         MIDSPIN,
     }

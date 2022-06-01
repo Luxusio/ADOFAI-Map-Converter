@@ -20,7 +20,7 @@ public class MapShapedMapConverterTest {
         String shapePath = "./src/test/resources/test/bmb.adofai";
 
         // when
-        CustomLevel result  = new ShapedMapConverter().convert(CustomLevelParser.readPath(path), "bmb", CustomLevelParser.readPath(shapePath), null);
+        CustomLevel result  = new ShapedMapConverter().convert(CustomLevelParser.readPath(path), new ShapedMapConverter.Parameters("bmb", CustomLevelParser.readPath(shapePath), null));
 
 
         // then

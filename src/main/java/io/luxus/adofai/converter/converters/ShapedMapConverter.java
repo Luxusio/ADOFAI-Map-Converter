@@ -11,6 +11,7 @@ import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.action.Twirl;
+import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-public class ShapedMapConverter implements MapConverter {
+public class ShapedMapConverter implements MapConverter<ShapedMapConverter.Parameters> {
 
 	@Override
-	public Object[] prepareParameters(Scanner scanner) {
+	public Parameters prepareParameters(Scanner scanner) {
 		System.out.println("*.adofai 파일 내의 pathData 혹은 angleData 형식으로 입력하여야 합니다*");
 		System.out.print("패턴(혹은 .adofai 파일) : ");
 		String sourceStr = scanner.nextLine().trim();
@@ -33,7 +34,7 @@ public class ShapedMapConverter implements MapConverter {
 			File file = new File(sourceStr);
 			if (!file.exists()) {
 				System.err.println("파일이 존재하지 않습니다");
-				return new Object[] { sourceStr, null, null };
+				return new Parameters(sourceStr, null, null);
 			}
 
 			try {
@@ -41,11 +42,10 @@ public class ShapedMapConverter implements MapConverter {
 			} catch (Throwable t) {
 				System.err.println("파일 불러오기에 실패했습니다");
 				t.printStackTrace();
-				return new Object[] { sourceStr, null, null };
+				return new Parameters(sourceStr, null, null);
 			}
 
-
-			return new Object[] { sourceStr, patternLevel, null };
+			return new Parameters(sourceStr, patternLevel, null);
 		}
 		else {
 			List<TileAngle> angleData = FlowFactory.readPathData(sourceStr);
@@ -61,33 +61,29 @@ public class ShapedMapConverter implements MapConverter {
 				} catch (Throwable throwable) {
 					System.err.println("패턴 읽어오기에 실패했습니다.");
 					throwable.printStackTrace();
-					return new Object[] { sourceStr, null, null };
+					return new Parameters(sourceStr, null, null);
 				}
 			}
 
-			return new Object[] { sourceStr, null, angleData };
+			return new Parameters(sourceStr, null, angleData);
 		}
 	}
 
 	@Override
-	public boolean impossible(CustomLevel customLevel, Object... args) {
-		String sourceStr = (String) args[0];
-		CustomLevel shapeLevel = (CustomLevel) args[1];
-		@SuppressWarnings("unchecked")
-		List<TileAngle> shapeAngles = (List<TileAngle>) args[2];
+	public boolean impossible(CustomLevel customLevel, Parameters parameters) {
 
-		if (shapeLevel != null) {
-			if (shapeLevel.getTiles().size() <= 1) {
+		if (parameters.shapeLevel != null) {
+			if (parameters.shapeLevel.getTiles().size() <= 1) {
 				System.err.println("패턴의 타일 수가 너무 적습니다.");
 				return true;
 			}
 		}
 		else {
-			if (shapeAngles == null) {
+			if (parameters.shapeAngles == null) {
 				System.err.println("shapeAngles가 null입니다.");
 				return true;
 			}
-			else if (shapeAngles.isEmpty()) {
+			if (parameters.shapeAngles.isEmpty()) {
 				System.err.println("패턴의 각도 수가 너무 적습니다.");
 				return true;
 			}
@@ -97,21 +93,17 @@ public class ShapedMapConverter implements MapConverter {
 	}
 
 	@Override
-	public String getLevelPostfix(CustomLevel customLevel, Object... args) {
-		String sourceStr = (String) args[0];
-		CustomLevel shapeLevel = (CustomLevel) args[1];
-		@SuppressWarnings("unchecked")
-		List<TileAngle> shapeAngles = (List<TileAngle>) args[2];
+	public String getLevelPostfix(CustomLevel customLevel, Parameters parameters) {
 
 		String shapeStr;
-		if (sourceStr != null) {
-			shapeStr = sourceStr.endsWith(".adofai") ?
-					sourceStr.substring(0, sourceStr.length() - 7) :
-					sourceStr;
+		if (parameters.sourceStr != null) {
+			shapeStr = parameters.sourceStr.endsWith(".adofai") ?
+					parameters.sourceStr.substring(0, parameters.sourceStr.length() - 7) :
+					parameters.sourceStr;
 		}
 		else {
-			shapeStr = shapeAngles.stream()
-					.map(angle -> angle.isMidspin() ? "!" : String.valueOf(angle.getAngle()))
+			shapeStr = parameters.shapeAngles.stream()
+					.map(angle -> angle.isMidspin() ? "999" : String.valueOf(angle.getAngle()))
 					.collect(Collectors.joining(","));
 		}
 
@@ -119,18 +111,15 @@ public class ShapedMapConverter implements MapConverter {
 	}
 
 	@Override
-	public CustomLevel convert(CustomLevel customLevel, Object... args) {
-		if (impossible(customLevel, args)) {
+	public CustomLevel convert(CustomLevel customLevel, Parameters parameters) {
+		if (impossible(customLevel, parameters)) {
 			return null;
 		}
-		String sourceStr = (String) args[0];
-		CustomLevel shapeLevel = (CustomLevel) args[1];
-		@SuppressWarnings("unchecked")
-		List<TileAngle> shapeAngles = (List<TileAngle>) args[2];
+		CustomLevel shapeLevel = parameters.shapeLevel;
 
 		if (shapeLevel == null) {
 
-			List<Tile.Builder> tiles = shapeAngles.stream()
+			List<Tile.Builder> tiles = parameters.shapeAngles.stream()
 					.map(angle -> new Tile.Builder().angle(angle))
 					.collect(Collectors.toList());
 
@@ -197,4 +186,12 @@ public class ShapedMapConverter implements MapConverter {
 					}
 				});
 	}
+
+	@RequiredArgsConstructor
+	public static class Parameters {
+		private final String sourceStr;
+		private final CustomLevel shapeLevel;
+		private final List<TileAngle> shapeAngles;
+	}
+
 }
