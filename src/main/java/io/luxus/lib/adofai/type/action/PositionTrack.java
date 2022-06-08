@@ -15,11 +15,17 @@ import java.util.Objects;
 public class PositionTrack extends Action {
 
 	private final List<Double> positionOffset;
+	private final Double rotation;
+	private final Double scale;
+	private final Double opacity;
 	private final Toggle editorOnly;
 
-	private PositionTrack(Boolean active, List<Double> positionOffset, Toggle editorOnly) {
+	private PositionTrack(Boolean active, List<Double> positionOffset, Double rotation, Double scale, Double opacity, Toggle editorOnly) {
 		super(EventType.POSITION_TRACK, active);
 		this.positionOffset = positionOffset;
+		this.rotation = rotation;
+		this.scale = scale;
+		this.opacity = opacity;
 		this.editorOnly = editorOnly;
 	}
 
@@ -28,6 +34,9 @@ public class PositionTrack extends Action {
 	public static final class Builder extends Action.Builder<Builder> {
 
 		private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
+		private Double rotation = 0.0;
+		private Double scale = 100.0;
+		private Double opacity = 100.0;
 		private Toggle editorOnly = Toggle.DISABLED;
 
 		/**
@@ -39,6 +48,9 @@ public class PositionTrack extends Action {
 		public Builder from(PositionTrack src) {
 			return self()
 					.positionOffset(src.positionOffset)
+					.rotation(src.rotation)
+					.scale(src.scale)
+					.opacity(src.opacity)
 					.editorOnly(src.editorOnly);
 		}
 
@@ -49,7 +61,7 @@ public class PositionTrack extends Action {
 		 */
 		@Override
 		public PositionTrack build() {
-			return new PositionTrack(active, positionOffset, editorOnly);
+			return new PositionTrack(active, positionOffset, rotation, scale, opacity, editorOnly);
 		}
 
 		/**
@@ -87,6 +99,24 @@ public class PositionTrack extends Action {
 			}
 			this.positionOffset = ListUtil.createNewUnmodifiableList(positionOffset);
 			return self();
+		}
+
+		public Builder rotation(Double rotation) {
+			Objects.requireNonNull(rotation);
+			this.rotation = rotation;
+			return this;
+		}
+
+		public Builder scale(Double scale) {
+			Objects.requireNonNull(scale);
+			this.scale = scale;
+			return this;
+		}
+
+		public Builder opacity(Double opacity) {
+			Objects.requireNonNull(opacity);
+			this.opacity = opacity;
+			return this;
 		}
 
 		/**

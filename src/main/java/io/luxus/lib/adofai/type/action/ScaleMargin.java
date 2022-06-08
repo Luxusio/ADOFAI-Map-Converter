@@ -9,20 +9,20 @@ import java.util.Objects;
 
 @Getter
 @ToString
-public class Checkpoint extends Action {
+public class ScaleMargin extends Action {
 
-	private final Long tileOffset;
+	private final Long scale;
 
-	private Checkpoint(Boolean active, Long tileOffset) {
-		super(EventType.CHECK_POINT, active);
-		this.tileOffset = tileOffset;
+	private ScaleMargin(Boolean active, Long scale) {
+		super(EventType.SCALE_MARGIN, active);
+		this.scale = scale;
 	}
 
 	@Getter
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private Long tileOffset = 0L;
+		private Long scale = 100L;
 
 		/**
 		 * set all parameter with given action
@@ -30,9 +30,9 @@ public class Checkpoint extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public Builder from(Checkpoint src) {
+		public Builder from(ScaleMargin src) {
 			return self()
-					.tileOffset(src.tileOffset);
+					.scale(src.scale);
 		}
 
 		/**
@@ -41,8 +41,8 @@ public class Checkpoint extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public Checkpoint build() {
-			return new Checkpoint(active, tileOffset);
+		public ScaleMargin build() {
+			return new ScaleMargin(active, scale);
 		}
 
 		/**
@@ -62,12 +62,12 @@ public class Checkpoint extends Action {
 		 */
 		@Override
 		public EventType getEventType() {
-			return EventType.CHECK_POINT;
+			return EventType.SCALE_MARGIN;
 		}
 
-		public Builder tileOffset(Long tileOffset) {
-			Objects.requireNonNull(tileOffset);
-			this.tileOffset = tileOffset;
+		public Builder scale(Long scale) {
+			Objects.requireNonNull(scale);
+			this.scale = scale;
 			return self();
 		}
 

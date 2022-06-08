@@ -20,9 +20,11 @@ public class MoveCamera extends Action {
 	private final Long zoom;
 	private final Double angleOffset;
 	private final Ease ease;
+	private final Toggle dontDisable;
+	private final Toggle minVfxOnly;
 	private final String eventTag;
 
-	private MoveCamera(Boolean active, Double duration, CameraRelativeTo relativeTo, List<Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, String eventTag) {
+	private MoveCamera(Boolean active, Double duration, CameraRelativeTo relativeTo, List<Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, Toggle dontDisable, Toggle minVfxOnly, String eventTag) {
 		super(EventType.MOVE_CAMERA, active);
 		this.duration = duration;
 		this.relativeTo = relativeTo;
@@ -31,6 +33,8 @@ public class MoveCamera extends Action {
 		this.zoom = zoom;
 		this.angleOffset = angleOffset;
 		this.ease = ease;
+		this.dontDisable = dontDisable;
+		this.minVfxOnly = minVfxOnly;
 		this.eventTag = eventTag;
 	}
 
@@ -45,6 +49,8 @@ public class MoveCamera extends Action {
 		private Long zoom = 100L;
 		private Double angleOffset = 0.0;
 		private Ease ease = Ease.LINEAR;
+		private Toggle dontDisable = Toggle.DISABLED;
+		private Toggle minVfxOnly = Toggle.DISABLED;
 		private String eventTag = "";
 
 		/**
@@ -62,6 +68,8 @@ public class MoveCamera extends Action {
 					.zoom(src.zoom)
 					.angleOffset(src.angleOffset)
 					.ease(src.ease)
+					.dontDisable(src.dontDisable)
+					.minVfxOnly(src.minVfxOnly)
 					.eventTag(src.eventTag);
 		}
 
@@ -72,7 +80,7 @@ public class MoveCamera extends Action {
 		 */
 		@Override
 		public MoveCamera build() {
-			return new MoveCamera(active, duration, relativeTo, position, rotation, zoom, angleOffset, ease, eventTag);
+			return new MoveCamera(active, duration, relativeTo, position, rotation, zoom, angleOffset, ease, dontDisable, minVfxOnly, eventTag);
 		}
 
 		/**
@@ -187,6 +195,18 @@ public class MoveCamera extends Action {
 		public Builder ease(Ease ease) {
 			Objects.requireNonNull(ease);
 			this.ease = ease;
+			return self();
+		}
+
+		public Builder dontDisable(Toggle dontDisable) {
+			Objects.requireNonNull(dontDisable);
+			this.dontDisable = dontDisable;
+			return self();
+		}
+
+		public Builder minVfxOnly(Toggle minVfxOnly) {
+			Objects.requireNonNull(minVfxOnly);
+			this.minVfxOnly = minVfxOnly;
 			return self();
 		}
 

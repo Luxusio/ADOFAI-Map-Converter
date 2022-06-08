@@ -31,8 +31,13 @@ public class ActionFactory {
     public static final Map<String, TrackColorType> trackColorTypeMap = getMap(TrackColorType.class);
     public static final Map<String, TrackDisappearAnimation> trackDisappearAnimationMap = getMap(TrackDisappearAnimation.class);
     public static final Map<String, TrackStyle> trackStyleMap = getMap(TrackStyle.class);
+    public static final Map<String, HoldSoundType> holdSoundTypeMap = getMap(HoldSoundType.class);
+    public static final Map<String, HoldMidSound> holdMidSoundMap = getMap(HoldMidSound.class);
+    public static final Map<String, HoldMidSoundType> holdMidSoundTypeMap = getMap(HoldMidSoundType.class);
+    public static final Map<String, HoldMidSoundTimingRelativeTo> holdMidSoundTimingRelativeToMap = getMap(HoldMidSoundTimingRelativeTo.class);
 
-    private static <T extends Enum<T> & JsonParsable> Map<String, T> getMap(Class<T> klass) {
+
+    public static <T extends Enum<T> & JsonParsable> Map<String, T> getMap(Class<T> klass) {
         T[] values = klass.getEnumConstants();
         Map<String, T> map = new HashMap<>(values.length);
 
@@ -102,6 +107,7 @@ public class ActionFactory {
             case CHECK_POINT: {
                 Checkpoint.Builder builder = new Checkpoint.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
+                reader.read("tileOffset", builder::tileOffset, JsonNode::asLong);
                 action = builder.build();
                 break;
             }
@@ -208,6 +214,8 @@ public class ActionFactory {
                 reader.read("zoom", builder::zoom, JsonNode::asLong);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
+                reader.read("dontDisable", builder::dontDisable, JsonNode::asText, toggleMap::get);
+                reader.read("minVfxOnly", builder::minVfxOnly, JsonNode::asText, toggleMap::get);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
 
                 action = builder.build();
@@ -229,6 +237,7 @@ public class ActionFactory {
                 reader.read("hitsound", builder::hitsound, JsonNode::asText, hitSoundMap::get);
                 reader.read("hitsoundVolume", builder::hitsoundVolume, JsonNode::asLong);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
+                reader.read("eventTag", builder::eventTag, JsonNode::asText);
 
                 action = builder.build();
                 break;
@@ -289,6 +298,7 @@ public class ActionFactory {
                 reader.readO("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
+                reader.read("maxVfxOnly", builder::maxVfxOnly, JsonNode::asText, toggleMap::get);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
 
                 action = builder.build();
@@ -365,6 +375,9 @@ public class ActionFactory {
                 PositionTrack.Builder builder = new PositionTrack.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("rotation", builder::rotation, JsonNode::asDouble);
+                reader.read("scale", builder::scale, JsonNode::asDouble);
+                reader.read("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("editorOnly", builder::editorOnly, JsonNode::asText, toggleMap::get);
 
                 action = builder.build();
@@ -476,6 +489,103 @@ public class ActionFactory {
                 action = builder.build();
                 break;
             }
+            case PAUSE: {
+                Pause.Builder builder = new Pause.Builder();
+                reader.read("duration", builder::duration, JsonNode::asDouble);
+                reader.read("countdownTicks", builder::countdownTicks, JsonNode::asLong);
+                reader.read("angleCorrectionDir", builder::angleCorrectionDir, JsonNode::asLong);
+
+                action = builder.build();
+                break;
+            }
+            case AUTO_PLAY_TILES: {
+                AutoPlayTiles.Builder builder = new AutoPlayTiles.Builder();
+                reader.read("enabled", builder::enabled, JsonNode::asText, toggleMap::get);
+                reader.read("safetyTiles", builder::safetyTiles, JsonNode::asText, toggleMap::get);
+
+                action = builder.build();
+                break;
+            }
+            case HOLD: {
+                Hold.Builder builder = new Hold.Builder();
+                reader.read("duration", builder::duration, JsonNode::asDouble);
+                reader.read("distanceMultiplier", builder::distanceMultiplier, JsonNode::asLong);
+                reader.read("landingAnimation", builder::landingAnimation, JsonNode::asText, toggleMap::get);
+
+                action = builder.build();
+                break;
+            }
+            case SET_HOLD_SOUND: {
+                SetHoldSound.Builder builder = new SetHoldSound.Builder();
+                reader.read("holdStartSound", builder::holdStartSound, JsonNode::asText, holdSoundTypeMap::get);
+                reader.read("holdLoopSound", builder::holdLoopSound, JsonNode::asText, holdSoundTypeMap::get);
+                reader.read("holdEndSound", builder::holdEndSound, JsonNode::asText, holdSoundTypeMap::get);
+                reader.read("holdMidSound", builder::holdMidSound, JsonNode::asText, holdMidSoundMap::get);
+                reader.read("holdMidSoundType", builder::holdMidSoundType, JsonNode::asText, holdMidSoundTypeMap::get);
+                reader.read("holdMidSoundDelay", builder::holdMidSoundDelay, JsonNode::asDouble);
+                reader.read("holdMidSoundTimingRelativeTo", builder::holdMidSoundTimingRelativeTo, JsonNode::asText, holdMidSoundTimingRelativeToMap::get);
+                reader.read("holdSoundVolume", builder::holdSoundVolume, JsonNode::asLong);
+
+                action = builder.build();
+                break;
+            }
+            case MULTI_PLANET: {
+                MultiPlanet.Builder builder = new MultiPlanet.Builder();
+                reader.read("planets", builder::planets, JsonNode::asLong);
+
+                action = builder.build();
+                break;
+            }
+            case FREE_ROAM: {
+                FreeRoam.Builder builder = new FreeRoam.Builder();
+                reader.read("duration", builder::duration, JsonNode::asDouble);
+                reader.read("size", builder::size, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("outTime", builder::outTime, JsonNode::asLong);
+                reader.read("outEase", builder::outEase, JsonNode::asText, easeMap::get);
+                reader.read("countdownTicks", builder::countdownTicks, JsonNode::asLong);
+                reader.read("angleCorrectionDir", builder::angleCorrectionDir, JsonNode::asLong);
+
+                action = builder.build();
+                break;
+            }
+            case FREE_ROAM_TWIRL: {
+                FreeRoamTwirl.Builder builder = new FreeRoamTwirl.Builder();
+                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+
+                action = builder.build();
+                break;
+            }
+            case FREE_ROAM_REMOVE: {
+                FreeRoamRemove.Builder builder = new FreeRoamRemove.Builder();
+                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("size", builder::size, nodeToXYListFunc(JsonNode::asDouble));
+
+                action = builder.build();
+                break;
+            }
+            case HIDE: {
+                Hide.Builder builder = new Hide.Builder();
+                reader.read("hideJudgment", builder::hideJudgment, JsonNode::asText, toggleMap::get);
+                reader.read("hideTileIcon", builder::hideTileIcon, JsonNode::asText, toggleMap::get);
+
+                action = builder.build();
+                break;
+            }
+            case SCALE_MARGIN: {
+                ScaleMargin.Builder builder = new ScaleMargin.Builder();
+                reader.read("scale", builder::scale, JsonNode::asLong);
+
+                action = builder.build();
+                break;
+            }
+            case SCALE_RADIUS: {
+                ScaleRadius.Builder builder = new ScaleRadius.Builder();
+                reader.read("scale", builder::scale, JsonNode::asLong);
+
+                action = builder.build();
+                break;
+            }
             case UNKNOWN: {
                 break;
             }
@@ -505,8 +615,12 @@ public class ActionFactory {
                 break;
             }
             case TWIRL:
-            case BOOKMARK:
+            case BOOKMARK: {
+                break;
+            }
             case CHECK_POINT: {
+                Checkpoint e = (Checkpoint) action;
+                writeVar(sb, "tileOffset", e.getTileOffset());
                 break;
             }
             case EDITOR_COMMENT: {
@@ -589,6 +703,8 @@ public class ActionFactory {
                 writeVar(sb, "zoom", e.getZoom());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
+                writeVar(sb, "dontDisable", e.getDontDisable(), Toggle::getJsonName);
+                writeVar(sb, "minVfxOnly", e.getMinVfxOnly(), Toggle::getJsonName);
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
@@ -604,6 +720,7 @@ public class ActionFactory {
                 writeVar(sb, "hitsound", e.getHitsound(), HitSound::getJsonName);
                 writeVar(sb, "hitsoundVolume", e.getHitsoundVolume());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
+                writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case RECOLOR_TRACK: {
@@ -632,6 +749,7 @@ public class ActionFactory {
                 writeVar(sb, "opacity", e.getOpacity());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
+                writeVar(sb, "maxVfxOnly", e.getMaxVfxOnly(), Toggle::getJsonName);
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
@@ -690,6 +808,9 @@ public class ActionFactory {
             case POSITION_TRACK: {
                 PositionTrack e = (PositionTrack) action;
                 writeVar(sb, "positionOffset", e.getPositionOffset());
+                writeVar(sb, "rotation", e.getRotation());
+                writeVar(sb, "scale", e.getScale());
+                writeVar(sb, "opacity", e.getOpacity());
                 writeVar(sb, "editorOnly", e.getEditorOnly(), Toggle::getJsonName);
                 break;
             }
@@ -774,6 +895,81 @@ public class ActionFactory {
                 writeVar(sb, "beatsBehind", e.getBeatsBehind());
                 break;
             }
+            case PAUSE: {
+                Pause e = (Pause) action;
+                writeVar(sb, "duration", e.getDuration());
+                writeVar(sb, "countdownTicks", e.getCountdownTicks());
+                writeVar(sb, "angleCorrectionDir", e.getAngleCorrectionDir());
+                break;
+            }
+            case AUTO_PLAY_TILES: {
+                AutoPlayTiles e = (AutoPlayTiles) action;
+                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
+                writeVar(sb, "safetyTiles", e.getSafetyTiles(), Toggle::getJsonName);
+                break;
+            }
+            case HOLD: {
+                Hold e = (Hold) action;
+                writeVar(sb, "duration", e.getDuration());
+                writeVar(sb, "distanceMultiplier", e.getDistanceMultiplier());
+                writeVar(sb, "landingAnimation", e.getLandingAnimation(), Toggle::getJsonName);
+                break;
+            }
+            case SET_HOLD_SOUND: {
+                SetHoldSound e = (SetHoldSound) action;
+                writeVar(sb, "holdStartSound", e.getHoldStartSound(), HoldSoundType::getJsonName);
+                writeVar(sb, "holdLoopSound", e.getHoldLoopSound(), HoldSoundType::getJsonName);
+                writeVar(sb, "holdEndSound", e.getHoldEndSound(), HoldSoundType::getJsonName);
+                writeVar(sb, "holdMidSound", e.getHoldMidSound(), HoldMidSound::getJsonName);
+                writeVar(sb, "holdMidSoundType", e.getHoldMidSoundType(), HoldMidSoundType::getJsonName);
+                writeVar(sb, "holdMidSoundDelay", e.getHoldMidSoundDelay());
+                writeVar(sb, "holdMidSoundTimingRelativeTo", e.getHoldMidSoundTimingRelativeTo(), HoldMidSoundTimingRelativeTo::getJsonName);
+                writeVar(sb, "holdSoundVolume", e.getHoldSoundVolume());
+                break;
+            }
+            case MULTI_PLANET: {
+                MultiPlanet e = (MultiPlanet) action;
+                writeVar(sb, "planets", e.getPlanets());
+                break;
+            }
+            case FREE_ROAM: {
+                FreeRoam e = (FreeRoam) action;
+                writeVar(sb, "duration", e.getDuration());
+                writeVar(sb, "size", e.getSize());
+                writeVar(sb, "positionOffset", e.getPositionOffset());
+                writeVar(sb, "outTime", e.getOutTime());
+                writeVar(sb, "outEase", e.getOutEase(), Ease::getJsonName);
+                writeVar(sb, "countdownTicks", e.getCountdownTicks());
+                writeVar(sb, "angleCorrectionDir", e.getAngleCorrectionDir());
+                break;
+            }
+            case FREE_ROAM_TWIRL: {
+                FreeRoamTwirl e = (FreeRoamTwirl) action;
+                writeVar(sb, "position", e.getPosition());
+                break;
+            }
+            case FREE_ROAM_REMOVE: {
+                FreeRoamRemove e = (FreeRoamRemove) action;
+                writeVar(sb, "position", e.getPosition());
+                writeVar(sb, "size", e.getSize());
+                break;
+            }
+            case HIDE: {
+                Hide e = (Hide) action;
+                writeVar(sb, "hideJudgment", e.getHideJudgment(), Toggle::getJsonName);
+                writeVar(sb, "hideTileIcon", e.getHideTileIcon(), Toggle::getJsonName);
+                break;
+            }
+            case SCALE_MARGIN: {
+                ScaleMargin e = (ScaleMargin) action;
+                writeVar(sb, "scale", e.getScale());
+                break;
+            }
+            case SCALE_RADIUS: {
+                ScaleRadius e = (ScaleRadius) action;
+                writeVar(sb, "scale", e.getScale());
+                break;
+            }
             case UNKNOWN: {
                 UnknownAction e = (UnknownAction) action;
                 e.getRawData().fields().forEachRemaining(field -> {
@@ -796,32 +992,18 @@ public class ActionFactory {
 
 
 /*
-Failed to read action rest={enabled=false}, {"floor":5,"eventType":"SetSpeed","enabled":false,"speedType":"Multiplier","beatsPerMinute":100,"bpmMultiplier":1.1}
-Failed to read action rest={enabled=false}, {"floor":10,"eventType":"Twirl","enabled":false}
-Failed to read action rest={enabled=false}, {"floor":15,"eventType":"Checkpoint","enabled":false}
-Failed to read action rest={enabled=false}, {"floor":42,"eventType":"SetHitsound","enabled":false,"gameSound":"Hitsound","hitsound":"ReverbClap","hitsoundVolume":100}
-Failed to read action rest={enabled=false}, {"floor":47,"eventType":"PlaySound","enabled":false,"hitsound":"Hat","hitsoundVolume":10,"angleOffset":1.1}
-Failed to read action rest={enabled=false}, {"floor":85,"eventType":"SetPlanetRotation","enabled":false,"ease":"InOutFlash","easeParts":1}
-Failed to read action rest={enabled=false}, {"floor":95,"eventType":"ColorTrack","enabled":false,"trackColorType":"Volume","trackColor":"debb7b","secondaryTrackColor":"ffffff","trackColorAnimDuration":2,"trackColorPulse":"None","trackPulseLength":10,"trackStyle":"Standard","trackTexture":"","trackTextureScale":1}
-Failed to read action rest={enabled=false}, {"floor":108,"eventType":"AnimateTrack","enabled":false,"trackAnimation":"Rise","beatsAhead":3,"trackDisappearAnimation":"Scatter_Far","beatsBehind":4}
-Failed to read action rest={enabled=false}, {"floor":124,"eventType":"RecolorTrack","enabled":false,"startTile":[0,"ThisTile"],"endTile":[0,"ThisTile"],"trackColorType":"Single","trackColor":"debb7b","secondaryTrackColor":"ffffff","trackColorAnimDuration":2,"trackColorPulse":"None","trackPulseLength":10,"trackStyle":"Standard","angleOffset":0,"eventTag":""}
-Failed to read action rest={enabled=false}, {"floor":130,"eventType":"MoveTrack","enabled":false,"startTile":[0,"End"],"endTile":[0,"End"],"duration":1,"positionOffset":[0,99.1],"rotationOffset":2.2,"opacity":1.1,"angleOffset":0,"ease":"Linear","eventTag":""}
-Failed to read action rest={enabled=false}, {"floor":135,"eventType":"PositionTrack","enabled":false,"positionOffset":[0.1,0.1],"editorOnly":"Enabled"}
-Failed to read action rest={enabled=false}, {"floor":144,"eventType":"AddDecoration","enabled":false,"decorationImage":"","position":[0,0],"relativeTo":"CameraAspect","pivotOffset":[0,0],"rotation":0,"scale":[100,100],"tile":[1,1],"color":"ffffff","opacity":100,"depth":0,"parallax":[0,0],"tag":"","imageSmoothing":"Enabled","components":""}
-Failed to read action rest={enabled=false}, {"floor":149,"eventType":"MoveDecorations","enabled":false,"duration":1.1,"tag":"asdfasd \" 123b \" bw\"","decorationImage":"1px.png","positionOffset":[1.1,1.1],"rotationOffset":1.1,"scale":[1.1,1.1],"color":"ff0000b7","opacity":1.1,"depth":-3,"parallax":[1.1,1.1],"angleOffset":1.1,"ease":"OutSine","eventTag":"asdb\\\" b\" wcd"}
-Failed to read action rest={enabled=false}, {"floor":159,"eventType":"AddText","enabled":false,"decText":"텍스트","font":"TimesNewRoman","position":[0,0],"relativeTo":"Tile","pivotOffset":[0,0],"rotation":0,"scale":[100,100],"color":"ffffff","opacity":100,"depth":-1,"parallax":[-1,-1],"tag":""}
-Failed to read action rest={enabled=false}, {"floor":164,"eventType":"SetText","enabled":false,"decText":"ffasbwef","tag":"123b\"cw weg\\w\\ca","angleOffset":1.1,"eventTag":"ASCasdc\"ef\\"}
-Failed to read action rest={enabled=false}, {"floor":172,"eventType":"CustomBackground","enabled":false,"color":"000000","bgImage":"1px.png","imageColor":"ffffff","parallax":[100,100],"bgDisplayMode":"Tiled","lockRot":"Disabled","loopBG":"Disabled","unscaledSize":100,"angleOffset":1.1,"eventTag":""}
-Failed to read action rest={enabled=false}, {"floor":177,"eventType":"Flash","enabled":false,"duration":1.1,"plane":"Foreground","startColor":"ffffffff","startOpacity":1.1,"endColor":"ffffffff","endOpacity":1.1,"angleOffset":1.1,"ease":"InSine","eventTag":"asdfasdf123"}
-Failed to read action rest={enabled=false}, {"floor":184,"eventType":"MoveCamera","enabled":false,"duration":1,"relativeTo":"LastPosition","position":[0,0],"rotation":0,"zoom":100,"angleOffset":1.1,"ease":"Linear","eventTag":""}
-Failed to read action rest={enabled=false}, {"floor":224,"eventType":"ShakeScreen","enabled":false,"duration":1.1,"strength":1.1,"intensity":1.1,"fadeOut":"Disabled","angleOffset":1.1,"eventTag":"asdf12"}
-Failed to read action rest={enabled=false}, {"floor":234,"eventType":"ScreenTile","enabled":false,"tile":[1.1,1.1],"angleOffset":1.1,"eventTag":"asfvbw"}
-Failed to read action rest={enabled=false}, {"floor":239,"eventType":"ScreenScroll","enabled":false,"scroll":[1.1,1.1],"angleOffset":1.1,"eventTag":"asdfasdbvwe123"}
-Failed to read action rest={enabled=false}, {"floor":244,"eventType":"RepeatEvents","enabled":false,"repetitions":12,"interval":1.1,"tag":"asdfasdf"}
-Failed to read action rest={enabled=false}, {"floor":249,"eventType":"SetConditionalEvents","enabled":false,"perfectTag":"1231r2vadvasd","hitTag":"wfhy4hrtr","barelyTag":"eg5u5gt\\\\","missTag":"af///ewf\\","lossTag":"asdfb//"}
-Failed to read action rest={enabled=false}, {"floor":254,"eventType":"EditorComment","enabled":false,"comment":"gawefwiofjsoibhaoifowofosad;fos\n<green>asdfasdf</green>\n\n\n\nasbwef\\\\\"\n\n\\\n\\"}
-Failed to read action rest={enabled=false}, {"floor":259,"eventType":"Bookmark","enabled":false}
-SetSpeed, Twirl, Checkpoint, SetHitsound, PlaySound, SetPlanetRotation, ColorTrack, AnimateTrack, RecolorTrack, MoveTrack, PositionTrack, AddDecoration, MoveDecorations, AddText, SetText, CustomBackground, Flash, MoveCamera, ShakeScreen, ScreenTile, ScreenScroll, RepeatEvents, SetConditionalEvents, EditorComment, Bookmark
+
+Failed to read action rest={duration=16, outEase="InOutSine", size=[5.1,4.5], angleCorrectionDir=-1, positionOffset=[1.1,1.1], outTime=4, countdownTicks=4}, {"floor":319,"eventType":"FreeRoam","duration":16,"size":[5.1,4.5],"positionOffset":[1.1,1.1],"outTime":4,"outEase":"InOutSine","countdownTicks":4,"angleCorrectionDir":-1}
+
+Failed to read action rest={position=[1,1]}, {"floor":321,"eventType":"FreeRoamTwirl","position":[1,1]}
+
+Failed to read action rest={size=[1.1,1.1], position=[1.1,1.1]}, {"floor":331,"eventType":"FreeRoamRemove","position":[1.1,1.1],"size":[1.1,1.1]}
+Failed to read action rest={size=[1,1], position=[1,0]}, {"floor":331,"eventType":"FreeRoamRemove","position":[1,0],"size":[1,1]}
+Failed to read action rest={size=[1,1], position=[1,0]}, {"floor":331,"eventType":"FreeRoamRemove","position":[1,0],"size":[1,1]}
+
+Failed to read action rest={hideJudgment="Disabled", hideTileIcon="Disabled"}, {"floor":341,"eventType":"Hide","hideJudgment":"Disabled","hideTileIcon":"Disabled"}
+Failed to read action rest={hideJudgment="Enabled", hideTileIcon="Enabled"}, {"floor":342,"eventType":"Hide","hideJudgment":"Enabled","hideTileIcon":"Enabled"}
+Failed to read action rest={hideJudgment="Disabled", hideTileIcon="Disabled"}, {"floor":343,"eventType":"Hide","hideJudgment":"Disabled","hideTileIcon":"Disabled"}
 
 */
 

@@ -25,6 +25,7 @@ public class LevelSettingFactory {
             Map.Entry<String, JsonNode> field = it.next();
             map.put(field.getKey(), field.getValue());
         }
+        map.remove("requiredMods"); // removed
 
         JsonPropertyReader reader = new JsonPropertyReader(map);
 
@@ -46,7 +47,6 @@ public class LevelSettingFactory {
         reader.read("levelTags", builder::levelTags, JsonNode::asText);
         reader.read("artistLinks", builder::artistLinks, JsonNode::asText);
         reader.read("difficulty", builder::difficulty, JsonNode::asLong);
-        reader.read("requiredMods", builder::requiredMods, jsonNode -> nodeToList(jsonNode, JsonNode::asText));
         reader.read("songFilename", builder::songFilename, JsonNode::asText);
         reader.read("bpm", builder::bpm, JsonNode::asDouble);
         reader.read("volume", builder::volume, JsonNode::asLong);
@@ -115,7 +115,6 @@ public class LevelSettingFactory {
         f = writeProperty(sb, f, "levelTags", s.getLevelTags());
         f = writeProperty(sb, f, "artistLinks", s.getArtistLinks());
         f = writeProperty(sb, f, "difficulty", s.getDifficulty());
-        f = writeProperty(sb, f, "requiredMods", s.getRequiredMods());
         f = writeProperty(sb, f, "songFilename", s.getSongFilename());
         f = writeProperty(sb, f, "bpm", s.getBpm());
         f = writeProperty(sb, f, "volume", s.getVolume());

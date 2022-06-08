@@ -24,11 +24,12 @@ public class MoveTrack extends Action {
 	private final Double opacity;
 	private final Double angleOffset;
 	private final Ease ease;
+	private final Toggle maxVfxOnly;
 	private final String eventTag;
 
 	private MoveTrack(Boolean active, Long startTileNum, TilePosition startTilePosition, Long endTileNum, TilePosition endTilePosition,
 					  Double duration, List<Double> positionOffset, Double rotationOffset, List<Double> scale, Double opacity,
-					  Double angleOffset, Ease ease, String eventTag) {
+					  Double angleOffset, Ease ease, Toggle maxVfxOnly, String eventTag) {
 		super(EventType.MOVE_TRACK, active);
 		this.startTileNum = startTileNum;
 		this.startTilePosition = startTilePosition;
@@ -41,6 +42,7 @@ public class MoveTrack extends Action {
 		this.opacity = opacity;
 		this.angleOffset = angleOffset;
 		this.ease = ease;
+		this.maxVfxOnly = maxVfxOnly;
 		this.eventTag = eventTag;
 	}
 
@@ -59,6 +61,7 @@ public class MoveTrack extends Action {
 		private Double opacity = null;
 		private Double angleOffset = 0.0;
 		private Ease ease = Ease.LINEAR;
+		private Toggle maxVfxOnly = Toggle.DISABLED;
 		private String eventTag = "";
 
 		/**
@@ -80,6 +83,7 @@ public class MoveTrack extends Action {
 					.opacity(src.opacity)
 					.angleOffset(src.angleOffset)
 					.ease(src.ease)
+					.maxVfxOnly(src.maxVfxOnly)
 					.eventTag(src.eventTag);
 		}
 
@@ -91,7 +95,7 @@ public class MoveTrack extends Action {
 		@Override
 		public MoveTrack build() {
 			return new MoveTrack(active, startTileNum, startTilePosition, endTileNum, endTilePosition, duration,
-					positionOffset, rotationOffset, scale, opacity, angleOffset, ease, eventTag);
+					positionOffset, rotationOffset, scale, opacity, angleOffset, ease, maxVfxOnly, eventTag);
 		}
 
 		/**
@@ -254,6 +258,12 @@ public class MoveTrack extends Action {
 		public Builder ease(Ease ease) {
 			Objects.requireNonNull(ease);
 			this.ease = ease;
+			return self();
+		}
+
+		public Builder maxVfxOnly(Toggle maxVfxOnly) {
+			Objects.requireNonNull(maxVfxOnly);
+			this.maxVfxOnly = maxVfxOnly;
 			return self();
 		}
 

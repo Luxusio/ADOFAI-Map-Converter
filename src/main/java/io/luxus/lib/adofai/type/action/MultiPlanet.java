@@ -9,20 +9,20 @@ import java.util.Objects;
 
 @Getter
 @ToString
-public class Checkpoint extends Action {
+public class MultiPlanet extends Action {
 
-	private final Long tileOffset;
+	private final Long planets;
 
-	private Checkpoint(Boolean active, Long tileOffset) {
-		super(EventType.CHECK_POINT, active);
-		this.tileOffset = tileOffset;
+	private MultiPlanet(Boolean active, Long planets) {
+		super(EventType.MULTI_PLANET, active);
+		this.planets = planets;
 	}
 
 	@Getter
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private Long tileOffset = 0L;
+		private Long planets = 2L;
 
 		/**
 		 * set all parameter with given action
@@ -30,9 +30,9 @@ public class Checkpoint extends Action {
 		 * @param src source action
 		 * @return self
 		 */
-		public Builder from(Checkpoint src) {
+		public Builder from(MultiPlanet src) {
 			return self()
-					.tileOffset(src.tileOffset);
+					.planets(src.planets);
 		}
 
 		/**
@@ -41,8 +41,8 @@ public class Checkpoint extends Action {
 		 * @return Built AddText action
 		 */
 		@Override
-		public Checkpoint build() {
-			return new Checkpoint(active, tileOffset);
+		public MultiPlanet build() {
+			return new MultiPlanet(active, planets);
 		}
 
 		/**
@@ -62,12 +62,15 @@ public class Checkpoint extends Action {
 		 */
 		@Override
 		public EventType getEventType() {
-			return EventType.CHECK_POINT;
+			return EventType.MULTI_PLANET;
 		}
 
-		public Builder tileOffset(Long tileOffset) {
-			Objects.requireNonNull(tileOffset);
-			this.tileOffset = tileOffset;
+		public Builder planets(Long planets) {
+			Objects.requireNonNull(planets);
+			if (planets < 2) {
+				throw new IllegalArgumentException("planets should be equal or bigger than 2");
+			}
+			this.planets = planets;
 			return self();
 		}
 

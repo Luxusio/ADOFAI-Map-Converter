@@ -29,7 +29,6 @@ public class LevelSetting {
     private final String levelTags;
     private final String artistLinks;
     private final Long difficulty;
-    private final List<String> requiredMods;
     private final String songFilename;
     private final Double bpm;
     private final Long volume;
@@ -95,7 +94,6 @@ public class LevelSetting {
         private String levelTags = "";
         private String artistLinks = "";
         private Long difficulty = 1L;
-        private List<String> requiredMods = new ArrayList<>();
         private String songFilename = "";
         private Double bpm = 100.0;
         private Long volume = 100L;
@@ -165,7 +163,6 @@ public class LevelSetting {
                     .levelTags(src.levelTags)
                     .artistLinks(src.artistLinks)
                     .difficulty(src.difficulty)
-                    .requiredMods(src.requiredMods)
                     .songFilename(src.songFilename)
                     .bpm(src.bpm)
                     .volume(src.volume)
@@ -219,7 +216,7 @@ public class LevelSetting {
         public LevelSetting build() {
             return new LevelSetting(version, artist, specialArtistType, artistPermission, song, author, separateCountdownTime,
                     previewImage, previewIcon, previewIconColor, previewSongStart, previewSongDuration, seizureWarning,
-                    levelDesc, levelTags, artistLinks, difficulty, requiredMods, songFilename, bpm, volume, offset, pitch,
+                    levelDesc, levelTags, artistLinks, difficulty, songFilename, bpm, volume, offset, pitch,
                     hitsound, hitsoundVolume, countdownTicks, trackColorType, trackColor, secondaryTrackColor,
                     trackColorAnimDuration, trackColorPulse, trackPulseLength, trackStyle, trackAnimation, beatsAhead,
                     trackDisappearAnimation, beatsBehind, backgroundColor, showDefaultBGIfNoImage, bgImage, bgImageColor,
@@ -455,23 +452,6 @@ public class LevelSetting {
         public Builder difficulty(Long difficulty) {
             Objects.requireNonNull(difficulty);
             this.difficulty = difficulty;
-            return self();
-        }
-
-        /**
-         * setter of requiredMods
-         *
-         * @param requiredMods requiredMods of LevelSetting
-         * @return self
-         * @throws NullPointerException when requiredMods is null
-         * @throws IllegalArgumentException when size of requiredMods is not 2
-         */
-        public Builder requiredMods(List<String> requiredMods) {
-            Objects.requireNonNull(requiredMods);
-            if (position.size() != 2) {
-                throw new IllegalArgumentException("size of requiredMods must be 2");
-            }
-            this.requiredMods = ListUtil.createNewUnmodifiableList(requiredMods);
             return self();
         }
 
