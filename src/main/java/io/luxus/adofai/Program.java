@@ -48,7 +48,8 @@ public class Program {
         System.out.println("10. 모든 타일 무작위 bpm 변환");
         System.out.println("11. 미드스핀 변환");
         System.out.println("12. 동타 변환");
-        System.out.println("13. 종료");
+        System.out.println("13. 행성 수 변환");
+        System.out.println("14. 종료");
         System.out.print("입력 : ");
 
         int mode = scanner.nextInt();
@@ -67,6 +68,7 @@ public class Program {
                 mode == 10 ? ChaosBpmMapConverter.class :
                 mode == 11 ? AllMidspinMapConverter.class :
                 mode == 12 ? PseudoMapConverter.class :
+                mode == 13 ? PlanetNumberMapConverter.class :
                         null;
 
         if (converterType == null) {

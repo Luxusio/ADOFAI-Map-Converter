@@ -32,7 +32,8 @@ public class MapConverterDispatcher {
                 BpmMultiplyMapConverter.class,
                 ChaosBpmMapConverter.class,
                 AllMidspinMapConverter.class,
-                PseudoMapConverter.class
+                PseudoMapConverter.class,
+                PlanetNumberMapConverter.class
         ).collect(Collectors.toMap(
                 Function.identity(),
                 clazz -> {
