@@ -76,10 +76,10 @@ public class PseudoMapConverter implements MapConverter<PseudoMapConverter.Param
                     double currStaticAngle = lastTileMeta.getStaticAngle();
 
                     if (oneTimingTiles.size() % 2 == 0) {
-                        currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, 0.0, lastTileMeta.isReversed());
+                        currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, 0.0, lastTileMeta.getPlanetAngle(), lastTileMeta.isReversed());
                     }
 
-                    currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, eachHitTravelAngle, lastTileMeta.isReversed());
+                    currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, eachHitTravelAngle, lastTileMeta.getPlanetAngle(), lastTileMeta.isReversed());
 
                     if (parameters.removeColorTrackEvents) {
                         newTileBuilders.forEach(newTileBuilder -> {
@@ -91,8 +91,8 @@ public class PseudoMapConverter implements MapConverter<PseudoMapConverter.Param
                     for (int i = 1; i < parameters.pseudo; i++) {
                         newTileBuilders.add(new Tile.Builder().angle(TileAngle.createNormal(currStaticAngle)));
                         newTileBuilders.add(new Tile.Builder().angle(TileAngle.MIDSPIN));
-                        currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, eachHitTravelAngle, lastTileMeta.isReversed());
-                        currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, 0, lastTileMeta.isReversed());
+                        currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, eachHitTravelAngle, lastTileMeta.getPlanetAngle(), lastTileMeta.isReversed());
+                        currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, 0, lastTileMeta.getPlanetAngle(), lastTileMeta.isReversed());
                     }
 
                     return newTileBuilders;

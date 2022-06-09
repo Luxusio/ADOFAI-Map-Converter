@@ -11,11 +11,11 @@ import java.util.Objects;
 @ToString
 public class Hold extends Action {
 
-    private final Double duration;
+    private final Long duration;            // additional hold rotation amount
     private final Long distanceMultiplier;
     private final Toggle landingAnimation;
 
-    private Hold(Boolean active, Double duration, Long distanceMultiplier, Toggle landingAnimation) {
+    private Hold(Boolean active, Long duration, Long distanceMultiplier, Toggle landingAnimation) {
         super(EventType.HOLD, active);
         this.duration = duration;
         this.distanceMultiplier = distanceMultiplier;
@@ -26,7 +26,7 @@ public class Hold extends Action {
     @ToString
     public static final class Builder extends Action.Builder<Builder> {
 
-        private Double duration = 0.0;
+        private Long duration = 0L;
         private Long distanceMultiplier = 100L;
         private Toggle landingAnimation = Toggle.DISABLED;
 
@@ -53,7 +53,7 @@ public class Hold extends Action {
             return EventType.HOLD;
         }
 
-        public Builder duration(Double duration) {
+        public Builder duration(Long duration) {
             Objects.requireNonNull(duration);
             this.duration = duration;
             return this;

@@ -508,7 +508,7 @@ public class ActionFactory {
             }
             case HOLD: {
                 Hold.Builder builder = new Hold.Builder();
-                reader.read("duration", builder::duration, JsonNode::asDouble);
+                reader.read("duration", builder::duration, JsonNode::asLong);
                 reader.read("distanceMultiplier", builder::distanceMultiplier, JsonNode::asLong);
                 reader.read("landingAnimation", builder::landingAnimation, JsonNode::asText, toggleMap::get);
 

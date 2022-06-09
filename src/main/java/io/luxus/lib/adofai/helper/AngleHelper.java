@@ -15,14 +15,14 @@ public class AngleHelper {
         private final double currTravelAngle;
     }
 
-    public static Result calculateAngleData(double prevStaticAngle, TileAngle currAngle, TileAngle nextAngle, boolean currReversed) {
+    public static Result calculateAngleData(double prevStaticAngle, TileAngle currAngle, TileAngle nextAngle, double planetAngle, boolean currReversed) {
         double currStaticAngle = currAngle.isMidspin() ? prevStaticAngle : currAngle.getAngle();
         double currTravelAngle;
 
         if (nextAngle.isMidspin()) {
             currTravelAngle = 0.0;
             if (currAngle.isMidspin()) {
-                currStaticAngle += 180;
+                currStaticAngle += planetAngle;
                 currStaticAngle = generalizeAngle(currStaticAngle);
             }
         }
@@ -33,7 +33,7 @@ public class AngleHelper {
             }
 
             if (!currAngle.isMidspin()) {
-                currTravelAngle += 180;
+                currTravelAngle += planetAngle;
             }
 
             currTravelAngle = generalizeAngle(currTravelAngle);
@@ -42,11 +42,11 @@ public class AngleHelper {
         return new Result(currStaticAngle, currTravelAngle);
     }
 
-    public static double getNextStaticAngle(double staticAngle, double relativeAngle, boolean reversed) {
+    public static double getNextStaticAngle(double staticAngle, double relativeAngle, double planetAngle, boolean reversed) {
         if (reversed) {
-            staticAngle = staticAngle + relativeAngle - 180;
+            staticAngle = staticAngle + relativeAngle - planetAngle;
         } else {
-            staticAngle = staticAngle - relativeAngle + 180;
+            staticAngle = staticAngle - relativeAngle + planetAngle;
         }
 
         return generalizeAngle(staticAngle);

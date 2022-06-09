@@ -46,8 +46,13 @@ public class MapConverterBase {
                                                         Consumer<CustomLevel.Builder> customLevelConsumer) {
         return convert(customLevel, useCameraOptimization, new Function<ApplyEach, List<Tile.Builder>>() {
 
-            private double currStaticAngle = AngleHelper.getNextStaticAngle(0.0, customLevel.getTiles().get(0).getTileMeta().getTravelAngle(), false);
+            private double currStaticAngle = AngleHelper.getNextStaticAngle(
+                    0.0,
+                    customLevel.getTiles().get(0).getTileMeta().getTravelAngle(),
+                    customLevel.getTiles().get(0).getTileMeta().getPlanetAngle(),
+                    false);
             private boolean reversed = false;
+            private long planetNumber = 2;
 
             @Override
             public List<Tile.Builder> apply(ApplyEach applyEach) {
@@ -67,7 +72,13 @@ public class MapConverterBase {
                                 reversed = !reversed;
                             }
 
-                            currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, travelAngle, reversed);
+                            List<Action> multiPlanetActions = builder.getActions(EventType.MULTI_PLANET);
+                            if (!multiPlanetActions.isEmpty()) {
+                                MultiPlanet multiPlanet = (MultiPlanet) multiPlanetActions.get(0);
+                                planetNumber = multiPlanet.getPlanets();
+                            }
+
+                            currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, travelAngle, TileMeta.calculatePlanetAngle(planetNumber), reversed);
 
                             return builder;
                         })
@@ -154,8 +165,8 @@ public class MapConverterBase {
 
                 double timingBpm = timingTiles.get(timingTiles.size() - 1).getTileMeta().getBpm();
 
-                double timingTravelAngle = TileMeta.calculateTotalTravelAngle(timingTiles);
-                double newTravelAngle = TileMeta.calculateTotalTravelAngle(newTiles.subList(newTileIdx, newTileIdx + newTileAmount));
+                double timingTravelAngle = TileMeta.calculateTotalTravelAndPlanetAngle(timingTiles);
+                double newTravelAngle = TileMeta.calculateTotalTravelAndPlanetAngle(newTiles.subList(newTileIdx, newTileIdx + newTileAmount));
 
                 double multiplyValue = newTravelAngle / timingTravelAngle;
                 double currBpm = timingBpm * multiplyValue;

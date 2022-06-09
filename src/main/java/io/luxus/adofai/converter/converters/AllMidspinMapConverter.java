@@ -54,7 +54,11 @@ public class AllMidspinMapConverter implements MapConverter<AllMidspinMapConvert
         return MapConverterBase.convert(customLevel, false,
                 new Function<MapConverterBase.ApplyEach, List<Tile.Builder>>() {
 
-                    private double staticAngle = AngleHelper.getNextStaticAngle(0.0, TileMeta.calculateTotalTravelAngle(getSameTimingTiles(customLevel.getTiles(), 0)), false);
+                    private double staticAngle = AngleHelper.getNextStaticAngle(
+                            0.0,
+                            TileMeta.calculateTotalTravelAngle(getSameTimingTiles(customLevel.getTiles(), 0)),
+                            customLevel.getTiles().get(0).getTileMeta().getPlanetAngle(),
+                            false);
 
                     @Override
                     public List<Tile.Builder> apply(MapConverterBase.ApplyEach applyEach) {
@@ -67,10 +71,10 @@ public class AllMidspinMapConverter implements MapConverter<AllMidspinMapConvert
                         List<Tile.Builder> newTileBuilders = new ArrayList<>(parameters.midspinAmount + 1);
                         newTileBuilders.add(new Tile.Builder().angle(createNormal(staticAngle)));
                         for (int i = 0; i < parameters.midspinAmount; i++) {
-                            staticAngle = AngleHelper.getNextStaticAngle(staticAngle, 0.0, lastTileMeta.isReversed());
+                            staticAngle = AngleHelper.getNextStaticAngle(staticAngle, 0.0, lastTileMeta.getPlanetAngle(), lastTileMeta.isReversed());
                             newTileBuilders.add(new Tile.Builder().angle(MIDSPIN));
                         }
-                        staticAngle = AngleHelper.getNextStaticAngle(staticAngle, travelAngle, lastTileMeta.isReversed());
+                        staticAngle = AngleHelper.getNextStaticAngle(staticAngle, travelAngle, lastTileMeta.getPlanetAngle(), lastTileMeta.isReversed());
 
                         // add events to new tiles
                         for (int i = 0; i < oneTimingTiles.size(); i++) {
