@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
+import io.luxus.lib.adofai.decoration.Decoration;
+import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.type.action.Action;
 import io.luxus.lib.adofai.type.EventType;
 
@@ -18,6 +20,7 @@ public class CustomLevelFactory {
         JsonNode angleDataNode = node.get("angleData");
         JsonNode settingsNode = node.get("settings");
         JsonNode actionsNode = node.get("actions");
+        JsonNode decorationsNode = node.get("decorations");
 
         if (pathDataNode == null && angleDataNode == null) {
             throw new IllegalStateException("There's no pathData, angleData");
@@ -33,10 +36,19 @@ public class CustomLevelFactory {
 
         LevelSetting.Builder levelSettingBuilder = LevelSettingFactory.read(settingsNode);
 
-        List<Double> angleData = pathDataNode != null ?
+        List<TileAngle> angleData = pathDataNode != null ?
                 FlowFactory.readPathData(pathDataNode) :
                 FlowFactory.readAngleData(angleDataNode);
-        angleData.add(0, 0.0);
+        angleData.add(0, TileAngle.ZERO);
+
+        List<Decoration> decorations = new ArrayList<>();
+        if (decorationsNode != null) {
+            Iterator<JsonNode> it = decorationsNode.elements();
+            while (it.hasNext()) {
+                JsonNode jsonNode = it.next();
+                decorations.add(DecorationFactory.read(jsonNode));
+            }
+        }
 
         CustomLevel.Builder builder = new CustomLevel.Builder()
                 .levelSettingBuilder(levelSettingBuilder)
@@ -47,8 +59,17 @@ public class CustomLevelFactory {
             JsonNode jsonNode = it.next();
 
             final int floor = jsonNode.get("floor").asInt();
-            builder.getTileBuilders().get(floor).addAction(ActionFactory.read(jsonNode));
+            Action action = ActionFactory.read(jsonNode);
+
+            Decoration decoration = DecorationFactory.tryConvert((long) floor, action);
+            if (decoration != null) {
+                decorations.add(decoration);
+            }
+            else {
+                builder.getTileBuilders().get(floor).addAction(action);
+            }
         }
+        builder.decorations(decorations);
 
         return builder.build();
     }
@@ -57,7 +78,7 @@ public class CustomLevelFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
 
-        List<Double> angleData = customLevel.getTiles().stream()
+        List<TileAngle> angleData = customLevel.getTiles().stream()
                 .map(Tile::getAngle)
                 .collect(Collectors.toList());
         LevelSetting levelSetting = customLevel.getLevelSetting();
@@ -111,8 +132,25 @@ public class CustomLevelFactory {
                 }
             }
         }
+        sb.append("\n\t]");
 
-        sb.append("\n\t]\n}\n");
+
+        isFirst = true;
+        sb.append(",\n\t\"decorations\":\n\t[");
+        for (Decoration decoration : customLevel.getDecorations()) {
+            if (isFirst) {
+                isFirst = false;
+                sb.append('\n');
+            }
+            else {
+                sb.append(",\n");
+            }
+            DecorationFactory.write(sb, decoration);
+        }
+        sb.append("\n\t]");
+
+
+        sb.append("\n}\n");
         return sb.toString();
     }
 

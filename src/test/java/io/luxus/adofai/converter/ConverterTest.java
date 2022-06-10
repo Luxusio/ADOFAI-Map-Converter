@@ -1,5 +1,7 @@
 package io.luxus.adofai.converter;
 
+import io.luxus.adofai.converter.converters.AllMidspinMapConverter;
+import io.luxus.adofai.converter.converters.NoSpeedChangeMapConverter;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import org.junit.jupiter.api.Test;
@@ -29,8 +31,8 @@ public class ConverterTest {
         //dispatcher.convertMapAndSave(path, ConverterType.NO_EFFECT, new HashSet<>(Arrays.asList(EventType.MOVE_DECORATIONS, EventType.ADD_DECORATION)));
         //dispatcher.convertMapAndSave(path, ConverterType.TRANSPARENCY, 30);
         //dispatcher.convertMapAndSave(path, ConverterType.PSEUDO, 4, 15.0, false);
-        dispatcher.convertMapAndSave(path, ConverterType.MIDSPIN, 2);
-        dispatcher.convertMapAndSave(path, ConverterType.NO_SPEED_CHANGE, 113.3333333333);
+        dispatcher.convertMapAndSave(path, AllMidspinMapConverter.class, new AllMidspinMapConverter.Parameters(2));
+        dispatcher.convertMapAndSave(path, NoSpeedChangeMapConverter.class, new NoSpeedChangeMapConverter.Parameters(113.3333333333));
 
         // then
 

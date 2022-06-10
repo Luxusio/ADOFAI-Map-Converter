@@ -1,26 +1,21 @@
 package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
-import io.luxus.lib.adofai.util.ListUtil;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
 @ToString
 public class ScreenTile extends Action {
 
-	private final List<Double> tile;
+	private final Pair<Double, Double> tile;
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private ScreenTile(Boolean active, List<Double> tile, Double angleOffset, String eventTag) {
+	private ScreenTile(Boolean active, Pair<Double, Double> tile, Double angleOffset, String eventTag) {
 		super(EventType.SCREEN_TILE, active);
 		this.tile = tile;
 		this.angleOffset = angleOffset;
@@ -31,7 +26,7 @@ public class ScreenTile extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private List<Double> tile = Arrays.asList(1.0, 1.0);
+		private Pair<Double, Double> tile = Pair.with(1.0, 1.0);
 		private Double angleOffset = 0.0;
 		private String eventTag = "";
 
@@ -86,12 +81,9 @@ public class ScreenTile extends Action {
 		 * @throws NullPointerException when tile is null
 		 * @throws IllegalArgumentException when size of tile is not 2
 		 */
-		public Builder tile(List<Double> tile) {
+		public Builder tile(Pair<Double, Double> tile) {
 			Objects.requireNonNull(tile);
-			if (tile.size() != 2) {
-				throw new IllegalArgumentException("size of tile must be 2");
-			}
-			this.tile = ListUtil.createNewUnmodifiableList(tile);
+			this.tile = tile;
 			return self();
 		}
 

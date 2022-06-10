@@ -25,6 +25,7 @@ public class LevelSettingFactory {
             Map.Entry<String, JsonNode> field = it.next();
             map.put(field.getKey(), field.getValue());
         }
+        map.remove("requiredMods"); // removed
 
         JsonPropertyReader reader = new JsonPropertyReader(map);
 
@@ -46,7 +47,6 @@ public class LevelSettingFactory {
         reader.read("levelTags", builder::levelTags, JsonNode::asText);
         reader.read("artistLinks", builder::artistLinks, JsonNode::asText);
         reader.read("difficulty", builder::difficulty, JsonNode::asLong);
-        reader.read("requiredMods", builder::requiredMods, jsonNode -> nodeToList(jsonNode, JsonNode::asText));
         reader.read("songFilename", builder::songFilename, JsonNode::asText);
         reader.read("bpm", builder::bpm, JsonNode::asDouble);
         reader.read("volume", builder::volume, JsonNode::asLong);
@@ -70,13 +70,13 @@ public class LevelSettingFactory {
         reader.read("showDefaultBGIfNoImage", builder::showDefaultBGIfNoImage, JsonNode::asText, toggleMap::get);
         reader.read("bgImage", builder::bgImage, JsonNode::asText);
         reader.read("bgImageColor", builder::bgImageColor, JsonNode::asText);
-        reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asLong));
+        reader.read("parallax", builder::parallax, nodeToXYPair(JsonNode::asLong));
         reader.read("bgDisplayMode", builder::bgDisplayMode, JsonNode::asText, bgDisplayModeTypeMap::get);
         reader.read("lockRot", builder::lockRot, JsonNode::asText, toggleMap::get);
         reader.read("loopBG", builder::loopBG, JsonNode::asText, toggleMap::get);
         reader.read("unscaledSize", builder::unscaledSize, JsonNode::asLong);
         reader.read("relativeTo", builder::relativeTo, JsonNode::asText, cameraRelativeToMap::get);
-        reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+        reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
         reader.read("rotation", builder::rotation, JsonNode::asDouble);
         reader.read("zoom", builder::zoom, JsonNode::asLong);
         reader.read("bgVideo", builder::bgVideo, JsonNode::asText);
@@ -115,7 +115,6 @@ public class LevelSettingFactory {
         f = writeProperty(sb, f, "levelTags", s.getLevelTags());
         f = writeProperty(sb, f, "artistLinks", s.getArtistLinks());
         f = writeProperty(sb, f, "difficulty", s.getDifficulty());
-        f = writeProperty(sb, f, "requiredMods", s.getRequiredMods());
         f = writeProperty(sb, f, "songFilename", s.getSongFilename());
         f = writeProperty(sb, f, "bpm", s.getBpm());
         f = writeProperty(sb, f, "volume", s.getVolume());

@@ -1,39 +1,37 @@
 package io.luxus.lib.adofai.type.action;
 
-import io.luxus.lib.adofai.type.*;
-import io.luxus.lib.adofai.util.ListUtil;
+import io.luxus.lib.adofai.type.Ease;
+import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.TilePosition;
+import io.luxus.lib.adofai.type.Toggle;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
 @ToString
 public class MoveTrack extends Action {
 
-	private final Long startTileNum;
-	private final TilePosition startTilePosition;
-	private final Long endTileNum;
-	private final TilePosition endTilePosition;
+	private final Pair<Long, TilePosition> startTile;
+	private final Pair<Long, TilePosition> endTile;
 	private final Double duration;
-	private final List<Double> positionOffset;
+	private final Pair<Double, Double> positionOffset;
 	private final Double rotationOffset;
-	private final List<Double> scale;
+	private final Pair<Double, Double> scale;
 	private final Double opacity;
 	private final Double angleOffset;
 	private final Ease ease;
+	private final Toggle maxVfxOnly;
 	private final String eventTag;
 
-	private MoveTrack(Boolean active, Long startTileNum, TilePosition startTilePosition, Long endTileNum, TilePosition endTilePosition,
-					  Double duration, List<Double> positionOffset, Double rotationOffset, List<Double> scale, Double opacity,
-					  Double angleOffset, Ease ease, String eventTag) {
+	private MoveTrack(Boolean active, Pair<Long, TilePosition> startTile, Pair<Long, TilePosition> endTile,
+					  Double duration, Pair<Double, Double> positionOffset, Double rotationOffset, Pair<Double, Double> scale, Double opacity,
+					  Double angleOffset, Ease ease, Toggle maxVfxOnly, String eventTag) {
 		super(EventType.MOVE_TRACK, active);
-		this.startTileNum = startTileNum;
-		this.startTilePosition = startTilePosition;
-		this.endTileNum = endTileNum;
-		this.endTilePosition = endTilePosition;
+		this.startTile = startTile;
+		this.endTile = endTile;
 		this.duration = duration;
 		this.positionOffset = positionOffset;
 		this.rotationOffset = rotationOffset;
@@ -41,6 +39,7 @@ public class MoveTrack extends Action {
 		this.opacity = opacity;
 		this.angleOffset = angleOffset;
 		this.ease = ease;
+		this.maxVfxOnly = maxVfxOnly;
 		this.eventTag = eventTag;
 	}
 
@@ -48,17 +47,16 @@ public class MoveTrack extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private Long startTileNum = 0L;
-		private TilePosition startTilePosition = TilePosition.THIS_TILE;
-		private Long endTileNum = 0L;
-		private TilePosition endTilePosition = TilePosition.THIS_TILE;
+		private Pair<Long, TilePosition> startTile = Pair.with(0L, TilePosition.THIS_TILE);
+		private Pair<Long, TilePosition> endTile = Pair.with(0L, TilePosition.THIS_TILE);
 		private Double duration = 1.0;
-		private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> positionOffset = Pair.with(0.0, 0.0);
 		private Double rotationOffset = null;
-		private List<Double> scale = null;
+		private Pair<Double, Double> scale = null;
 		private Double opacity = null;
 		private Double angleOffset = 0.0;
 		private Ease ease = Ease.LINEAR;
+		private Toggle maxVfxOnly = Toggle.DISABLED;
 		private String eventTag = "";
 
 		/**
@@ -69,10 +67,8 @@ public class MoveTrack extends Action {
 		 */
 		public Builder from(MoveTrack src) {
 			return self()
-					.startTileNum(src.startTileNum)
-					.startTilePosition(src.startTilePosition)
-					.endTileNum(src.endTileNum)
-					.endTilePosition(src.endTilePosition)
+					.startTile(src.startTile)
+					.endTile(src.endTile)
 					.duration(src.duration)
 					.positionOffset(src.positionOffset)
 					.rotationOffset(src.rotationOffset)
@@ -80,6 +76,7 @@ public class MoveTrack extends Action {
 					.opacity(src.opacity)
 					.angleOffset(src.angleOffset)
 					.ease(src.ease)
+					.maxVfxOnly(src.maxVfxOnly)
 					.eventTag(src.eventTag);
 		}
 
@@ -90,8 +87,8 @@ public class MoveTrack extends Action {
 		 */
 		@Override
 		public MoveTrack build() {
-			return new MoveTrack(active, startTileNum, startTilePosition, endTileNum, endTilePosition, duration,
-					positionOffset, rotationOffset, scale, opacity, angleOffset, ease, eventTag);
+			return new MoveTrack(active, startTile, endTile, duration,
+					positionOffset, rotationOffset, scale, opacity, angleOffset, ease, maxVfxOnly, eventTag);
 		}
 
 		/**
@@ -114,55 +111,15 @@ public class MoveTrack extends Action {
 			return EventType.MOVE_TRACK;
 		}
 
-		/**
-		 * setter of startTileNum
-		 *
-		 * @param startTileNum startTileNum of MoveTrack Event
-		 * @return self
-		 * @throws NullPointerException when startTileNum is null
-		 */
-		public Builder startTileNum(Long startTileNum) {
-			Objects.requireNonNull(startTileNum);
-			this.startTileNum = startTileNum;
+		public Builder startTile(Pair<Long, TilePosition> startTile) {
+			Objects.requireNonNull(startTile);
+			this.startTile = startTile;
 			return self();
 		}
 
-		/**
-		 * setter of startTilePosition
-		 *
-		 * @param startTilePosition startTilePosition of MoveTrack Event
-		 * @return self
-		 * @throws NullPointerException when startTilePosition is null
-		 */
-		public Builder startTilePosition(TilePosition startTilePosition) {
-			Objects.requireNonNull(startTilePosition);
-			this.startTilePosition = startTilePosition;
-			return self();
-		}
-
-		/**
-		 * setter of endTileNum
-		 *
-		 * @param endTileNum endTileNum of MoveTrack Event
-		 * @return self
-		 * @throws NullPointerException when endTileNum is null
-		 */
-		public Builder endTileNum(Long endTileNum) {
-			Objects.requireNonNull(endTileNum);
-			this.endTileNum = endTileNum;
-			return self();
-		}
-
-		/**
-		 * setter of endTilePosition
-		 *
-		 * @param endTilePosition endTilePosition of MoveTrack Event
-		 * @return self
-		 * @throws NullPointerException when endTilePosition is null
-		 */
-		public Builder endTilePosition(TilePosition endTilePosition) {
-			Objects.requireNonNull(endTilePosition);
-			this.endTilePosition = endTilePosition;
+		public Builder endTile(Pair<Long, TilePosition> endTile) {
+			Objects.requireNonNull(endTile);
+			this.endTile = endTile;
 			return self();
 		}
 
@@ -186,11 +143,8 @@ public class MoveTrack extends Action {
 		 * @return self
 		 * @throws IllegalArgumentException when size of positionOffset is not 2
 		 */
-		public Builder positionOffset(List<Double> positionOffset) {
-			if (positionOffset != null && positionOffset.size() != 2) {
-				throw new IllegalArgumentException("size of positionOffset must be 2");
-			}
-			this.positionOffset = ListUtil.createNewUnmodifiableList(positionOffset);
+		public Builder positionOffset(Pair<Double, Double> positionOffset) {
+			this.positionOffset = positionOffset;
 			return self();
 		}
 
@@ -212,11 +166,8 @@ public class MoveTrack extends Action {
 		 * @return self
 		 * @throws IllegalArgumentException when size of scale is not 2
 		 */
-		public Builder scale(List<Double> scale) {
-			if (scale != null && scale.size() != 2) {
-				throw new IllegalArgumentException("size of scale must be 2");
-			}
-			this.scale = ListUtil.createNewUnmodifiableList(scale);
+		public Builder scale(Pair<Double, Double> scale) {
+			this.scale = scale;
 			return self();
 		}
 
@@ -257,6 +208,12 @@ public class MoveTrack extends Action {
 			return self();
 		}
 
+		public Builder maxVfxOnly(Toggle maxVfxOnly) {
+			Objects.requireNonNull(maxVfxOnly);
+			this.maxVfxOnly = maxVfxOnly;
+			return self();
+		}
+
 		/**
 		 * setter of eventTag
 		 *
@@ -269,6 +226,7 @@ public class MoveTrack extends Action {
 			this.eventTag = eventTag;
 			return self();
 		}
+
 	}
 
 }

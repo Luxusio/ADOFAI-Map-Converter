@@ -2,24 +2,28 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.Toggle;
-import io.luxus.lib.adofai.util.ListUtil;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
 @ToString
 public class PositionTrack extends Action {
 
-	private final List<Double> positionOffset;
+	private final Pair<Double, Double> positionOffset;
+	private final Double rotation;
+	private final Double scale;
+	private final Double opacity;
 	private final Toggle editorOnly;
 
-	private PositionTrack(Boolean active, List<Double> positionOffset, Toggle editorOnly) {
+	private PositionTrack(Boolean active, Pair<Double, Double> positionOffset, Double rotation, Double scale, Double opacity, Toggle editorOnly) {
 		super(EventType.POSITION_TRACK, active);
 		this.positionOffset = positionOffset;
+		this.rotation = rotation;
+		this.scale = scale;
+		this.opacity = opacity;
 		this.editorOnly = editorOnly;
 	}
 
@@ -27,7 +31,10 @@ public class PositionTrack extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> positionOffset = Pair.with(0.0, 0.0);
+		private Double rotation = 0.0;
+		private Double scale = 100.0;
+		private Double opacity = 100.0;
 		private Toggle editorOnly = Toggle.DISABLED;
 
 		/**
@@ -39,6 +46,9 @@ public class PositionTrack extends Action {
 		public Builder from(PositionTrack src) {
 			return self()
 					.positionOffset(src.positionOffset)
+					.rotation(src.rotation)
+					.scale(src.scale)
+					.opacity(src.opacity)
 					.editorOnly(src.editorOnly);
 		}
 
@@ -49,7 +59,7 @@ public class PositionTrack extends Action {
 		 */
 		@Override
 		public PositionTrack build() {
-			return new PositionTrack(active, positionOffset, editorOnly);
+			return new PositionTrack(active, positionOffset, rotation, scale, opacity, editorOnly);
 		}
 
 		/**
@@ -80,13 +90,28 @@ public class PositionTrack extends Action {
 		 * @throws NullPointerException when positionOffset is null
 		 * @throws IllegalArgumentException when size of positionOffset is not 2
 		 */
-		public Builder positionOffset(List<Double> positionOffset) {
+		public Builder positionOffset(Pair<Double, Double> positionOffset) {
 			Objects.requireNonNull(positionOffset);
-			if (positionOffset.size() != 2) {
-				throw new IllegalArgumentException("size of positionOffset must be 2");
-			}
-			this.positionOffset = ListUtil.createNewUnmodifiableList(positionOffset);
+			this.positionOffset = positionOffset;
 			return self();
+		}
+
+		public Builder rotation(Double rotation) {
+			Objects.requireNonNull(rotation);
+			this.rotation = rotation;
+			return this;
+		}
+
+		public Builder scale(Double scale) {
+			Objects.requireNonNull(scale);
+			this.scale = scale;
+			return this;
+		}
+
+		public Builder opacity(Double opacity) {
+			Objects.requireNonNull(opacity);
+			this.opacity = opacity;
+			return this;
 		}
 
 		/**

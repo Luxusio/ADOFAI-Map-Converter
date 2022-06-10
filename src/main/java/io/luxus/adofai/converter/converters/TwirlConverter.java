@@ -8,27 +8,26 @@ import io.luxus.lib.adofai.type.action.Twirl;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 import io.luxus.lib.adofai.util.NumberUtil;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-public class TwirlConverter implements MapConverter {
+public class TwirlConverter implements MapConverter<TwirlConverter.Parameters> {
 
 	@Override
-	public Object[] prepareParameters(Scanner scanner) {
+	public Parameters prepareParameters(Scanner scanner) {
 		System.out.print("회전 넣을 비율(0.0~1.0):");
 		double twirlRate = scanner.nextDouble();
 		scanner.nextLine();
 
-		return new Object[] { twirlRate };
+		return new Parameters(twirlRate);
 	}
 
 	@Override
-	public boolean impossible(CustomLevel customLevel, Object... args) {
-		double twirlRate = (double) args[0];
-
-		if (twirlRate < 0 || twirlRate > 1.0) {
+	public boolean impossible(CustomLevel customLevel, Parameters parameters) {
+		if (parameters.twirlRate < 0 || parameters.twirlRate > 1.0) {
 			System.err.println("회전 비율은 0 이상 1.0 이하여야 합니다.");
 			return true;
 		}
@@ -37,24 +36,26 @@ public class TwirlConverter implements MapConverter {
 	}
 
 	@Override
-	public String getLevelPostfix(CustomLevel customLevel, Object... args) {
-		double twirlRate = (double) args[0];
-
-		return NumberUtil.fuzzyEquals(twirlRate, 0.0) ? "No Twirl" :
-				NumberUtil.fuzzyEquals(twirlRate, 1.0) ? "All Twirl" :
-						"Twirl rate " + twirlRate;
+	public String getLevelPostfix(CustomLevel customLevel, Parameters parameters) {
+		return NumberUtil.fuzzyEquals(parameters.twirlRate, 0.0) ? "No Twirl" :
+				NumberUtil.fuzzyEquals(parameters.twirlRate, 1.0) ? "All Twirl" :
+						"Twirl rate " + parameters.twirlRate;
 	}
 
 	@Override
-	public CustomLevel convert(CustomLevel customLevel, Object... args) {
-		double twirlRate = (double) args[0];
-
+	public CustomLevel convert(CustomLevel customLevel, Parameters parameters) {
 		return MapConverterBase
 				.convertBasedOnTravelAngle(customLevel, false, tile -> tile.getTileMeta().getTravelAngle(), tileBuilder -> {
 					tileBuilder.removeActions(EventType.TWIRL);
-					if (twirlRate > Math.random()) {
+					if (parameters.twirlRate > Math.random()) {
 						tileBuilder.addAction(new Twirl.Builder().build());
 					}
 				});
 	}
+
+	@RequiredArgsConstructor
+	public static class Parameters {
+		private final double twirlRate;
+	}
+
 }

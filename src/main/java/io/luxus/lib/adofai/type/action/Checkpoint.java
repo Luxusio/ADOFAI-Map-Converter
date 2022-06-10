@@ -4,18 +4,25 @@ import io.luxus.lib.adofai.type.EventType;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Objects;
+
 
 @Getter
 @ToString
 public class Checkpoint extends Action {
-	
-	private Checkpoint(Boolean active) {
+
+	private final Long tileOffset;
+
+	private Checkpoint(Boolean active, Long tileOffset) {
 		super(EventType.CHECK_POINT, active);
+		this.tileOffset = tileOffset;
 	}
 
 	@Getter
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
+
+		private Long tileOffset = 0L;
 
 		/**
 		 * set all parameter with given action
@@ -24,7 +31,8 @@ public class Checkpoint extends Action {
 		 * @return self
 		 */
 		public Builder from(Checkpoint src) {
-			return self();
+			return self()
+					.tileOffset(src.tileOffset);
 		}
 
 		/**
@@ -34,7 +42,7 @@ public class Checkpoint extends Action {
 		 */
 		@Override
 		public Checkpoint build() {
-			return new Checkpoint(active);
+			return new Checkpoint(active, tileOffset);
 		}
 
 		/**
@@ -55,6 +63,12 @@ public class Checkpoint extends Action {
 		@Override
 		public EventType getEventType() {
 			return EventType.CHECK_POINT;
+		}
+
+		public Builder tileOffset(Long tileOffset) {
+			Objects.requireNonNull(tileOffset);
+			this.tileOffset = tileOffset;
+			return self();
 		}
 
 	}

@@ -4,14 +4,14 @@ import io.luxus.lib.adofai.CustomLevel;
 
 import java.util.Scanner;
 
-public interface MapConverter {
+public interface MapConverter<T> {
 
-    Object[] prepareParameters(Scanner scanner);
+    T prepareParameters(Scanner scanner);
 
-    boolean impossible(CustomLevel customLevel, Object... args);
+    boolean impossible(CustomLevel customLevel, T parameters);
 
-    String getLevelPostfix(CustomLevel customLevel, Object... args);
+    String getLevelPostfix(CustomLevel customLevel, T parameters);
 
-    CustomLevel convert(CustomLevel customLevel, Object... args);
+    CustomLevel convert(CustomLevel customLevel, T parameters);
 
 }

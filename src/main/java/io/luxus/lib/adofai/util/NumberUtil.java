@@ -25,8 +25,7 @@ public final class NumberUtil {
      * @return 0 <= angle < 360
      */
     public static double generalizeAngle(double angle) {
-        angle = angle - ((int) (angle / 360)) * 360;
-        return angle < 0 ? angle + 360 : angle;
+        return ((angle % 360) + 360) % 360;
     }
 
     /**

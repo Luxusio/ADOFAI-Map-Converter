@@ -19,8 +19,8 @@ public class TwirlConverterTest {
         String path = "./src/test/resources/test/sb.adofai";
 
         // when
-        CustomLevel resultAllTwirl = new TwirlConverter().convert(CustomLevelParser.readPath(path), 1.0);
-        CustomLevel resultNoTwirl = new TwirlConverter().convert(CustomLevelParser.readPath(path), 0.0);
+        CustomLevel resultAllTwirl = new TwirlConverter().convert(CustomLevelParser.readPath(path), new TwirlConverter.Parameters(1.0));
+        CustomLevel resultNoTwirl = new TwirlConverter().convert(CustomLevelParser.readPath(path), new TwirlConverter.Parameters(0.0));
 
         // then
         CustomLevel original = CustomLevelParser.readPath(path);

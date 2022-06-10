@@ -2,13 +2,11 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.Ease;
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.util.ListUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -18,19 +16,19 @@ public class MoveDecorations extends Action {
 	private final Double duration;
 	private final String tag;
 	private final String decorationImage;
-	private final List<Double> positionOffset;
+	private final Pair<Double, Double> positionOffset;
 	private final Double rotationOffset;
-	private final List<Double> scale;
+	private final Pair<Double, Double> scale;
 	private final String color;
 	private final Double opacity;
 	private final Long depth;
-	private final List<Double> parallax;
+	private final Pair<Double, Double> parallax;
 	private final Double angleOffset;
 	private final Ease ease;
 	private final String eventTag;
 
-	private MoveDecorations(Boolean active, Double duration, String tag, String decorationImage, List<Double> positionOffset, Double rotationOffset,
-						   List<Double> scale, String color, Double opacity, Long depth, List<Double> parallax, Double angleOffset, Ease ease, String eventTag) {
+	private MoveDecorations(Boolean active, Double duration, String tag, String decorationImage, Pair<Double, Double> positionOffset, Double rotationOffset,
+							Pair<Double, Double> scale, String color, Double opacity, Long depth, Pair<Double, Double> parallax, Double angleOffset, Ease ease, String eventTag) {
 		super(EventType.MOVE_DECORATIONS, active);
 		this.duration = duration;
 		this.tag = tag;
@@ -55,13 +53,13 @@ public class MoveDecorations extends Action {
 		private Double duration = 1.0;
 		private String tag = "";
 		private String decorationImage = null;
-		private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> positionOffset = Pair.with(0.0, 0.0);
 		private Double rotationOffset = null;
-		private List<Double> scale = null;
+		private Pair<Double, Double> scale = null;
 		private String color = null;
 		private Double opacity = null;
 		private Long depth = null;
-		private List<Double> parallax = null;
+		private Pair<Double, Double> parallax = null;
 		private Double angleOffset = 0.0;
 		private Ease ease = Ease.LINEAR;
 		private String eventTag = "";
@@ -166,11 +164,8 @@ public class MoveDecorations extends Action {
 		 * @return self
 		 * @throws IllegalArgumentException when size of positionOffset is not 2
 		 */
-		public Builder positionOffset(List<Double> positionOffset) {
-			if (positionOffset != null && positionOffset.size() != 2) {
-				throw new IllegalArgumentException("size of positionOffset must be 2");
-			}
-			this.positionOffset = ListUtil.createNewUnmodifiableList(positionOffset);
+		public Builder positionOffset(Pair<Double, Double> positionOffset) {
+			this.positionOffset = positionOffset;
 			return self();
 		}
 
@@ -194,11 +189,8 @@ public class MoveDecorations extends Action {
 		 * @return self
 		 * @throws IllegalArgumentException when size of scale is not 2
 		 */
-		public Builder scale(List<Double> scale) {
-			if (scale != null && scale.size() != 2) {
-				throw new IllegalArgumentException("size of scale must be 2");
-			}
-			this.scale = ListUtil.createNewUnmodifiableList(scale);
+		public Builder scale(Pair<Double, Double> scale) {
+			this.scale = scale;
 			return self();
 		}
 
@@ -250,10 +242,7 @@ public class MoveDecorations extends Action {
 		 * @param parallax parallax of MoveDecoration Event
 		 * @return self
 		 */
-		public Builder parallax(List<Double> parallax) {
-			if (parallax != null && parallax.size() != 2) {
-				throw new IllegalArgumentException("size of parallax must be 2");
-			}
+		public Builder parallax(Pair<Double, Double> parallax) {
 			this.parallax = parallax;
 			return self();
 		}

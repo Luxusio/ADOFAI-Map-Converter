@@ -8,33 +8,46 @@ import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 
 import java.io.IOException;
-import java.util.EnumMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Scanner;
-
-import static io.luxus.adofai.converter.ConverterType.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MapConverterDispatcher {
 
-    private final Map<ConverterType, MapConverter> converterMap = new EnumMap<>(ConverterType.class);
+    private final Map<Class<? extends MapConverter<?>>, MapConverter<?>> converterMap;
 
     public MapConverterDispatcher() {
-        converterMap.put(OUTER, new OuterMapConverter());
-        converterMap.put(LINEAR, new LinearMapConverter());
-        converterMap.put(SHAPED, new ShapedMapConverter());
-        converterMap.put(TWIRL_RATIO, new TwirlConverter());
-        converterMap.put(NO_EFFECT, new NonEffectMapConverter());
-        converterMap.put(TRANSPARENCY, new TransparentMapConverter());
-        converterMap.put(BPM_VALUE_ONLY, new OnlyBpmSetMapConverter());
-        converterMap.put(NO_SPEED_CHANGE, new NoSpeedChangeMapConverter());
-        converterMap.put(BPM_MULTIPLIER, new BpmMultiplyMapConverter());
-        converterMap.put(CHAOS, new ChaosBpmMapConverter());
-        converterMap.put(MIDSPIN, new AllMidspinMapConverter());
-        converterMap.put(PSEUDO, new PseudoMapConverter());
+        this.converterMap = Collections.unmodifiableMap(Stream.of(
+                OuterMapConverter.class,
+                LinearMapConverter.class,
+                ShapedMapConverter.class,
+                TwirlConverter.class,
+                NonEffectMapConverter.class,
+                TransparentMapConverter.class,
+                OnlyBpmSetMapConverter.class,
+                NoSpeedChangeMapConverter.class,
+                BpmMultiplyMapConverter.class,
+                ChaosBpmMapConverter.class,
+                AllMidspinMapConverter.class,
+                PseudoMapConverter.class,
+                PlanetNumberMapConverter.class
+        ).collect(Collectors.toMap(
+                Function.identity(),
+                clazz -> {
+                    try {
+                        return clazz.newInstance();
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                })));
     }
 
-    public Object[] prepareParameters(ConverterType type, Scanner scanner) {
-        MapConverter mapConverter = converterMap.get(type);
+    public <CT extends MapConverter<T>, T> T prepareParameters(Class<CT> type, Scanner scanner) {
+        @SuppressWarnings("unchecked")
+        MapConverter<T> mapConverter = (MapConverter<T>) converterMap.get(type);
         if (mapConverter == null) {
             System.err.println("잘못된 converterType 입니다. (" + type + ")");
             return null;
@@ -43,8 +56,9 @@ public class MapConverterDispatcher {
         return mapConverter.prepareParameters(scanner);
     }
 
-    public void convertMapAndSave(String path, ConverterType type, Object... args) {
-        MapConverter mapConverter = converterMap.get(type);
+    public <CT extends MapConverter<T>, T> void convertMapAndSave(String path, Class<CT> type, T args) {
+        @SuppressWarnings("unchecked")
+        MapConverter<T> mapConverter = (MapConverter<T>) converterMap.get(type);
         if (mapConverter == null) {
             System.err.println("잘못된 converterType 입니다. (" + type + ")");
             return;
@@ -65,7 +79,7 @@ public class MapConverterDispatcher {
         }
     }
 
-    public CustomLevel convertCustomLevel(String path, MapConverter mapConverter, Object... args) {
+    private <T> CustomLevel convertCustomLevel(String path, MapConverter<T> mapConverter, T args) {
         CustomLevel customLevel;
         try {
             customLevel = CustomLevelParser.readPath(path);
@@ -82,7 +96,7 @@ public class MapConverterDispatcher {
         return mapConverter.convert(customLevel, args);
     }
 
-    public String getSavePath(String path, MapConverter mapConverter, CustomLevel customLevel, Object... args) {
+    private <T> String getSavePath(String path, MapConverter<T> mapConverter, CustomLevel customLevel, T args) {
         if (path.endsWith(".adofai")) {
             path = path.substring(0, path.length() - 7);
         }

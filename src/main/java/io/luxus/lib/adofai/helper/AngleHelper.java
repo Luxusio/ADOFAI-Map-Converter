@@ -1,10 +1,9 @@
 package io.luxus.lib.adofai.helper;
 
-import io.luxus.lib.adofai.util.NumberUtil;
+import io.luxus.lib.adofai.type.TileAngle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
 public class AngleHelper {
@@ -16,25 +15,25 @@ public class AngleHelper {
         private final double currTravelAngle;
     }
 
-    public static Result calculateAngleData(double prevStaticAngle, Double currAngle, Double nextAngle, boolean currReversed) {
-        double currStaticAngle = isMidAngle(currAngle) ? prevStaticAngle : currAngle;
+    public static Result calculateAngleData(double prevStaticAngle, TileAngle currAngle, TileAngle nextAngle, double planetAngle, boolean currReversed) {
+        double currStaticAngle = currAngle.isMidspin() ? prevStaticAngle : currAngle.getAngle();
         double currTravelAngle;
 
-        if (isMidAngle(nextAngle)) {
+        if (nextAngle.isMidspin()) {
             currTravelAngle = 0.0;
-            if (isMidAngle(currAngle)) {
-                currStaticAngle += 180;
+            if (currAngle.isMidspin()) {
+                currStaticAngle += planetAngle;
                 currStaticAngle = generalizeAngle(currStaticAngle);
             }
         }
         else {
-            currTravelAngle = currStaticAngle - nextAngle;
+            currTravelAngle = currStaticAngle - nextAngle.getAngle();
             if (currReversed) {
                 currTravelAngle = -currTravelAngle;
             }
 
-            if (!isMidAngle(currAngle)) {
-                currTravelAngle += 180;
+            if (!currAngle.isMidspin()) {
+                currTravelAngle += planetAngle;
             }
 
             currTravelAngle = generalizeAngle(currTravelAngle);
@@ -43,19 +42,20 @@ public class AngleHelper {
         return new Result(currStaticAngle, currTravelAngle);
     }
 
-    public static double getNextStaticAngle(double staticAngle, double relativeAngle, boolean reversed) {
-        if (reversed) {
-            staticAngle = staticAngle + relativeAngle - 180;
-        } else {
-            staticAngle = staticAngle - relativeAngle + 180;
+    public static double getNextStaticAngle(double staticAngle, double travelAngle, double planetAngle, boolean reversed) {
+        if (travelAngle == 0) {
+            if (reversed) {
+                return generalizeAngle(staticAngle + planetAngle);
+            } else {
+                return generalizeAngle(staticAngle - planetAngle);
+            }
         }
 
-        return generalizeAngle(staticAngle);
-    }
-
-    public static boolean isMidAngle(Double angle) {
-        return ANGLE_MID_TILE == null ? angle == null :
-                NumberUtil.fuzzyEquals(ANGLE_MID_TILE, angle);
+        if (reversed) {
+            return generalizeAngle(staticAngle + (travelAngle - planetAngle));
+        } else {
+            return generalizeAngle(staticAngle - (travelAngle - planetAngle));
+        }
     }
 
 }

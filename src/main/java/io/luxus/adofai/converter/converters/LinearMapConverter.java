@@ -1,30 +1,34 @@
 package io.luxus.adofai.converter.converters;
 
 import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.type.TileAngle;
 
-import java.util.Collections;
 import java.util.Scanner;
+
+import static java.util.Collections.singletonList;
 
 public class LinearMapConverter extends ShapedMapConverter {
 
+    public static final ShapedMapConverter.Parameters PARAMETERS = new Parameters("", null, singletonList(TileAngle.ZERO));
+
     @Override
-    public Object[] prepareParameters(Scanner scanner) {
-        return new Object[0];
+    public ShapedMapConverter.Parameters prepareParameters(Scanner scanner) {
+        return PARAMETERS;
     }
 
     @Override
-    public boolean impossible(CustomLevel customLevel, Object... args) {
+    public boolean impossible(CustomLevel customLevel, ShapedMapConverter.Parameters args) {
         return false;
     }
 
     @Override
-    public String getLevelPostfix(CustomLevel customLevel, Object... args) {
+    public String getLevelPostfix(CustomLevel customLevel, ShapedMapConverter.Parameters args) {
         return "Linear";
     }
 
     @Override
-    public CustomLevel convert(CustomLevel customLevel, Object... args) {
-        return super.convert(customLevel, "", null, Collections.singletonList(0.0));
+    public CustomLevel convert(CustomLevel customLevel, ShapedMapConverter.Parameters parameters) {
+        return super.convert(customLevel, PARAMETERS);
     }
 
 }

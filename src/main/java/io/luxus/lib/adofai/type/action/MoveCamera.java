@@ -1,12 +1,13 @@
 package io.luxus.lib.adofai.type.action;
 
-import io.luxus.lib.adofai.type.*;
-import io.luxus.lib.adofai.util.ListUtil;
+import io.luxus.lib.adofai.type.CameraRelativeTo;
+import io.luxus.lib.adofai.type.Ease;
+import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.Toggle;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -15,14 +16,16 @@ public class MoveCamera extends Action {
 
 	private final Double duration;
 	private final CameraRelativeTo relativeTo;
-	private final List<Double> position;
+	private final Pair<Double, Double> position;
 	private final Double rotation;
 	private final Long zoom;
 	private final Double angleOffset;
 	private final Ease ease;
+	private final Toggle dontDisable;
+	private final Toggle minVfxOnly;
 	private final String eventTag;
 
-	private MoveCamera(Boolean active, Double duration, CameraRelativeTo relativeTo, List<Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, String eventTag) {
+	private MoveCamera(Boolean active, Double duration, CameraRelativeTo relativeTo, Pair<Double, Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, Toggle dontDisable, Toggle minVfxOnly, String eventTag) {
 		super(EventType.MOVE_CAMERA, active);
 		this.duration = duration;
 		this.relativeTo = relativeTo;
@@ -31,6 +34,8 @@ public class MoveCamera extends Action {
 		this.zoom = zoom;
 		this.angleOffset = angleOffset;
 		this.ease = ease;
+		this.dontDisable = dontDisable;
+		this.minVfxOnly = minVfxOnly;
 		this.eventTag = eventTag;
 	}
 
@@ -40,11 +45,13 @@ public class MoveCamera extends Action {
 
 		private Double duration = 1.0;
 		private CameraRelativeTo relativeTo = CameraRelativeTo.PLAYER;
-		private List<Double> position = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> position = Pair.with(0.0, 0.0);
 		private Double rotation = 0.0;
 		private Long zoom = 100L;
 		private Double angleOffset = 0.0;
 		private Ease ease = Ease.LINEAR;
+		private Toggle dontDisable = Toggle.DISABLED;
+		private Toggle minVfxOnly = Toggle.DISABLED;
 		private String eventTag = "";
 
 		/**
@@ -62,6 +69,8 @@ public class MoveCamera extends Action {
 					.zoom(src.zoom)
 					.angleOffset(src.angleOffset)
 					.ease(src.ease)
+					.dontDisable(src.dontDisable)
+					.minVfxOnly(src.minVfxOnly)
 					.eventTag(src.eventTag);
 		}
 
@@ -72,7 +81,7 @@ public class MoveCamera extends Action {
 		 */
 		@Override
 		public MoveCamera build() {
-			return new MoveCamera(active, duration, relativeTo, position, rotation, zoom, angleOffset, ease, eventTag);
+			return new MoveCamera(active, duration, relativeTo, position, rotation, zoom, angleOffset, ease, dontDisable, minVfxOnly, eventTag);
 		}
 
 		/**
@@ -127,14 +136,10 @@ public class MoveCamera extends Action {
 		 * @param position position of MoveCamera Event
 		 * @return self
 		 * @throws NullPointerException when position is null
-		 * @throws IllegalArgumentException when size of position is not 2
 		 */
-		public Builder position(List<Double> position) {
+		public Builder position(Pair<Double, Double> position) {
 			Objects.requireNonNull(position);
-			if (position.size() != 2) {
-				throw new IllegalArgumentException("size of position must be 2");
-			}
-			this.position = ListUtil.createNewUnmodifiableList(position);
+			this.position = position;
 			return self();
 		}
 
@@ -187,6 +192,18 @@ public class MoveCamera extends Action {
 		public Builder ease(Ease ease) {
 			Objects.requireNonNull(ease);
 			this.ease = ease;
+			return self();
+		}
+
+		public Builder dontDisable(Toggle dontDisable) {
+			Objects.requireNonNull(dontDisable);
+			this.dontDisable = dontDisable;
+			return self();
+		}
+
+		public Builder minVfxOnly(Toggle minVfxOnly) {
+			Objects.requireNonNull(minVfxOnly);
+			this.minVfxOnly = minVfxOnly;
 			return self();
 		}
 

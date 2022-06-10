@@ -1,6 +1,8 @@
 package io.luxus.lib.adofai;
 
+import io.luxus.lib.adofai.decoration.Decoration;
 import io.luxus.lib.adofai.helper.AngleHelper;
+import io.luxus.lib.adofai.type.TileAngle;
 import lombok.*;
 
 import java.util.*;
@@ -13,6 +15,7 @@ public class CustomLevel {
 
     private final LevelSetting levelSetting;
     private final List<Tile> tiles;
+    private final List<Decoration> decorations;
 
     @Getter
     @ToString
@@ -20,6 +23,7 @@ public class CustomLevel {
 
         private LevelSetting.Builder levelSettingBuilder = new LevelSetting.Builder();
         private List<Tile.Builder> tileBuilders = new ArrayList<>();
+        private List<Decoration> decorations = new ArrayList<>();
 
         public Builder self() {
             return this;
@@ -37,7 +41,7 @@ public class CustomLevel {
 
         public CustomLevel build() {
             LevelSetting levelSetting = levelSettingBuilder.build();
-            return new CustomLevel(levelSetting, getTiles(levelSetting));
+            return new CustomLevel(levelSetting, getTiles(levelSetting), Collections.unmodifiableList(new ArrayList<>(decorations)));
         }
 
         private List<Tile> getTiles(LevelSetting levelSetting) {
@@ -50,7 +54,7 @@ public class CustomLevel {
 
             // build first tile
             Tile firstTile = bIt.next()
-                    .buildFirst(levelSetting, tileBuilders.size() == 1 ? 0.0 : tileBuilders.get(1).getAngle());
+                    .buildFirst(levelSetting, tileBuilders.size() == 1 ? TileAngle.ZERO : tileBuilders.get(1).getAngle());
 
             results.add(firstTile);
 
@@ -91,7 +95,7 @@ public class CustomLevel {
             return self();
         }
 
-        public Builder tileFromAngles(List<Double> angles) {
+        public Builder tileFromAngles(List<TileAngle> angles) {
             this.tileBuilders = angles.stream()
                     .map(angle -> new Tile.Builder().angle(angle))
                     .collect(Collectors.toList());
@@ -105,6 +109,12 @@ public class CustomLevel {
 
         public Builder addTileBuilder(Tile.Builder tileBuilder) {
             this.tileBuilders.add(tileBuilder);
+            return self();
+        }
+
+        public Builder decorations(List<Decoration> decorations) {
+            Objects.requireNonNull(decorations);
+            this.decorations = decorations;
             return self();
         }
 

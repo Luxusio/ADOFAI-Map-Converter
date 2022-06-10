@@ -3,35 +3,35 @@ package io.luxus.lib.adofai.type.action;
 import io.luxus.lib.adofai.type.DecorationRelativeTo;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.Toggle;
-import io.luxus.lib.adofai.util.ListUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.*;
+import java.util.Objects;
 
 @Getter
 @ToString
 public final class AddDecoration extends Action {
 	
 	private final String decorationImage;
-	private final List<Double> position;
+	private final Pair<Double, Double> position;
 	private final DecorationRelativeTo relativeTo;
-	private final List<Double> pivotOffset;
+	private final Pair<Double, Double> pivotOffset;
 	private final Double rotation;
-	private final List<Double> scale;
-	private final List<Long> tile;
+	private final Pair<Double, Double> scale;
+	private final Pair<Long, Long> tile;
 	private final String color;
 	private final Double opacity;
 	private final Long depth;
-	private final List<Double> parallax;
+	private final Pair<Double, Double> parallax;
 	private final String tag;
 	private final Toggle imageSmoothing;
 	private final String components;
 
-	private AddDecoration(Boolean active, String decorationImage, List<Double> position, DecorationRelativeTo relativeTo,
-						 List<Double> pivotOffset, Double rotation, List<Double> scale, List<Long> tile, String color,
-						  Double opacity, Long depth, List<Double> parallax, String tag, Toggle imageSmoothing, String components) {
+	private AddDecoration(Boolean active, String decorationImage, Pair<Double, Double> position, DecorationRelativeTo relativeTo,
+						  Pair<Double, Double> pivotOffset, Double rotation, Pair<Double, Double> scale, Pair<Long, Long> tile, String color,
+						  Double opacity, Long depth, Pair<Double, Double> parallax, String tag, Toggle imageSmoothing, String components) {
 		super(EventType.ADD_DECORATION, active);
 		this.decorationImage = decorationImage;
 		this.position = position;
@@ -54,16 +54,16 @@ public final class AddDecoration extends Action {
 	public static final class Builder extends Action.Builder<Builder> {
 
 		private String decorationImage = "";
-		private List<Double> position = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> position = Pair.with(0.0, 0.0);
 		private DecorationRelativeTo relativeTo = DecorationRelativeTo.TILE;
-		private List<Double> pivotOffset = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> pivotOffset = Pair.with(0.0, 0.0);
 		private Double rotation = 0.0;
-		private List<Double> scale = Arrays.asList(100.0, 100.0);
-		private List<Long> tile = Arrays.asList(1L, 1L);
+		private Pair<Double, Double> scale = Pair.with(100.0, 100.0);
+		private Pair<Long, Long> tile = Pair.with(1L, 1L);
 		private String color = "ffffff";
 		private Double opacity = 100.0;
 		private Long depth = 0L;
-		private List<Double> parallax = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> parallax = Pair.with(0.0, 0.0);
 		private String tag = "";
 		private Toggle imageSmoothing = Toggle.ENABLED;
 		private String components = "";
@@ -144,12 +144,9 @@ public final class AddDecoration extends Action {
 		 * @param position position of AddDecoration Event
 		 * @return self
 		 */
-		public Builder position(List<Double> position) {
+		public Builder position(Pair<Double, Double> position) {
 			Objects.requireNonNull(position);
-			if (position.size() != 2) {
-				throw new IllegalArgumentException("size of position must be 2");
-			}
-			this.position = ListUtil.createNewUnmodifiableList(position);
+			this.position = position;
 			return self();
 		}
 
@@ -170,16 +167,12 @@ public final class AddDecoration extends Action {
 		 * setter of pivotOffset
 		 *
 		 * @throws NullPointerException when pivotOffset is null
-		 * @throws IllegalArgumentException when size of pivotOffset is not 2
 		 * @param pivotOffset pivotOffset of addDecoration event
 		 * @return self
 		 */
-		public Builder pivotOffset(List<Double> pivotOffset) {
+		public Builder pivotOffset(Pair<Double, Double> pivotOffset) {
 			Objects.requireNonNull(pivotOffset);
-			if (pivotOffset.size() != 2) {
-				throw new IllegalArgumentException("size of pivotOffset must be 2");
-			}
-			this.pivotOffset = ListUtil.createNewUnmodifiableList(pivotOffset);
+			this.pivotOffset = pivotOffset;
 			return self();
 		}
 
@@ -204,12 +197,9 @@ public final class AddDecoration extends Action {
 		 * @param scale scale of addDecoration event
 		 * @return self
 		 */
-		public Builder scale(List<Double> scale) {
+		public Builder scale(Pair<Double, Double> scale) {
 			Objects.requireNonNull(scale);
-			if (scale.size() != 2) {
-				throw new IllegalArgumentException("size of scale must be 2");
-			}
-			this.scale = ListUtil.createNewUnmodifiableList(scale);
+			this.scale = scale;
 			return self();
 		}
 
@@ -221,12 +211,9 @@ public final class AddDecoration extends Action {
 		 * @param tile tile of addDecoration event
 		 * @return self
 		 */
-		public Builder tile(List<Long> tile) {
+		public Builder tile(Pair<Long, Long> tile) {
 			Objects.requireNonNull(tile);
-			if (tile.size() != 2) {
-				throw new IllegalArgumentException("size of tile must be 2");
-			}
-			this.tile = ListUtil.createNewUnmodifiableList(tile);
+			this.tile = tile;
 			return self();
 		}
 
@@ -280,7 +267,7 @@ public final class AddDecoration extends Action {
 		 * @param parallax parallax of addDecoration event
 		 * @return self
 		 */
-		public Builder parallax(List<Double> parallax) {
+		public Builder parallax(Pair<Double, Double> parallax) {
 			Objects.requireNonNull(parallax);
 			this.parallax = parallax;
 			return self();

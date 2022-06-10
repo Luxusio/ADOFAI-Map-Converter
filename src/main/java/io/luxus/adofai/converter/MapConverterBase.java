@@ -3,6 +3,7 @@ package io.luxus.adofai.converter;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
+import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.type.TilePosition;
 import io.luxus.lib.adofai.type.action.*;
 import io.luxus.lib.adofai.type.EventType;
@@ -12,6 +13,7 @@ import io.luxus.lib.adofai.helper.TileHelper;
 import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,8 +47,13 @@ public class MapConverterBase {
                                                         Consumer<CustomLevel.Builder> customLevelConsumer) {
         return convert(customLevel, useCameraOptimization, new Function<ApplyEach, List<Tile.Builder>>() {
 
-            private double currStaticAngle = AngleHelper.getNextStaticAngle(0.0, customLevel.getTiles().get(0).getTileMeta().getTravelAngle(), false);
+            private double currStaticAngle = AngleHelper.getNextStaticAngle(
+                    0.0,
+                    customLevel.getTiles().get(0).getTileMeta().getTravelAngle(),
+                    customLevel.getTiles().get(0).getTileMeta().getPlanetAngle(),
+                    false);
             private boolean reversed = false;
+            private long planetNumber = 2;
 
             @Override
             public List<Tile.Builder> apply(ApplyEach applyEach) {
@@ -58,15 +65,21 @@ public class MapConverterBase {
                             Tile.Builder builder = new Tile.Builder().from(tile);
                             tileBuilderConsumer.accept(builder);
 
-                            if (!AngleHelper.isMidAngle(builder.getAngle())) {
-                                builder.angle(currStaticAngle);
+                            if (!builder.getAngle().isMidspin()) {
+                                builder.angle(TileAngle.createNormal(currStaticAngle));
                             }
 
                             if (builder.getActions(EventType.TWIRL).size() % 2 == 1) {
                                 reversed = !reversed;
                             }
 
-                            currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, travelAngle, reversed);
+                            List<Action> multiPlanetActions = builder.getActions(EventType.MULTI_PLANET);
+                            if (!multiPlanetActions.isEmpty()) {
+                                MultiPlanet multiPlanet = (MultiPlanet) multiPlanetActions.get(0);
+                                planetNumber = multiPlanet.getPlanets();
+                            }
+
+                            currStaticAngle = AngleHelper.getNextStaticAngle(currStaticAngle, travelAngle, TileMeta.calculatePlanetAngle(planetNumber), reversed);
 
                             return builder;
                         })
@@ -153,8 +166,8 @@ public class MapConverterBase {
 
                 double timingBpm = timingTiles.get(timingTiles.size() - 1).getTileMeta().getBpm();
 
-                double timingTravelAngle = TileMeta.calculateTotalTravelAngle(timingTiles);
-                double newTravelAngle = TileMeta.calculateTotalTravelAngle(newTiles.subList(newTileIdx, newTileIdx + newTileAmount));
+                double timingTravelAngle = TileMeta.calculateTotalTravelAndPlanetAngle(timingTiles);
+                double newTravelAngle = TileMeta.calculateTotalTravelAndPlanetAngle(newTiles.subList(newTileIdx, newTileIdx + newTileAmount));
 
                 double multiplyValue = newTravelAngle / timingTravelAngle;
                 double currBpm = timingBpm * multiplyValue;
@@ -185,12 +198,12 @@ public class MapConverterBase {
                 final int newTileNum = newTileIdx + i;
                 newTimingTileBuilders.get(i)
                         .editActions(EventType.RECOLOR_TRACK, RecolorTrack.class, a -> new RecolorTrack.Builder().from(a)
-                                .startTileNum(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
-                                .endTileNum(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .startTile(Pair.with(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTile().getValue0().intValue(), a.getStartTile().getValue1()), a.getStartTile().getValue1()))
+                                .endTile(Pair.with(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTile().getValue0().intValue(), a.getEndTile().getValue1()), a.getEndTile().getValue1()))
                                 .build())
                         .editActions(EventType.MOVE_TRACK, MoveTrack.class, a -> new MoveTrack.Builder().from(a)
-                                .startTileNum(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
-                                .endTileNum(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .startTile(Pair.with(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTile().getValue0().intValue(), a.getStartTile().getValue1()), a.getStartTile().getValue1()))
+                                .endTile(Pair.with(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTile().getValue0().intValue(), a.getEndTile().getValue1()), a.getEndTile().getValue1()))
                                 .build());
             }
 

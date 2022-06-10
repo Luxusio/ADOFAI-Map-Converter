@@ -36,6 +36,18 @@ public enum EventType implements JsonParsable {
     SCREEN_SCROLL("ScreenScroll", false),
     ADD_TEXT("AddText", false),
     SET_TEXT("SetText", false),
+    PAUSE("Pause", true),
+    AUTO_PLAY_TILES("AutoPlayTiles", true),
+    HOLD("Hold", true),
+    SET_HOLD_SOUND("SetHoldSound", true),
+    MULTI_PLANET("MultiPlanet", true),
+    FREE_ROAM("FreeRoam", true),
+    FREE_ROAM_TWIRL("FreeRoamTwirl", false),
+    FREE_ROAM_REMOVE("FreeRoamRemove", false),
+    HIDE("Hide", true),
+    SCALE_MARGIN("ScaleMargin", true),
+    SCALE_RADIUS("ScaleRadius", true),
+
     ;
 
     private final String jsonName;

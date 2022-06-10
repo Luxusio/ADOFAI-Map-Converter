@@ -5,25 +5,24 @@ import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Scanner;
 
-public class BpmMultiplyMapConverter implements MapConverter {
+public class BpmMultiplyMapConverter implements MapConverter<BpmMultiplyMapConverter.Parameters> {
 
     @Override
-    public Object[] prepareParameters(Scanner scanner) {
+    public Parameters prepareParameters(Scanner scanner) {
 
         System.out.print("배수:");
         double multiplier = scanner.nextDouble();
         scanner.nextLine();
 
-        return new Object[] { multiplier };
+        return new Parameters(multiplier);
     }
 
     @Override
-    public boolean impossible(CustomLevel customLevel, Object... args) {
-        double multiplier = (double) args[0];
-
+    public boolean impossible(CustomLevel customLevel, Parameters parameters) {
         double maxPossibleMultiplier = Double.POSITIVE_INFINITY;
         for (Tile tile : customLevel.getTiles()) {
             TileMeta tileMeta = tile.getTileMeta();
@@ -32,7 +31,7 @@ public class BpmMultiplyMapConverter implements MapConverter {
             maxPossibleMultiplier = Math.min(possibleMultiplier, maxPossibleMultiplier);
         }
 
-        if (multiplier > maxPossibleMultiplier) {
+        if (parameters.multiplier > maxPossibleMultiplier) {
             System.out.println("배수가 너무 높습니다. " + maxPossibleMultiplier + "배 이하로 해주세요");
             return true;
         }
@@ -41,20 +40,24 @@ public class BpmMultiplyMapConverter implements MapConverter {
     }
 
     @Override
-    public String getLevelPostfix(CustomLevel result, Object... args) {
-        return "BPM x" + args[0];
+    public String getLevelPostfix(CustomLevel result, Parameters parameters) {
+        return "BPM x" + parameters.multiplier;
     }
 
     @Override
-    public CustomLevel convert(CustomLevel customLevel, Object... args) {
-        if (impossible(customLevel, args)) {
+    public CustomLevel convert(CustomLevel customLevel, Parameters parameters) {
+        if (impossible(customLevel, parameters)) {
             return null;
         }
 
-        double multiplier = (double) args[0];
-
         return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
-                tile -> tile.getTileMeta().getTravelAngle() * multiplier,
+                tile -> tile.getTileMeta().getTravelAngle() * parameters.multiplier,
                 noop -> {});
     }
+
+    @RequiredArgsConstructor
+    public static class Parameters {
+        private final double multiplier;
+    }
+
 }

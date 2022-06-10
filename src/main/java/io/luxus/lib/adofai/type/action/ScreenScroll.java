@@ -1,23 +1,21 @@
 package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.util.ListUtil;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
 @ToString
 public class ScreenScroll extends Action {
 
-	private final List<Double> scroll;
+	private final Pair<Double, Double> scroll;
 	private final Double angleOffset;
 	private final String eventTag;
 
-	public ScreenScroll(Boolean active, List<Double> scroll, Double angleOffset, String eventTag) {
+	public ScreenScroll(Boolean active, Pair<Double, Double> scroll, Double angleOffset, String eventTag) {
 		super(EventType.SCREEN_SCROLL, active);
 		this.scroll = scroll;
 		this.angleOffset = angleOffset;
@@ -28,7 +26,7 @@ public class ScreenScroll extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private List<Double> scroll = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> scroll = Pair.with(0.0, 0.0);
 		private Double angleOffset = 0.0;
 		private String eventTag = "";
 
@@ -83,12 +81,9 @@ public class ScreenScroll extends Action {
 		 * @throws NullPointerException when scroll is null
 		 * @throws IllegalArgumentException when size of scroll is not 2
 		 */
-		public Builder scroll(List<Double> scroll) {
+		public Builder scroll(Pair<Double, Double> scroll) {
 			Objects.requireNonNull(scroll);
-			if (scroll.size() != 2) {
-				throw new IllegalArgumentException("size of scroll must be 2");
-			}
-			this.scroll = ListUtil.createNewUnmodifiableList(scroll);
+			this.scroll = scroll;
 			return self();
 		}
 

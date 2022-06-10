@@ -1,8 +1,7 @@
 package io.luxus.lib.adofai;
 
-import io.luxus.lib.adofai.type.action.Action;
-import io.luxus.lib.adofai.type.action.PositionTrack;
-import io.luxus.lib.adofai.type.action.SetSpeed;
+import io.luxus.lib.adofai.type.TileAngle;
+import io.luxus.lib.adofai.type.action.*;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.SpeedType;
 import io.luxus.lib.adofai.type.Toggle;
@@ -12,6 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +26,10 @@ public class TileMeta {
     private final double travelAngle;   // angle planet would travel in this tile
     private final double staticAngle;   // static angle of this tile
     private final boolean reversed;
+    private final double additionalSleepAngle;
+    private final boolean hold;
+
+    private final long planets;
 
     private final double realX;
     private final double realY;
@@ -33,11 +37,12 @@ public class TileMeta {
     private final double editorX;
     private final double editorY;
 
-    public static TileMeta createFirstTileMeta(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, Double nextAngle) {
+
+    public static TileMeta createFirstTileMeta(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, TileAngle nextAngle) {
         return new TileMeta.Builder(actionMap, levelSetting, nextAngle).build();
     }
 
-    public static TileMeta createTileMeta(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, Double currAngle, Double nextAngle) {
+    public static TileMeta createTileMeta(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, TileAngle currAngle, TileAngle nextAngle) {
         return new TileMeta.Builder(actionMap, prevTileMeta, currAngle, nextAngle).build();
     }
 
@@ -57,6 +62,14 @@ public class TileMeta {
                 .reduce(0.0, Double::sum);
     }
 
+
+    public static double calculateTotalTravelAndPlanetAngle(List<Tile> tiles) {
+        return tiles.stream()
+                .map(Tile::getTileMeta)
+                .map(tileMeta -> tileMeta.getTravelAngle() + tileMeta.getAdditionalSleepAngle())
+                .reduce(0.0, Double::sum);
+    }
+
     public static double calculateTotalTravelAngle(List<Tile> tiles) {
         return tiles.stream()
                 .map(Tile::getTileMeta)
@@ -72,16 +85,12 @@ public class TileMeta {
         return 60000.0 / calculatePerceivedBpm(bpm, travelAngle);
     }
 
+    public static double calculatePlanetAngle(long planets) {
+        return 360.0 / planets;
+    }
+
     public double getPerceivedBpm() {
         return calculatePerceivedBpm(bpm, travelAngle);
-    }
-
-    public double getReversedTempBPM() {
-        return getReversedTravelAngle() * bpm / travelAngle;
-    }
-
-    public double getReversedTravelAngle() {
-        return getTravelAngle() == 360.0 ? 360.0 : 360.0 - getTravelAngle();
     }
 
     public double getTravelMs() {
@@ -92,6 +101,10 @@ public class TileMeta {
         return bpm * 360 / getTravelAngle();
     }
 
+    public double getPlanetAngle() {
+        return calculatePlanetAngle(planets);
+    }
+
     private static class Builder {
 
         private final int floor;
@@ -100,32 +113,39 @@ public class TileMeta {
         private double travelAngle;
         private double staticAngle;
         private boolean reversed;
+        private double additionalSleepAngle;
+        private boolean hold;
 
         private double realX;
         private double realY;
         private double editorX;
         private double editorY;
+        private long planets;
 
-        private Builder(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, Double nextAngle) {
+        private Builder(Map<EventType, List<Action>> actionMap, LevelSetting levelSetting, TileAngle nextAngle) { // first
             this.floor = 0;
+
             this.bpm = levelSetting.getBpm();
             this.travelAngle = 360.0;
             this.staticAngle = 0.0;
             this.reversed = false;
+            this.planets = 2L;
 
             this.realX = 0.0;
             this.realY = 0.0;
             this.editorX = 0.0;
             this.editorY = 0.0;
 
-            update(actionMap, 0.0, 0.0, nextAngle);
+            update(actionMap, 0.0, TileAngle.ZERO, nextAngle);
         }
 
-        private Builder(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, Double currAngle, Double nextAngle) {
+        private Builder(Map<EventType, List<Action>> actionMap, TileMeta prevTileMeta, TileAngle currAngle, TileAngle nextAngle) { // after first
             this.floor = prevTileMeta.floor + 1;
+
             this.bpm = prevTileMeta.bpm;
             this.staticAngle = prevTileMeta.staticAngle;
             this.reversed = prevTileMeta.reversed;
+            this.planets = prevTileMeta.planets;
 
             this.realX = prevTileMeta.realX;
             this.realY = prevTileMeta.realY;
@@ -144,7 +164,7 @@ public class TileMeta {
             this.editorY += y;
         }
 
-        private void update(Map<EventType, List<Action>> actionMap, double staticAngle, Double currAngle, Double nextAngle) {
+        private void update(Map<EventType, List<Action>> actionMap, double staticAngle, TileAngle currAngle, TileAngle nextAngle) {
             List<Action> actions;
 
             actions = actionMap.get(EventType.SET_SPEED);
@@ -164,25 +184,66 @@ public class TileMeta {
                 this.reversed = !this.reversed;
             }
 
+            // planets
+            actions = actionMap.get(EventType.MULTI_PLANET);
+            if (actions != null && !actions.isEmpty()) {
+                MultiPlanet multiPlanet = (MultiPlanet) actions.get(0);
+
+                this.planets = multiPlanet.getPlanets();
+            }
+
+            AngleHelper.Result result = AngleHelper.calculateAngleData(staticAngle, currAngle, nextAngle, calculatePlanetAngle(this.planets), reversed);
+            this.staticAngle = result.getCurrStaticAngle();
+            this.travelAngle = result.getCurrTravelAngle();
+
+            // additionalSleepAngle
+            actions = actionMap.get(EventType.HOLD);
+            if (actions != null && !actions.isEmpty()) {
+                Hold hold = (Hold) actions.get(0);
+
+                this.hold = true;
+                this.additionalSleepAngle = 360 * hold.getDuration();
+            }
+
+            actions = actionMap.get(EventType.FREE_ROAM);
+            if (actions != null && !actions.isEmpty()) {
+                FreeRoam freeRoam = (FreeRoam) actions.get(0);
+
+                this.additionalSleepAngle = 180 * freeRoam.getDuration();
+            }
+
+            actions = actionMap.get(EventType.PAUSE);
+            if (actions != null && !actions.isEmpty()) {
+                Pause pause = (Pause) actions.get(0);
+
+                // TravelAngle 360 + Pause 1 beat = no Pause bug.
+                // That I subtract 1 from valid duration
+                if (travelAngle == 360.0) {
+                    this.additionalSleepAngle = 180 * Math.max(pause.getDuration() - 1, 0.0);
+                }
+                else {
+                    this.additionalSleepAngle = 180 * pause.getDuration();
+                }
+            }
+
+            BigDecimal bigDecimal = new BigDecimal(0);
+
+
             actions = actionMap.get(EventType.POSITION_TRACK);
             if (actions != null && !actions.isEmpty()) {
                 PositionTrack positionTrack = (PositionTrack) actions.get(0);
 
                 if (positionTrack.getEditorOnly() == Toggle.DISABLED) {
-                    this.realX += positionTrack.getPositionOffset().get(0);
-                    this.realY += positionTrack.getPositionOffset().get(1);
+                    this.realX += positionTrack.getPositionOffset().getValue0();
+                    this.realY += positionTrack.getPositionOffset().getValue1();
                 }
-                this.editorX += positionTrack.getPositionOffset().get(0);
-                this.editorY += positionTrack.getPositionOffset().get(1);
+                this.editorX += positionTrack.getPositionOffset().getValue0();
+                this.editorY += positionTrack.getPositionOffset().getValue1();
             }
-
-            AngleHelper.Result result = AngleHelper.calculateAngleData(staticAngle, currAngle, nextAngle, reversed);
-            this.staticAngle = result.getCurrStaticAngle();
-            this.travelAngle = result.getCurrTravelAngle();
         }
 
         private TileMeta build() {
-            return new TileMeta(floor, bpm, travelAngle, staticAngle, reversed, realX, realY, editorX, editorY);
+            return new TileMeta(floor, bpm, travelAngle, staticAngle, reversed, additionalSleepAngle, hold, planets, realX, realY, editorX, editorY);
         }
 
     }

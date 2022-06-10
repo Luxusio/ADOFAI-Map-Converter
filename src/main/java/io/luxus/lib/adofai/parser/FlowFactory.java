@@ -1,6 +1,7 @@
 package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.luxus.lib.adofai.type.LegacyTileAngle;
 import io.luxus.lib.adofai.type.TileAngle;
 import io.luxus.lib.adofai.util.NumberUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
@@ -8,28 +9,27 @@ import io.luxus.lib.adofai.util.StringJsonUtil;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 import static io.luxus.lib.adofai.util.NumberUtil.generalizeAngle;
 
 public class FlowFactory {
 
-    private static final Map<Character, TileAngle> angleCharMap = new HashMap<>();
+    private static final Map<Character, LegacyTileAngle> angleCharMap = new HashMap<>();
 
     static {
-        for (TileAngle value : TileAngle.values()) angleCharMap.put(value.getCode(), value);
+        for (LegacyTileAngle value : LegacyTileAngle.values()) angleCharMap.put(value.getCode(), value);
     }
 
-    public static List<Double> readPathData(JsonNode node) {
+    public static List<TileAngle> readPathData(JsonNode node) {
         return readPathData(node.asText());
     }
 
-    public static List<Double> readPathData(String nodeText) {
-        List<TileAngle> pathData = nodeText.chars()
+    public static List<TileAngle> readPathData(String nodeText) {
+        List<LegacyTileAngle> pathData = nodeText.chars()
                 .mapToObj(c -> (char) c)
                 .map(angleCharMap::get)
                 .collect(Collectors.toList());
 
-        for (TileAngle angle : pathData) {
+        for (LegacyTileAngle angle : pathData) {
             if (angle == null) {
                 return null;
             }
@@ -38,47 +38,47 @@ public class FlowFactory {
         return pathDataToAngleData(pathData);
     }
 
-    public static List<Double> pathDataToAngleData(List<TileAngle> pathData) {
+    public static List<TileAngle> pathDataToAngleData(List<LegacyTileAngle> pathData) {
         double staticAngle = 0;
-        List<Double> angleData = new ArrayList<>(pathData.size() + 1);
+        List<TileAngle> angleData = new ArrayList<>(pathData.size() + 1);
 
-        for (TileAngle angle : pathData) {
-            if (angle == TileAngle.NONE) {
-                angleData.add(ANGLE_MID_TILE);
+        for (LegacyTileAngle angle : pathData) {
+            if (angle == LegacyTileAngle.NONE) {
+                angleData.add(TileAngle.MIDSPIN);
             } else {
                 if (angle.isRelative()) {
                     staticAngle = generalizeAngle(staticAngle + 180 - angle.getSize());
                 }
                 else staticAngle = angle.getSize();
-                angleData.add(staticAngle);
+                angleData.add(TileAngle.createNormal(staticAngle));
             }
         }
 
         return angleData;
     }
 
-    public static List<Double> readAngleData(JsonNode node) {
-        List<Double> angleData = new ArrayList<>(node.size() + 1);
+    public static List<TileAngle> readAngleData(JsonNode node) {
+        List<TileAngle> angleData = new ArrayList<>(node.size() + 1);
         Iterator<JsonNode> it = node.elements();
         while (it.hasNext()) {
             JsonNode next = it.next();
             double angleValue = next.asDouble();
             if (NumberUtil.fuzzyEquals(angleValue, 999.0)) {
-                angleData.add(ANGLE_MID_TILE);
+                angleData.add(TileAngle.MIDSPIN);
             } else {
-                angleData.add(angleValue);
+                angleData.add(TileAngle.createNormal(angleValue));
             }
         }
         return angleData;
     }
 
-    public static boolean writePathData(StringBuilder sb, List<Double> angleData) {
+    public static boolean writePathData(StringBuilder sb, List<TileAngle> angleData) {
 
         StringBuilder tempSb = new StringBuilder();
         tempSb.append("\t\"pathData\": \"");
 
         Iterator<Double> it = angleData.stream()
-                .map(angle -> angle == ANGLE_MID_TILE ? 999.0 : angle)
+                .map(angle -> angle.isMidspin() ? 999.0 : angle.getAngle())
                 .iterator();
 
         Double currAngle;
@@ -89,26 +89,26 @@ public class FlowFactory {
 
         while (it.hasNext()) {
             Double nextAngle = it.next();
-            TileAngle tileAngle = getCurrTileAngle(currAngle, nextAngle);
-            if (tileAngle == null) return false;
+            LegacyTileAngle legacyTileAngle = getCurrTileAngle(currAngle, nextAngle);
+            if (legacyTileAngle == null) return false;
 
-            tempSb.append(tileAngle.getCode());
+            tempSb.append(legacyTileAngle.getCode());
 
             currAngle = nextAngle;
         }
-        TileAngle tileAngle = getCurrTileAngle(currAngle, 999.0);
-        if (tileAngle == null) return false;
-        tempSb.append(tileAngle.getCode());
+        LegacyTileAngle legacyTileAngle = getCurrTileAngle(currAngle, 999.0);
+        if (legacyTileAngle == null) return false;
+        tempSb.append(legacyTileAngle.getCode());
 
         tempSb.append("\"");
         sb.append(tempSb);
         return true;
     }
 
-    public static void writeAngleData(StringBuilder sb, List<Double> angleData) {
+    public static void writeAngleData(StringBuilder sb, List<TileAngle> angleData) {
         sb.append("\t\"angleData\": ");
         Iterator<Double> it = angleData.stream()
-                .map(angle -> angle == ANGLE_MID_TILE ? 999.0 : angle)
+                .map(angle -> angle.isMidspin() ? 999.0 : angle.getAngle())
                 .iterator();
 
         if (it.hasNext()) it.next();
@@ -116,15 +116,15 @@ public class FlowFactory {
     }
 
 
-    private static TileAngle getCurrTileAngle(Double currAngle, Double nextAngle) {
+    private static LegacyTileAngle getCurrTileAngle(Double currAngle, Double nextAngle) {
 
         if (NumberUtil.fuzzyEquals(currAngle, 999.0)) {
-            return TileAngle.NONE;
+            return LegacyTileAngle.NONE;
         }
 
         double relativeAngle = generalizeAngle(180 - nextAngle + currAngle);
 
-        for (TileAngle angle : TileAngle.values()) {
+        for (LegacyTileAngle angle : LegacyTileAngle.values()) {
             if (NumberUtil.fuzzyEquals(
                     angle.isRelative() ? relativeAngle : currAngle,
                     angle.getSize()))

@@ -1,7 +1,11 @@
 package io.luxus.adofai;
 
-import io.luxus.adofai.converter.ConverterType;
+import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterDispatcher;
+import io.luxus.adofai.converter.converters.*;
+import io.luxus.adofai.converter.converters.effect.NonEffectMapConverter;
+import io.luxus.adofai.converter.converters.effect.OnlyBpmSetMapConverter;
+import io.luxus.adofai.converter.converters.effect.TransparentMapConverter;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +30,7 @@ public class Program {
 
     private static void program(Scanner scanner) {
         System.out.println("A Dance of Fire and Ice 맵 변환기");
-        System.out.println("ver 1.4.0");
+        System.out.println("ver 1.5.0");
         System.out.println("개발자 : Luxus io");
         System.out.println("YouTube : https://www.youtube.com/c/Luxusio");
         System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
@@ -44,25 +48,27 @@ public class Program {
         System.out.println("10. 모든 타일 무작위 bpm 변환");
         System.out.println("11. 미드스핀 변환");
         System.out.println("12. 동타 변환");
-        System.out.println("13. 종료");
+        System.out.println("13. 행성 수 변환");
+        System.out.println("14. 종료");
         System.out.print("입력 : ");
 
         int mode = scanner.nextInt();
         scanner.nextLine();
 
-        ConverterType converterType =
-                mode == 1 ? ConverterType.OUTER :
-                mode == 2 ? ConverterType.LINEAR :
-                mode == 3 ? ConverterType.SHAPED :
-                mode == 4 ? ConverterType.TWIRL_RATIO :
-                mode == 5 ? ConverterType.NO_EFFECT :
-                mode == 6 ? ConverterType.TRANSPARENCY :
-                mode == 7 ? ConverterType.BPM_VALUE_ONLY :
-                mode == 8 ? ConverterType.NO_SPEED_CHANGE :
-                mode == 9 ? ConverterType.BPM_MULTIPLIER :
-                mode == 10 ? ConverterType.CHAOS :
-                mode == 11 ? ConverterType.MIDSPIN :
-                mode == 12 ? ConverterType.PSEUDO :
+        Class<? extends MapConverter<?>> converterType =
+                mode == 1 ?  OuterMapConverter.class :
+                mode == 2 ?  LinearMapConverter.class :
+                mode == 3 ?  ShapedMapConverter.class :
+                mode == 4 ?  TwirlConverter.class :
+                mode == 5 ?  NonEffectMapConverter.class :
+                mode == 6 ?  TransparentMapConverter.class :
+                mode == 7 ?  OnlyBpmSetMapConverter.class :
+                mode == 8 ?  NoSpeedChangeMapConverter.class :
+                mode == 9 ?  BpmMultiplyMapConverter.class :
+                mode == 10 ? ChaosBpmMapConverter.class :
+                mode == 11 ? AllMidspinMapConverter.class :
+                mode == 12 ? PseudoMapConverter.class :
+                mode == 13 ? PlanetNumberMapConverter.class :
                         null;
 
         if (converterType == null) {
@@ -70,9 +76,18 @@ public class Program {
             return;
         }
 
-        MapConverterDispatcher dispatcher = new MapConverterDispatcher();
+        convert(converterType, scanner);
 
-        Object[] args = dispatcher.prepareParameters(converterType, scanner);
+        System.out.println("complete");
+    }
+
+    private static <CT extends MapConverter<T>, T> void convert(Class<?> converterType, Scanner scanner) {
+
+        @SuppressWarnings("unchecked")
+        Class<CT> type = (Class<CT>) converterType;
+
+        MapConverterDispatcher dispatcher = new MapConverterDispatcher();
+        T parameters = dispatcher.prepareParameters(type, scanner);
 
         System.out.println();
         System.out.println("*all 시 backup.adofai 를 제외한 모든 하위 폴더의 파일을 변환합니다*");
@@ -97,11 +112,8 @@ public class Program {
                 continue;
             }
 
-            dispatcher.convertMapAndSave(path, converterType, args);
-
+            dispatcher.convertMapAndSave(path, type, parameters);
         }
-        System.out.println("complete");
-
     }
 
 }

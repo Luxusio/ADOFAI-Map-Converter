@@ -3,14 +3,13 @@ package io.luxus.lib.adofai.helper;
 import io.luxus.lib.adofai.LevelSetting;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
+import io.luxus.lib.adofai.type.TileAngle;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static io.luxus.lib.adofai.Constants.ANGLE_MID_TILE;
 
 /**
  *
@@ -34,7 +33,7 @@ public class TilesBuildHelper {
 
         if (!results.isEmpty()) {
             Tile firstTile = tileBuilders.get(0)
-                    .buildFirst(levelSetting, tileBuilders.size() == 1 ? 0.0 : tileBuilders.get(1).getAngle());
+                    .buildFirst(levelSetting, tileBuilders.size() == 1 ? TileAngle.ZERO : tileBuilders.get(1).getAngle());
 
             results.add(firstTile);
         }
@@ -57,9 +56,7 @@ public class TilesBuildHelper {
             currTileBuilder = nextTileBuilder;
         }
 
-        Tile newCurrTile = currTileBuilder
-                .build(prevTileMeta, currTileBuilder.getAngle() == ANGLE_MID_TILE ?
-                        prevTileMeta.getStaticAngle() : currTileBuilder.getAngle());
+        Tile newCurrTile = currTileBuilder.build(prevTileMeta, currTileBuilder.getAngle());
         results.add(newCurrTile);
 
         return results;
@@ -78,7 +75,7 @@ public class TilesBuildHelper {
         return self();
     }
 
-    public TilesBuildHelper fromAngles(List<Double> angles) {
+    public TilesBuildHelper fromAngles(List<TileAngle> angles) {
         this.tileBuilders = angles.stream()
                 .map(angle -> new Tile.Builder().angle(angle))
                 .collect(Collectors.toList());

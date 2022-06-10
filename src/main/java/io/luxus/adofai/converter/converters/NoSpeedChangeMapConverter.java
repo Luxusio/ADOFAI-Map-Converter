@@ -3,36 +3,27 @@ package io.luxus.adofai.converter.converters;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.LevelSetting;
-import io.luxus.lib.adofai.Tile;
-import io.luxus.lib.adofai.TileMeta;
 import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.action.Pause;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
 import java.util.Scanner;
 
-public class NoSpeedChangeMapConverter implements MapConverter {
+public class NoSpeedChangeMapConverter implements MapConverter<NoSpeedChangeMapConverter.Parameters> {
 
     @Override
-    public Object[] prepareParameters(Scanner scanner) {
+    public Parameters prepareParameters(Scanner scanner) {
         System.out.print("목표 BPM:");
         double destBpm = scanner.nextDouble();
         scanner.nextLine();
 
-        return new Object[] { destBpm };
+        return new Parameters(destBpm);
     }
 
     @Override
-    public boolean impossible(CustomLevel customLevel, Object... args) {
-        double destBpm = (double) args[0];
+    public boolean impossible(CustomLevel customLevel, Parameters parameters) {
 
-        double possibleMaxBpm = getPossibleMaxBpm(customLevel.getTiles());
-        if (destBpm > possibleMaxBpm) {
-            System.err.println("destBpm이 너무 빠릅니다. " + possibleMaxBpm + "bpm 이하로 입력 해 주세요.");
-            return true;
-        }
-
-        if (destBpm <= 0) {
+        if (parameters.destinationBpm <= 0) {
             System.err.println("destBpm은 0보다 커야합니다.");
             return true;
         }
@@ -41,28 +32,47 @@ public class NoSpeedChangeMapConverter implements MapConverter {
     }
 
     @Override
-    public String getLevelPostfix(CustomLevel customLevel, Object... args) {
-        double destBpm = (double) args[0];
-        return  "NoSpeedChange " + destBpm + "BPM";
+    public String getLevelPostfix(CustomLevel customLevel, Parameters parameters) {
+        return  "NoSpeedChange " + parameters.destinationBpm + "BPM";
     }
 
     @Override
-    public CustomLevel convert(CustomLevel customLevel, Object... args) {
-        double destBpm = (double) args[0];
+    public CustomLevel convert(CustomLevel customLevel, Parameters parameters) {
 
-        return MapConverterBase.convertBasedOnTravelAngle(customLevel, false,
-                tile -> tile.getTileMeta().getTravelAngle() * destBpm /  tile.getTileMeta().getBpm(),
-                tileBuilder -> tileBuilder.removeActions(EventType.SET_SPEED),
-                customLevelBuilder -> customLevelBuilder.getLevelSettingBuilder().bpm(destBpm));
+        Wrapper<Double> restTravelAngle = new Wrapper<>();
+
+        return MapConverterBase.convertBasedOnTravelAngle(
+                customLevel,
+                false,
+                tile -> {
+                    double travelAngle = tile.getTileMeta().getTravelAngle() * parameters.destinationBpm /  tile.getTileMeta().getBpm();
+                    restTravelAngle.value = Math.max(travelAngle - 360.0, 0.0);
+
+                    return Math.min(travelAngle, 360.0);
+                },
+                tileBuilder -> {
+                    tileBuilder.removeActions(EventType.SET_SPEED);
+
+                    if (restTravelAngle.value > 0.0) {
+                        // TravelAngle 360 + Pause 1 beat = no Pause bug.
+                        // That I add 1 to valid duration
+                        tileBuilder.addAction(new Pause.Builder()
+                                .duration(restTravelAngle.value / 180 + 1)
+                                .angleCorrectionDir(0L)
+                                .build());
+                    }
+                },
+                customLevelBuilder -> customLevelBuilder.getLevelSettingBuilder().bpm(parameters.destinationBpm));
     }
 
-    public static double getPossibleMaxBpm(List<Tile> tiles) {
-        double possibleMaxBpm = Double.POSITIVE_INFINITY;
-        for (Tile tile : tiles) {
-            TileMeta tileMeta = tile.getTileMeta();
-            possibleMaxBpm = Math.min(tileMeta.getPossibleMaxBpm(), possibleMaxBpm);
-        }
-        return possibleMaxBpm;
+
+    @RequiredArgsConstructor
+    public static class Parameters {
+        private final double destinationBpm;
+    }
+
+    class Wrapper<T> {
+        T value;
     }
 
 }

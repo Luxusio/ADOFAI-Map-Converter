@@ -2,10 +2,16 @@ package io.luxus.lib.adofai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.type.*;
-import io.luxus.lib.adofai.util.ListUtil;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @ToString
@@ -29,7 +35,6 @@ public class LevelSetting {
     private final String levelTags;
     private final String artistLinks;
     private final Long difficulty;
-    private final List<String> requiredMods;
     private final String songFilename;
     private final Double bpm;
     private final Long volume;
@@ -53,13 +58,13 @@ public class LevelSetting {
     private final Toggle showDefaultBGIfNoImage;
     private final String bgImage;
     private final String bgImageColor;
-    private final List<Long> parallax;
+    private final Pair<Long, Long> parallax;
     private final BGDisplayModeType bgDisplayMode;
     private final Toggle lockRot;
     private final Toggle loopBG;
     private final Long unscaledSize;
     private final CameraRelativeTo relativeTo;
-    private final List<Double> position;
+    private final Pair<Double, Double> position;
     private final Double rotation;
     private final Long zoom;
     private final String bgVideo;
@@ -95,7 +100,6 @@ public class LevelSetting {
         private String levelTags = "";
         private String artistLinks = "";
         private Long difficulty = 1L;
-        private List<String> requiredMods = new ArrayList<>();
         private String songFilename = "";
         private Double bpm = 100.0;
         private Long volume = 100L;
@@ -119,13 +123,13 @@ public class LevelSetting {
         private Toggle showDefaultBGIfNoImage = Toggle.ENABLED;
         private String bgImage = "";
         private String bgImageColor = "ffffff";
-        private List<Long> parallax = Arrays.asList(100L, 100L);
+        private Pair<Long, Long> parallax = Pair.with(100L, 100L);
         private BGDisplayModeType bgDisplayMode = BGDisplayModeType.FIT_TO_SCREEN;
         private Toggle lockRot = Toggle.DISABLED;
         private Toggle loopBG = Toggle.DISABLED;
         private Long unscaledSize = 100L;
         private CameraRelativeTo relativeTo = CameraRelativeTo.PLAYER;
-        private List<Double> position = Arrays.asList(0.0, 0.0);
+        private Pair<Double, Double> position = Pair.with(0.0, 0.0);
         private Double rotation = 0.0;
         private Long zoom = 100L;
         private String bgVideo = "";
@@ -165,7 +169,6 @@ public class LevelSetting {
                     .levelTags(src.levelTags)
                     .artistLinks(src.artistLinks)
                     .difficulty(src.difficulty)
-                    .requiredMods(src.requiredMods)
                     .songFilename(src.songFilename)
                     .bpm(src.bpm)
                     .volume(src.volume)
@@ -219,7 +222,7 @@ public class LevelSetting {
         public LevelSetting build() {
             return new LevelSetting(version, artist, specialArtistType, artistPermission, song, author, separateCountdownTime,
                     previewImage, previewIcon, previewIconColor, previewSongStart, previewSongDuration, seizureWarning,
-                    levelDesc, levelTags, artistLinks, difficulty, requiredMods, songFilename, bpm, volume, offset, pitch,
+                    levelDesc, levelTags, artistLinks, difficulty, songFilename, bpm, volume, offset, pitch,
                     hitsound, hitsoundVolume, countdownTicks, trackColorType, trackColor, secondaryTrackColor,
                     trackColorAnimDuration, trackColorPulse, trackPulseLength, trackStyle, trackAnimation, beatsAhead,
                     trackDisappearAnimation, beatsBehind, backgroundColor, showDefaultBGIfNoImage, bgImage, bgImageColor,
@@ -455,23 +458,6 @@ public class LevelSetting {
         public Builder difficulty(Long difficulty) {
             Objects.requireNonNull(difficulty);
             this.difficulty = difficulty;
-            return self();
-        }
-
-        /**
-         * setter of requiredMods
-         *
-         * @param requiredMods requiredMods of LevelSetting
-         * @return self
-         * @throws NullPointerException when requiredMods is null
-         * @throws IllegalArgumentException when size of requiredMods is not 2
-         */
-        public Builder requiredMods(List<String> requiredMods) {
-            Objects.requireNonNull(requiredMods);
-            if (position.size() != 2) {
-                throw new IllegalArgumentException("size of requiredMods must be 2");
-            }
-            this.requiredMods = ListUtil.createNewUnmodifiableList(requiredMods);
             return self();
         }
 
@@ -782,12 +768,9 @@ public class LevelSetting {
          * @throws NullPointerException when parallax is null
          * @throws IllegalArgumentException when size of parallax is not 2
          */
-        public Builder parallax(List<Long> parallax) {
+        public Builder parallax(Pair<Long, Long> parallax) {
             Objects.requireNonNull(parallax);
-            if (parallax.size() != 2) {
-                throw new IllegalArgumentException("size of parallax must be 2");
-            }
-            this.parallax = ListUtil.createNewUnmodifiableList(parallax);
+            this.parallax = parallax;
             return self();
         }
 
@@ -864,12 +847,9 @@ public class LevelSetting {
          * @throws NullPointerException when position is null
          * @throws IllegalArgumentException when size of position is not 2
          */
-        public Builder position(List<Double> position) {
+        public Builder position(Pair<Double, Double> position) {
             Objects.requireNonNull(position);
-            if (position.size() != 2) {
-                throw new IllegalArgumentException("size of position must be 2");
-            }
-            this.position = ListUtil.createNewUnmodifiableList(position);
+            this.position = position;
             return self();
         }
 

@@ -2,10 +2,7 @@ package io.luxus.lib.adofai.type.action;
 
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.HitSound;
-import io.luxus.lib.adofai.type.TrackAnimation;
-import io.luxus.lib.adofai.type.TrackDisappearAnimation;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
@@ -17,12 +14,14 @@ public class PlaySound extends Action {
 	private final HitSound hitsound;
 	private final Long hitsoundVolume;
 	private final Double angleOffset;
+	private final String eventTag;
 
-	private PlaySound(Boolean active, HitSound hitsound, Long hitsoundVolume, Double angleOffset) {
+	private PlaySound(Boolean active, HitSound hitsound, Long hitsoundVolume, Double angleOffset, String eventTag) {
 		super(EventType.PLAY_SOUND, active);
 		this.hitsound = hitsound;
 		this.hitsoundVolume = hitsoundVolume;
 		this.angleOffset = angleOffset;
+		this.eventTag = eventTag;
 	}
 
 	@Getter
@@ -32,6 +31,7 @@ public class PlaySound extends Action {
 		private HitSound hitsound = HitSound.KICK;
 		private Long hitsoundVolume = 100L;
 		private Double angleOffset = 0.0;
+		private String eventTag = "";
 
 		/**
 		 * set all parameter with given action
@@ -43,7 +43,8 @@ public class PlaySound extends Action {
 			return self()
 					.hitsound(src.hitsound)
 					.hitsoundVolume(src.hitsoundVolume)
-					.angleOffset(src.angleOffset);
+					.angleOffset(src.angleOffset)
+					.eventTag(src.eventTag);
 		}
 
 		/**
@@ -53,7 +54,7 @@ public class PlaySound extends Action {
 		 */
 		@Override
 		public PlaySound build() {
-			return new PlaySound(active, hitsound, hitsoundVolume, angleOffset);
+			return new PlaySound(active, hitsound, hitsoundVolume, angleOffset, eventTag);
 		}
 
 		/**
@@ -114,6 +115,13 @@ public class PlaySound extends Action {
 			this.angleOffset = angleOffset;
 			return self();
 		}
+
+		public Builder eventTag(String eventTag) {
+			Objects.requireNonNull(eventTag);
+			this.eventTag = eventTag;
+			return self();
+		}
+
 	}
 
 }

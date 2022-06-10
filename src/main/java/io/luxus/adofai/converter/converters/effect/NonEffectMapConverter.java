@@ -5,14 +5,15 @@ import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.EventType;
+import lombok.RequiredArgsConstructor;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class NonEffectMapConverter implements MapConverter {
+public class NonEffectMapConverter implements MapConverter<NonEffectMapConverter.Parameters> {
 
     @Override
-    public Object[] prepareParameters(Scanner scanner) {
+    public Parameters prepareParameters(Scanner scanner) {
         System.out.println("목록 : " + Arrays.stream(EventType.values())
                 .filter(eventType -> eventType != EventType.UNKNOWN)
                 .collect(Collectors.toList()));
@@ -32,15 +33,12 @@ public class NonEffectMapConverter implements MapConverter {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        return new Object[] { eventTypeSet };
+        return new Parameters(eventTypeSet);
     }
 
     @Override
-    public boolean impossible(CustomLevel customLevel, Object... args) {
-        @SuppressWarnings("unchecked")
-        Set<EventType> eventTypeSet = (Set<EventType>) args[0];
-
-        if (eventTypeSet.isEmpty()) {
+    public boolean impossible(CustomLevel customLevel, Parameters parameters) {
+        if (parameters.eventTypes.isEmpty()) {
             System.err.println("제거할 effect가 없습니다.");
             return true;
         }
@@ -49,28 +47,30 @@ public class NonEffectMapConverter implements MapConverter {
     }
 
     @Override
-    public String getLevelPostfix(CustomLevel customLevel, Object[] args) {
+    public String getLevelPostfix(CustomLevel customLevel, Parameters parameters) {
         return "NonEffect";
     }
 
     @Override
-    public CustomLevel convert(CustomLevel customLevel, Object... args) {
-        if (impossible(customLevel, args)) {
+    public CustomLevel convert(CustomLevel customLevel, Parameters parameters) {
+        if (impossible(customLevel, parameters)) {
             return null;
         }
-
-        @SuppressWarnings("unchecked")
-        Set<EventType> eventTypeSet = (Set<EventType>) args[0];
 
         return MapConverterBase.convert(customLevel, false,
                 applyEach -> applyEach.getOneTimingTiles().stream()
                         .map(tile -> new Tile.Builder().from(tile))
-                        .peek(newTileBuilder -> eventTypeSet.forEach(newTileBuilder::removeActions))
+                        .peek(newTileBuilder -> parameters.eventTypes.forEach(newTileBuilder::removeActions))
                         .collect(Collectors.toList()),
                 customLevelBuilder -> {
                     Tile.Builder tileBuilder = customLevelBuilder.getTileBuilders().get(0);
-                    eventTypeSet.forEach(tileBuilder::removeActions);
+                    parameters.eventTypes.forEach(tileBuilder::removeActions);
                 });
+    }
+
+    @RequiredArgsConstructor
+    public static class Parameters {
+        private final Set<EventType> eventTypes;
     }
 
 }
