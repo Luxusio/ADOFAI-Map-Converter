@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -191,6 +192,10 @@ public class TileMeta {
                 this.planets = multiPlanet.getPlanets();
             }
 
+            AngleHelper.Result result = AngleHelper.calculateAngleData(staticAngle, currAngle, nextAngle, calculatePlanetAngle(this.planets), reversed);
+            this.staticAngle = result.getCurrStaticAngle();
+            this.travelAngle = result.getCurrTravelAngle();
+
             // additionalSleepAngle
             actions = actionMap.get(EventType.HOLD);
             if (actions != null && !actions.isEmpty()) {
@@ -211,8 +216,17 @@ public class TileMeta {
             if (actions != null && !actions.isEmpty()) {
                 Pause pause = (Pause) actions.get(0);
 
-                this.additionalSleepAngle = 180 * pause.getDuration();
+                // TravelAngle 360 + Pause 1 beat = no Pause bug.
+                // That I subtract 1 from valid duration
+                if (travelAngle == 360.0) {
+                    this.additionalSleepAngle = 180 * Math.max(pause.getDuration() - 1, 0.0);
+                }
+                else {
+                    this.additionalSleepAngle = 180 * pause.getDuration();
+                }
             }
+
+            BigDecimal bigDecimal = new BigDecimal(0);
 
 
             actions = actionMap.get(EventType.POSITION_TRACK);
@@ -226,10 +240,6 @@ public class TileMeta {
                 this.editorX += positionTrack.getPositionOffset().getValue0();
                 this.editorY += positionTrack.getPositionOffset().getValue1();
             }
-
-            AngleHelper.Result result = AngleHelper.calculateAngleData(staticAngle, currAngle, nextAngle, calculatePlanetAngle(this.planets), reversed);
-            this.staticAngle = result.getCurrStaticAngle();
-            this.travelAngle = result.getCurrTravelAngle();
         }
 
         private TileMeta build() {
