@@ -2,14 +2,13 @@ package io.luxus.lib.adofai.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.helper.JsonPropertyReader;
-import io.luxus.lib.adofai.type.action.*;
 import io.luxus.lib.adofai.type.*;
+import io.luxus.lib.adofai.type.action.*;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 import static io.luxus.lib.adofai.util.StringJsonUtil.*;
-import static io.luxus.lib.adofai.util.StringJsonUtil.writeVar;
 
 public class ActionFactory {
 
@@ -124,7 +123,7 @@ public class ActionFactory {
                 reader.read("color", builder::color, JsonNode::asText);
                 reader.read("bgImage", builder::bgImage, JsonNode::asText);
                 reader.read("imageColor", builder::imageColor, JsonNode::asText);
-                reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("parallax", builder::parallax, nodeToXYPair(JsonNode::asDouble));
                 reader.read("bgDisplayMode", builder::bgDisplayMode, JsonNode::asText, bgDisplayModeTypeMap::get);
                 reader.read("lockRot", builder::lockRot, JsonNode::asText, toggleMap::get);
                 reader.read("loopBG", builder::loopBG, JsonNode::asText, toggleMap::get);
@@ -166,21 +165,20 @@ public class ActionFactory {
                 AddDecoration.Builder builder = new AddDecoration.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
 
-                // parameter를 읽기 쉽게 해주는 class만들어서 사용하기
                 Stream.of(reader.read("decorationImage", o -> o.map(JsonNode::asText)),
                                 reader.read("decText", o -> o.map(JsonNode::asText)))
                         .filter(Optional::isPresent).map(Optional::get)
                         .findFirst().ifPresent(builder::decorationImage);
-                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
                 reader.read("relativeTo", builder::relativeTo, JsonNode::asText, decorationRelativeToMap::get);
-                reader.read("pivotOffset", builder::pivotOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("pivotOffset", builder::pivotOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
-                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
-                reader.read("tile", builder::tile, nodeToXYListFunc(JsonNode::asLong));
+                reader.read("scale", builder::scale, nodeToXYPair(JsonNode::asDouble));
+                reader.read("tile", builder::tile, nodeToXYPair(JsonNode::asLong));
                 reader.read("color", builder::color, JsonNode::asText);
                 reader.read("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("depth", builder::depth, JsonNode::asLong);
-                reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("parallax", builder::parallax, nodeToXYPair(JsonNode::asDouble));
                 reader.read("tag", builder::tag, JsonNode::asText);
                 reader.read("imageSmoothing", builder::imageSmoothing, JsonNode::asText, toggleMap::get);
                 reader.read("components", builder::components, JsonNode::asText);
@@ -209,7 +207,7 @@ public class ActionFactory {
                 reader.read("active", builder::active, JsonNode::asBoolean);
                 reader.read("duration", builder::duration, JsonNode::asDouble);
                 reader.read("relativeTo", builder::relativeTo, JsonNode::asText, cameraRelativeToMap::get);
-                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
                 reader.read("zoom", builder::zoom, JsonNode::asLong);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
@@ -245,21 +243,8 @@ public class ActionFactory {
             case RECOLOR_TRACK: {
                 RecolorTrack.Builder builder = new RecolorTrack.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
-
-                reader.read("startTile", startTile -> {
-                            builder.startTileNum((Long) startTile.get(0));
-                            builder.startTilePosition((TilePosition) startTile.get(1)); },
-                        jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asLong(),
-                                tilePositionMap.get(jsonNode.get(1).asText())));
-
-                reader.read("endTile", endTile -> {
-                            builder.endTileNum((Long) endTile.get(0));
-                            builder.endTilePosition((TilePosition) endTile.get(1)); },
-                        jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asLong(),
-                                tilePositionMap.get(jsonNode.get(1).asText())));
-
+                reader.read("startTile", builder::startTile, nodeToPair(JsonNode::asLong, chain(JsonNode::asText, tilePositionMap::get)));
+                reader.read("endTile", builder::endTile, nodeToPair(JsonNode::asLong, chain(JsonNode::asText, tilePositionMap::get)));
                 reader.read("trackColorType", builder::trackColorType, JsonNode::asText, trackColorTypeMap::get);
                 reader.read("trackColor", builder::trackColor, JsonNode::asText);
                 reader.read("secondaryTrackColor", builder::secondaryTrackColor, JsonNode::asText);
@@ -276,25 +261,12 @@ public class ActionFactory {
             case MOVE_TRACK: {
                 MoveTrack.Builder builder = new MoveTrack.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
-
-                reader.read("startTile", startTile -> {
-                    builder.startTileNum((Long) startTile.get(0));
-                    builder.startTilePosition((TilePosition) startTile.get(1)); },
-                        jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asLong(),
-                                tilePositionMap.get(jsonNode.get(1).asText())));
-
-                reader.read("endTile", endTile -> {
-                    builder.endTileNum((Long) endTile.get(0));
-                    builder.endTilePosition((TilePosition) endTile.get(1)); },
-                        jsonNode -> Arrays.asList(
-                                jsonNode.get(0).asLong(),
-                                tilePositionMap.get(jsonNode.get(1).asText())));
-
+                reader.read("startTile", builder::startTile, nodeToPair(JsonNode::asLong, chain(JsonNode::asText, tilePositionMap::get)));
+                reader.read("endTile", builder::endTile, nodeToPair(JsonNode::asLong, chain(JsonNode::asText, tilePositionMap::get)));
                 reader.read("duration", builder::duration, JsonNode::asDouble);
-                reader.readO("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("positionOffset", builder::positionOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.readO("rotationOffset", builder::rotationOffset, JsonNode::asDouble);
-                reader.readO("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("scale", builder::scale, nodeToXYPair(JsonNode::asDouble));
                 reader.readO("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
@@ -357,13 +329,13 @@ public class ActionFactory {
                 reader.read("duration", builder::duration, JsonNode::asDouble);
                 reader.read("tag", builder::tag, JsonNode::asText);
                 reader.readO("decorationImage", builder::decorationImage, JsonNode::asText);
-                reader.readO("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("positionOffset", builder::positionOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.readO("rotationOffset", builder::rotationOffset, JsonNode::asDouble);
-                reader.readO("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("scale", builder::scale, nodeToXYPair(JsonNode::asDouble));
                 reader.readO("color", builder::color, JsonNode::asText);
                 reader.readO("opacity", builder::opacity, JsonNode::asDouble);
                 reader.readO("depth", builder::depth, JsonNode::asLong);
-                reader.readO("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
+                reader.readO("parallax", builder::parallax, nodeToXYPair(JsonNode::asDouble));
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("ease", builder::ease, JsonNode::asText, easeMap::get);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
@@ -374,7 +346,7 @@ public class ActionFactory {
             case POSITION_TRACK: {
                 PositionTrack.Builder builder = new PositionTrack.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
-                reader.read("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("positionOffset", builder::positionOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
                 reader.read("scale", builder::scale, JsonNode::asDouble);
                 reader.read("opacity", builder::opacity, JsonNode::asDouble);
@@ -423,7 +395,7 @@ public class ActionFactory {
             case SCREEN_TILE: {
                 ScreenTile.Builder builder = new ScreenTile.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
-                reader.read("tile", builder::tile, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("tile", builder::tile, nodeToXYPair(JsonNode::asDouble));
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
 
@@ -433,7 +405,7 @@ public class ActionFactory {
             case SCREEN_SCROLL: {
                 ScreenScroll.Builder builder = new ScreenScroll.Builder();
                 reader.read("active", builder::active, JsonNode::asBoolean);
-                reader.read("scroll", builder::scroll, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("scroll", builder::scroll, nodeToXYPair(JsonNode::asDouble));
                 reader.read("angleOffset", builder::angleOffset, JsonNode::asDouble);
                 reader.read("eventTag", builder::eventTag, JsonNode::asText);
 
@@ -446,15 +418,15 @@ public class ActionFactory {
                 reader.read("decText", builder::decText, JsonNode::asText);
                 reader.read("decText", builder::decText, JsonNode::asText);
                 reader.read("font", builder::font, JsonNode::asText, fontMap::get);
-                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
                 reader.read("relativeTo", builder::relativeTo, JsonNode::asText, decorationRelativeToMap::get);
-                reader.read("pivotOffset", builder::pivotOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("pivotOffset", builder::pivotOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
-                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("scale", builder::scale, nodeToXYPair(JsonNode::asDouble));
                 reader.read("color", builder::color, JsonNode::asText);
                 reader.read("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("depth", builder::depth, JsonNode::asLong);
-                reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("parallax", builder::parallax, nodeToXYPair(JsonNode::asDouble));
                 reader.read("tag", builder::tag, JsonNode::asText);
 
                 action = builder.build();
@@ -539,8 +511,8 @@ public class ActionFactory {
             case FREE_ROAM: {
                 FreeRoam.Builder builder = new FreeRoam.Builder();
                 reader.read("duration", builder::duration, JsonNode::asDouble);
-                reader.read("size", builder::size, nodeToXYListFunc(JsonNode::asDouble));
-                reader.read("positionOffset", builder::positionOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("size", builder::size, nodeToXYPair(JsonNode::asDouble));
+                reader.read("positionOffset", builder::positionOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.read("outTime", builder::outTime, JsonNode::asLong);
                 reader.read("outEase", builder::outEase, JsonNode::asText, easeMap::get);
                 reader.read("countdownTicks", builder::countdownTicks, JsonNode::asLong);
@@ -551,15 +523,15 @@ public class ActionFactory {
             }
             case FREE_ROAM_TWIRL: {
                 FreeRoamTwirl.Builder builder = new FreeRoamTwirl.Builder();
-                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
 
                 action = builder.build();
                 break;
             }
             case FREE_ROAM_REMOVE: {
                 FreeRoamRemove.Builder builder = new FreeRoamRemove.Builder();
-                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
-                reader.read("size", builder::size, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
+                reader.read("size", builder::size, nodeToXYPair(JsonNode::asDouble));
 
                 action = builder.build();
                 break;
@@ -609,7 +581,7 @@ public class ActionFactory {
         switch (action.getEventType()) {
             case SET_SPEED: {
                 SetSpeed e = (SetSpeed) action;
-                writeVar(sb, "speedType", e.getSpeedType(), SpeedType::getJsonName);
+                writeVar(sb, "speedType", e.getSpeedType());
                 writeVar(sb, "beatsPerMinute", e.getBeatsPerMinute());
                 writeVar(sb, "bpmMultiplier", e.getBpmMultiplier());
                 break;
@@ -634,9 +606,9 @@ public class ActionFactory {
                 writeVar(sb, "bgImage", e.getBgImage());
                 writeVar(sb, "imageColor", e.getImageColor());
                 writeVar(sb, "parallax", e.getParallax());
-                writeVar(sb, "bgDisplayMode", e.getBgDisplayMode(), BGDisplayModeType::getJsonName);
-                writeVar(sb, "lockRot", e.getLockRot(), Toggle::getJsonName);
-                writeVar(sb, "loopBG", e.getLoopBG(), Toggle::getJsonName);
+                writeVar(sb, "bgDisplayMode", e.getBgDisplayMode());
+                writeVar(sb, "lockRot", e.getLockRot());
+                writeVar(sb, "loopBG", e.getLoopBG());
                 writeVar(sb, "unscaledSize", e.getUnscaledSize());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
@@ -644,22 +616,22 @@ public class ActionFactory {
             }
             case COLOR_TRACK: {
                 ColorTrack e = (ColorTrack) action;
-                writeVar(sb, "trackColorType", e.getTrackColorType(), TrackColorType::getJsonName);
+                writeVar(sb, "trackColorType", e.getTrackColorType());
                 writeVar(sb, "trackColor", e.getTrackColor());
                 writeVar(sb, "secondaryTrackColor", e.getSecondaryTrackColor());
                 writeVar(sb, "trackColorAnimDuration", e.getTrackColorAnimDuration());
-                writeVar(sb, "trackColorPulse", e.getTrackColorPulse(), TrackColorPulse::getJsonName);
+                writeVar(sb, "trackColorPulse", e.getTrackColorPulse());
                 writeVar(sb, "trackPulseLength", e.getTrackPulseLength());
-                writeVar(sb, "trackStyle", e.getTrackStyle(), TrackStyle::getJsonName);
+                writeVar(sb, "trackStyle", e.getTrackStyle());
                 writeVar(sb, "trackTexture", e.getTrackTexture());
                 writeVar(sb, "trackTextureScale", e.getTrackTextureScale());
                 break;
             }
             case ANIMATE_TRACK: {
                 AnimateTrack e = (AnimateTrack) action;
-                writeVar(sb, "trackAnimation", e.getTrackAnimation(), TrackAnimation::getJsonName);
+                writeVar(sb, "trackAnimation", e.getTrackAnimation());
                 writeVar(sb, "beatsAhead", e.getBeatsAhead());
-                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation(), TrackDisappearAnimation::getJsonName);
+                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation());
                 writeVar(sb, "beatsBehind", e.getBeatsBehind());
                 break;
             }
@@ -667,7 +639,7 @@ public class ActionFactory {
                 AddDecoration e = (AddDecoration) action;
                 writeVar(sb, "decorationImage", e.getDecorationImage());
                 writeVar(sb, "position", e.getPosition());
-                writeVar(sb, "relativeTo", e.getRelativeTo(), DecorationRelativeTo::getJsonName);
+                writeVar(sb, "relativeTo", e.getRelativeTo());
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
@@ -677,47 +649,47 @@ public class ActionFactory {
                 writeVar(sb, "depth", e.getDepth());
                 writeVar(sb, "parallax", e.getParallax());
                 writeVar(sb, "tag", e.getTag());
-                writeVar(sb, "imageSmoothing", e.getImageSmoothing(), Toggle::getJsonName);
+                writeVar(sb, "imageSmoothing", e.getImageSmoothing());
                 writeVar(sb, "components", e.getComponents());
                 break;
             }
             case FLASH: {
                 Flash e = (Flash) action;
                 writeVar(sb, "duration", e.getDuration());
-                writeVar(sb, "plane", e.getPlane(), Plane::getJsonName);
+                writeVar(sb, "plane", e.getPlane());
                 writeVar(sb, "startColor", e.getStartColor());
                 writeVar(sb, "startOpacity", e.getStartOpacity());
                 writeVar(sb, "endColor", e.getEndColor());
                 writeVar(sb, "endOpacity", e.getEndOpacity());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
+                writeVar(sb, "ease", e.getEase());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case MOVE_CAMERA: {
                 MoveCamera e = (MoveCamera) action;
                 writeVar(sb, "duration", e.getDuration());
-                writeVar(sb, "relativeTo", e.getRelativeTo(), CameraRelativeTo::getJsonName);
+                writeVar(sb, "relativeTo", e.getRelativeTo());
                 writeVar(sb, "position", e.getPosition());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "zoom", e.getZoom());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
-                writeVar(sb, "dontDisable", e.getDontDisable(), Toggle::getJsonName);
-                writeVar(sb, "minVfxOnly", e.getMinVfxOnly(), Toggle::getJsonName);
+                writeVar(sb, "ease", e.getEase());
+                writeVar(sb, "dontDisable", e.getDontDisable());
+                writeVar(sb, "minVfxOnly", e.getMinVfxOnly());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case SET_HITSOUND: {
                 SetHitsound e = (SetHitsound) action;
-                writeVar(sb, "gameSound", e.getGameSound(), GameSound::getJsonName);
-                writeVar(sb, "hitsound", e.getHitsound(), HitSound::getJsonName);
+                writeVar(sb, "gameSound", e.getGameSound());
+                writeVar(sb, "hitsound", e.getHitsound());
                 writeVar(sb, "hitsoundVolume", e.getHitsoundVolume());
                 break;
             }
             case PLAY_SOUND: {
                 PlaySound e = (PlaySound) action;
-                writeVar(sb, "hitsound", e.getHitsound(), HitSound::getJsonName);
+                writeVar(sb, "hitsound", e.getHitsound());
                 writeVar(sb, "hitsoundVolume", e.getHitsoundVolume());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
@@ -725,49 +697,49 @@ public class ActionFactory {
             }
             case RECOLOR_TRACK: {
                 RecolorTrack e = (RecolorTrack) action;
-                writeVar(sb, "startTile", Arrays.asList(e.getStartTileNum(), e.getStartTilePosition().getJsonName()));
-                writeVar(sb, "endTile", Arrays.asList(e.getEndTileNum(), e.getEndTilePosition().getJsonName()));
-                writeVar(sb, "trackColorType", e.getTrackColorType(), TrackColorType::getJsonName);
+                writeVar(sb, "startTile", e.getStartTile());
+                writeVar(sb, "endTile", e.getEndTile());
+                writeVar(sb, "trackColorType", e.getTrackColorType());
                 writeVar(sb, "trackColor", e.getTrackColor());
                 writeVar(sb, "secondaryTrackColor", e.getSecondaryTrackColor());
                 writeVar(sb, "trackColorAnimDuration", e.getTrackColorAnimDuration());
-                writeVar(sb, "trackColorPulse", e.getTrackColorPulse(), TrackColorPulse::getJsonName);
+                writeVar(sb, "trackColorPulse", e.getTrackColorPulse());
                 writeVar(sb, "trackPulseLength", e.getTrackPulseLength());
-                writeVar(sb, "trackStyle", e.getTrackStyle(), TrackStyle::getJsonName);
+                writeVar(sb, "trackStyle", e.getTrackStyle());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case MOVE_TRACK: {
                 MoveTrack e = (MoveTrack) action;
-                writeVar(sb, "startTile", Arrays.asList(e.getStartTileNum(), e.getStartTilePosition().getJsonName()));
-                writeVar(sb, "endTile", Arrays.asList(e.getEndTileNum(), e.getEndTilePosition().getJsonName()));
+                writeVar(sb, "startTile", e.getStartTile());
+                writeVar(sb, "endTile", e.getEndTile());
                 writeVar(sb, "duration", e.getDuration());
                 writeVar(sb, "positionOffset", e.getPositionOffset());
                 writeVar(sb, "rotationOffset", e.getRotationOffset());
                 writeVar(sb, "scale", e.getScale());
                 writeVar(sb, "opacity", e.getOpacity());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
-                writeVar(sb, "maxVfxOnly", e.getMaxVfxOnly(), Toggle::getJsonName);
+                writeVar(sb, "ease", e.getEase());
+                writeVar(sb, "maxVfxOnly", e.getMaxVfxOnly());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case SET_FILTER: {
                 SetFilter e = (SetFilter) action;
-                writeVar(sb, "filter", e.getFilter(), Filter::getJsonName);
-                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
+                writeVar(sb, "filter", e.getFilter());
+                writeVar(sb, "enabled", e.getEnabled());
                 writeVar(sb, "intensity", e.getIntensity());
                 writeVar(sb, "duration", e.getDuration());
-                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
-                writeVar(sb, "disableOthers", e.getDisableOthers(), Toggle::getJsonName);
+                writeVar(sb, "ease", e.getEase());
+                writeVar(sb, "disableOthers", e.getDisableOthers());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case HALL_OF_MIRRORS: {
                 HallOfMirrors e = (HallOfMirrors) action;
-                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
+                writeVar(sb, "enabled", e.getEnabled());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
@@ -777,14 +749,14 @@ public class ActionFactory {
                 writeVar(sb, "duration", e.getDuration());
                 writeVar(sb, "strength", e.getStrength());
                 writeVar(sb, "intensity", e.getIntensity());
-                writeVar(sb, "fadeOut", e.getFadeOut(), Toggle::getJsonName);
+                writeVar(sb, "fadeOut", e.getFadeOut());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
             case SET_PLANET_ROTATION: {
                 SetPlanetRotation e = (SetPlanetRotation) action;
-                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
+                writeVar(sb, "ease", e.getEase());
                 writeVar(sb, "easeParts", e.getEaseParts());
                 break;
             }
@@ -801,7 +773,7 @@ public class ActionFactory {
                 writeVar(sb, "depth", e.getDepth());
                 writeVar(sb, "parallax", e.getParallax());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
-                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
+                writeVar(sb, "ease", e.getEase());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
             }
@@ -811,7 +783,7 @@ public class ActionFactory {
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
                 writeVar(sb, "opacity", e.getOpacity());
-                writeVar(sb, "editorOnly", e.getEditorOnly(), Toggle::getJsonName);
+                writeVar(sb, "editorOnly", e.getEditorOnly());
                 break;
             }
             case REPEAT_EVENTS: {
@@ -823,12 +795,12 @@ public class ActionFactory {
             }
             case BLOOM: {
                 Bloom e = (Bloom) action;
-                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
+                writeVar(sb, "enabled", e.getEnabled());
                 writeVar(sb, "threshold", e.getThreshold());
                 writeVar(sb, "intensity", e.getIntensity());
                 writeVar(sb, "color", e.getColor());
                 writeVar(sb, "duration", e.getDuration());
-                writeVar(sb, "ease", e.getEase(), Ease::getJsonName);
+                writeVar(sb, "ease", e.getEase());
                 writeVar(sb, "angleOffset", e.getAngleOffset());
                 writeVar(sb, "eventTag", e.getEventTag());
                 break;
@@ -859,9 +831,9 @@ public class ActionFactory {
             case ADD_TEXT: {
                 AddText e = (AddText) action;
                 writeVar(sb, "decText", e.getDecText());
-                writeVar(sb, "font", e.getFont(), Font::getJsonName);
+                writeVar(sb, "font", e.getFont());
                 writeVar(sb, "position", e.getPosition());
-                writeVar(sb, "relativeTo", e.getRelativeTo(), DecorationRelativeTo::getJsonName);
+                writeVar(sb, "relativeTo", e.getRelativeTo());
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
@@ -882,16 +854,16 @@ public class ActionFactory {
             }
             case CHANGE_TRACK: {
                 ChangeTrack e = (ChangeTrack) action;
-                writeVar(sb, "trackColorType", e.getTrackColorType(), TrackColorType::getJsonName);
+                writeVar(sb, "trackColorType", e.getTrackColorType());
                 writeVar(sb, "trackColor", e.getTrackColor());
                 writeVar(sb, "secondaryTrackColor", e.getSecondaryTrackColor());
                 writeVar(sb, "trackColorAnimDuration", e.getTrackColorAnimDuration());
-                writeVar(sb, "trackColorPulse", e.getTrackColorPulse(), TrackColorPulse::getJsonName);
+                writeVar(sb, "trackColorPulse", e.getTrackColorPulse());
                 writeVar(sb, "trackPulseLength", e.getTrackPulseLength());
-                writeVar(sb, "trackStyle", e.getTrackStyle(), TrackStyle::getJsonName);
-                writeVar(sb, "trackAnimation", e.getTrackAnimation(), TrackAnimation::getJsonName);
+                writeVar(sb, "trackStyle", e.getTrackStyle());
+                writeVar(sb, "trackAnimation", e.getTrackAnimation());
                 writeVar(sb, "beatsAhead", e.getBeatsAhead());
-                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation(), TrackDisappearAnimation::getJsonName);
+                writeVar(sb, "trackDisappearAnimation", e.getTrackDisappearAnimation());
                 writeVar(sb, "beatsBehind", e.getBeatsBehind());
                 break;
             }
@@ -904,26 +876,26 @@ public class ActionFactory {
             }
             case AUTO_PLAY_TILES: {
                 AutoPlayTiles e = (AutoPlayTiles) action;
-                writeVar(sb, "enabled", e.getEnabled(), Toggle::getJsonName);
-                writeVar(sb, "safetyTiles", e.getSafetyTiles(), Toggle::getJsonName);
+                writeVar(sb, "enabled", e.getEnabled());
+                writeVar(sb, "safetyTiles", e.getSafetyTiles());
                 break;
             }
             case HOLD: {
                 Hold e = (Hold) action;
                 writeVar(sb, "duration", e.getDuration());
                 writeVar(sb, "distanceMultiplier", e.getDistanceMultiplier());
-                writeVar(sb, "landingAnimation", e.getLandingAnimation(), Toggle::getJsonName);
+                writeVar(sb, "landingAnimation", e.getLandingAnimation());
                 break;
             }
             case SET_HOLD_SOUND: {
                 SetHoldSound e = (SetHoldSound) action;
-                writeVar(sb, "holdStartSound", e.getHoldStartSound(), HoldSoundType::getJsonName);
-                writeVar(sb, "holdLoopSound", e.getHoldLoopSound(), HoldSoundType::getJsonName);
-                writeVar(sb, "holdEndSound", e.getHoldEndSound(), HoldSoundType::getJsonName);
-                writeVar(sb, "holdMidSound", e.getHoldMidSound(), HoldMidSound::getJsonName);
-                writeVar(sb, "holdMidSoundType", e.getHoldMidSoundType(), HoldMidSoundType::getJsonName);
+                writeVar(sb, "holdStartSound", e.getHoldStartSound());
+                writeVar(sb, "holdLoopSound", e.getHoldLoopSound());
+                writeVar(sb, "holdEndSound", e.getHoldEndSound());
+                writeVar(sb, "holdMidSound", e.getHoldMidSound());
+                writeVar(sb, "holdMidSoundType", e.getHoldMidSoundType());
                 writeVar(sb, "holdMidSoundDelay", e.getHoldMidSoundDelay());
-                writeVar(sb, "holdMidSoundTimingRelativeTo", e.getHoldMidSoundTimingRelativeTo(), HoldMidSoundTimingRelativeTo::getJsonName);
+                writeVar(sb, "holdMidSoundTimingRelativeTo", e.getHoldMidSoundTimingRelativeTo());
                 writeVar(sb, "holdSoundVolume", e.getHoldSoundVolume());
                 break;
             }
@@ -938,7 +910,7 @@ public class ActionFactory {
                 writeVar(sb, "size", e.getSize());
                 writeVar(sb, "positionOffset", e.getPositionOffset());
                 writeVar(sb, "outTime", e.getOutTime());
-                writeVar(sb, "outEase", e.getOutEase(), Ease::getJsonName);
+                writeVar(sb, "outEase", e.getOutEase());
                 writeVar(sb, "countdownTicks", e.getCountdownTicks());
                 writeVar(sb, "angleCorrectionDir", e.getAngleCorrectionDir());
                 break;
@@ -956,8 +928,8 @@ public class ActionFactory {
             }
             case HIDE: {
                 Hide e = (Hide) action;
-                writeVar(sb, "hideJudgment", e.getHideJudgment(), Toggle::getJsonName);
-                writeVar(sb, "hideTileIcon", e.getHideTileIcon(), Toggle::getJsonName);
+                writeVar(sb, "hideJudgment", e.getHideJudgment());
+                writeVar(sb, "hideTileIcon", e.getHideTileIcon());
                 break;
             }
             case SCALE_MARGIN: {
@@ -989,22 +961,4 @@ public class ActionFactory {
     }
 
 }
-
-
-/*
-
-Failed to read action rest={duration=16, outEase="InOutSine", size=[5.1,4.5], angleCorrectionDir=-1, positionOffset=[1.1,1.1], outTime=4, countdownTicks=4}, {"floor":319,"eventType":"FreeRoam","duration":16,"size":[5.1,4.5],"positionOffset":[1.1,1.1],"outTime":4,"outEase":"InOutSine","countdownTicks":4,"angleCorrectionDir":-1}
-
-Failed to read action rest={position=[1,1]}, {"floor":321,"eventType":"FreeRoamTwirl","position":[1,1]}
-
-Failed to read action rest={size=[1.1,1.1], position=[1.1,1.1]}, {"floor":331,"eventType":"FreeRoamRemove","position":[1.1,1.1],"size":[1.1,1.1]}
-Failed to read action rest={size=[1,1], position=[1,0]}, {"floor":331,"eventType":"FreeRoamRemove","position":[1,0],"size":[1,1]}
-Failed to read action rest={size=[1,1], position=[1,0]}, {"floor":331,"eventType":"FreeRoamRemove","position":[1,0],"size":[1,1]}
-
-Failed to read action rest={hideJudgment="Disabled", hideTileIcon="Disabled"}, {"floor":341,"eventType":"Hide","hideJudgment":"Disabled","hideTileIcon":"Disabled"}
-Failed to read action rest={hideJudgment="Enabled", hideTileIcon="Enabled"}, {"floor":342,"eventType":"Hide","hideJudgment":"Enabled","hideTileIcon":"Enabled"}
-Failed to read action rest={hideJudgment="Disabled", hideTileIcon="Disabled"}, {"floor":343,"eventType":"Hide","hideJudgment":"Disabled","hideTileIcon":"Disabled"}
-
-*/
-
 

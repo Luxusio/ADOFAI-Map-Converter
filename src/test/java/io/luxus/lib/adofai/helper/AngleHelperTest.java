@@ -17,7 +17,7 @@ class AngleHelperTest {
             "0,45,180,false,135",
             "0,45,180,true,225",
             "0,30,120,false,90",
-            "0,360,120,false,90",
+            "0,360,120,false,120",
     })
     void testGetNextStaticAngle(double staticAngle, double relativeAngle, double planetAngle, boolean reversed, double expected) {
         // given

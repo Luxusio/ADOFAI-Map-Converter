@@ -3,22 +3,18 @@ package io.luxus.lib.adofai.type.action;
 import io.luxus.lib.adofai.type.EventType;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-
-import static io.luxus.lib.adofai.util.ListUtil.toUnmodifiableXYList;
 
 
 @Getter
 @ToString
 public class FreeRoamTwirl extends Action {
 
-	private final List<Double> position;
+	private final Pair<Double, Double> position;
 
-	private FreeRoamTwirl(Boolean active, List<Double> position) {
+	private FreeRoamTwirl(Boolean active, Pair<Double, Double> position) {
 		super(EventType.FREE_ROAM_TWIRL, active);
 		this.position = position;
 	}
@@ -27,7 +23,7 @@ public class FreeRoamTwirl extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private List<Double> position = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> position = Pair.with(0.0, 0.0);
 
 		/**
 		 * set all parameter with given action
@@ -70,12 +66,9 @@ public class FreeRoamTwirl extends Action {
 			return EventType.FREE_ROAM_TWIRL;
 		}
 
-		public Builder position(List<Double> position) {
+		public Builder position(Pair<Double, Double> position) {
 			Objects.requireNonNull(position);
-			if (position.size() != 2) {
-				throw new IllegalArgumentException("size of position should be 2");
-			}
-			this.position = toUnmodifiableXYList(position);
+			this.position = position;
 			return self();
 		}
 

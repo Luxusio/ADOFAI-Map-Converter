@@ -13,6 +13,7 @@ import io.luxus.lib.adofai.helper.TileHelper;
 import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,12 +198,12 @@ public class MapConverterBase {
                 final int newTileNum = newTileIdx + i;
                 newTimingTileBuilders.get(i)
                         .editActions(EventType.RECOLOR_TRACK, RecolorTrack.class, a -> new RecolorTrack.Builder().from(a)
-                                .startTileNum(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
-                                .endTileNum(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .startTile(Pair.with(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTile().getValue0().intValue(), a.getStartTile().getValue1()), a.getStartTile().getValue1()))
+                                .endTile(Pair.with(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTile().getValue0().intValue(), a.getEndTile().getValue1()), a.getEndTile().getValue1()))
                                 .build())
                         .editActions(EventType.MOVE_TRACK, MoveTrack.class, a -> new MoveTrack.Builder().from(a)
-                                .startTileNum(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTileNum().intValue(), a.getStartTilePosition()))
-                                .endTileNum(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTileNum().intValue(), a.getEndTilePosition()))
+                                .startTile(Pair.with(getTileNum(minimumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getStartTile().getValue0().intValue(), a.getStartTile().getValue1()), a.getStartTile().getValue1()))
+                                .endTile(Pair.with(getTileNum(maximumBoundOldTileNewTileMap, oldTiles.size(), newTileBuilders.size(), oldTileNum, newTileNum, a.getEndTile().getValue0().intValue(), a.getEndTile().getValue1()), a.getEndTile().getValue1()))
                                 .build());
             }
 

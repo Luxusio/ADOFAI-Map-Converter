@@ -1,12 +1,13 @@
 package io.luxus.lib.adofai.type.action;
 
-import io.luxus.lib.adofai.type.*;
-import io.luxus.lib.adofai.util.ListUtil;
+import io.luxus.lib.adofai.type.CameraRelativeTo;
+import io.luxus.lib.adofai.type.Ease;
+import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.Toggle;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -15,7 +16,7 @@ public class MoveCamera extends Action {
 
 	private final Double duration;
 	private final CameraRelativeTo relativeTo;
-	private final List<Double> position;
+	private final Pair<Double, Double> position;
 	private final Double rotation;
 	private final Long zoom;
 	private final Double angleOffset;
@@ -24,7 +25,7 @@ public class MoveCamera extends Action {
 	private final Toggle minVfxOnly;
 	private final String eventTag;
 
-	private MoveCamera(Boolean active, Double duration, CameraRelativeTo relativeTo, List<Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, Toggle dontDisable, Toggle minVfxOnly, String eventTag) {
+	private MoveCamera(Boolean active, Double duration, CameraRelativeTo relativeTo, Pair<Double, Double> position, Double rotation, Long zoom, Double angleOffset, Ease ease, Toggle dontDisable, Toggle minVfxOnly, String eventTag) {
 		super(EventType.MOVE_CAMERA, active);
 		this.duration = duration;
 		this.relativeTo = relativeTo;
@@ -44,7 +45,7 @@ public class MoveCamera extends Action {
 
 		private Double duration = 1.0;
 		private CameraRelativeTo relativeTo = CameraRelativeTo.PLAYER;
-		private List<Double> position = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> position = Pair.with(0.0, 0.0);
 		private Double rotation = 0.0;
 		private Long zoom = 100L;
 		private Double angleOffset = 0.0;
@@ -135,14 +136,10 @@ public class MoveCamera extends Action {
 		 * @param position position of MoveCamera Event
 		 * @return self
 		 * @throws NullPointerException when position is null
-		 * @throws IllegalArgumentException when size of position is not 2
 		 */
-		public Builder position(List<Double> position) {
+		public Builder position(Pair<Double, Double> position) {
 			Objects.requireNonNull(position);
-			if (position.size() != 2) {
-				throw new IllegalArgumentException("size of position must be 2");
-			}
-			this.position = ListUtil.createNewUnmodifiableList(position);
+			this.position = position;
 			return self();
 		}
 

@@ -70,13 +70,13 @@ public class LevelSettingFactory {
         reader.read("showDefaultBGIfNoImage", builder::showDefaultBGIfNoImage, JsonNode::asText, toggleMap::get);
         reader.read("bgImage", builder::bgImage, JsonNode::asText);
         reader.read("bgImageColor", builder::bgImageColor, JsonNode::asText);
-        reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asLong));
+        reader.read("parallax", builder::parallax, nodeToXYPair(JsonNode::asLong));
         reader.read("bgDisplayMode", builder::bgDisplayMode, JsonNode::asText, bgDisplayModeTypeMap::get);
         reader.read("lockRot", builder::lockRot, JsonNode::asText, toggleMap::get);
         reader.read("loopBG", builder::loopBG, JsonNode::asText, toggleMap::get);
         reader.read("unscaledSize", builder::unscaledSize, JsonNode::asLong);
         reader.read("relativeTo", builder::relativeTo, JsonNode::asText, cameraRelativeToMap::get);
-        reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+        reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
         reader.read("rotation", builder::rotation, JsonNode::asDouble);
         reader.read("zoom", builder::zoom, JsonNode::asLong);
         reader.read("bgVideo", builder::bgVideo, JsonNode::asText);

@@ -2,10 +2,16 @@ package io.luxus.lib.adofai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.type.*;
-import io.luxus.lib.adofai.util.ListUtil;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @ToString
@@ -52,13 +58,13 @@ public class LevelSetting {
     private final Toggle showDefaultBGIfNoImage;
     private final String bgImage;
     private final String bgImageColor;
-    private final List<Long> parallax;
+    private final Pair<Long, Long> parallax;
     private final BGDisplayModeType bgDisplayMode;
     private final Toggle lockRot;
     private final Toggle loopBG;
     private final Long unscaledSize;
     private final CameraRelativeTo relativeTo;
-    private final List<Double> position;
+    private final Pair<Double, Double> position;
     private final Double rotation;
     private final Long zoom;
     private final String bgVideo;
@@ -117,13 +123,13 @@ public class LevelSetting {
         private Toggle showDefaultBGIfNoImage = Toggle.ENABLED;
         private String bgImage = "";
         private String bgImageColor = "ffffff";
-        private List<Long> parallax = Arrays.asList(100L, 100L);
+        private Pair<Long, Long> parallax = Pair.with(100L, 100L);
         private BGDisplayModeType bgDisplayMode = BGDisplayModeType.FIT_TO_SCREEN;
         private Toggle lockRot = Toggle.DISABLED;
         private Toggle loopBG = Toggle.DISABLED;
         private Long unscaledSize = 100L;
         private CameraRelativeTo relativeTo = CameraRelativeTo.PLAYER;
-        private List<Double> position = Arrays.asList(0.0, 0.0);
+        private Pair<Double, Double> position = Pair.with(0.0, 0.0);
         private Double rotation = 0.0;
         private Long zoom = 100L;
         private String bgVideo = "";
@@ -762,12 +768,9 @@ public class LevelSetting {
          * @throws NullPointerException when parallax is null
          * @throws IllegalArgumentException when size of parallax is not 2
          */
-        public Builder parallax(List<Long> parallax) {
+        public Builder parallax(Pair<Long, Long> parallax) {
             Objects.requireNonNull(parallax);
-            if (parallax.size() != 2) {
-                throw new IllegalArgumentException("size of parallax must be 2");
-            }
-            this.parallax = ListUtil.createNewUnmodifiableList(parallax);
+            this.parallax = parallax;
             return self();
         }
 
@@ -844,12 +847,9 @@ public class LevelSetting {
          * @throws NullPointerException when position is null
          * @throws IllegalArgumentException when size of position is not 2
          */
-        public Builder position(List<Double> position) {
+        public Builder position(Pair<Double, Double> position) {
             Objects.requireNonNull(position);
-            if (position.size() != 2) {
-                throw new IllegalArgumentException("size of position must be 2");
-            }
-            this.position = ListUtil.createNewUnmodifiableList(position);
+            this.position = position;
             return self();
         }
 

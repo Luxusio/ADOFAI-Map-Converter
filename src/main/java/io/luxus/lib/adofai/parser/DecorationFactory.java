@@ -3,9 +3,6 @@ package io.luxus.lib.adofai.parser;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.luxus.lib.adofai.decoration.*;
 import io.luxus.lib.adofai.helper.JsonPropertyReader;
-import io.luxus.lib.adofai.type.DecorationRelativeTo;
-import io.luxus.lib.adofai.type.Font;
-import io.luxus.lib.adofai.type.Toggle;
 import io.luxus.lib.adofai.type.action.Action;
 
 import java.util.HashMap;
@@ -60,16 +57,16 @@ public class DecorationFactory {
                 reader.read("floor", builder::floor, JsonNode::asLong);
                 reader.read("visible", builder::visible, JsonNode::asBoolean);
                 reader.read("decorationImage", builder::decorationImage, JsonNode::asText);
-                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
                 reader.read("relativeTo", builder::relativeTo, JsonNode::asText, decorationRelativeToMap::get);
-                reader.read("pivotOffset", builder::pivotOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("pivotOffset", builder::pivotOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
-                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
-                reader.read("tile", builder::tile, nodeToXYListFunc(JsonNode::asLong));
+                reader.read("scale", builder::scale, nodeToXYPair(JsonNode::asDouble));
+                reader.read("tile", builder::tile, nodeToXYPair(JsonNode::asLong));
                 reader.read("color", builder::color, JsonNode::asText);
                 reader.read("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("depth", builder::depth, JsonNode::asLong);
-                reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("parallax", builder::parallax, nodeToXYPair(JsonNode::asDouble));
                 reader.read("tag", builder::tag, JsonNode::asText);
                 reader.read("imageSmoothing", builder::imageSmoothing, JsonNode::asText, toggleMap::get);
                 reader.read("failHitbox", builder::failHitbox, JsonNode::asText, toggleMap::get);
@@ -85,15 +82,15 @@ public class DecorationFactory {
                 reader.read("decText", builder::decText, JsonNode::asText);
                 reader.read("decText", builder::decText, JsonNode::asText);
                 reader.read("font", builder::font, JsonNode::asText, fontMap::get);
-                reader.read("position", builder::position, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("position", builder::position, nodeToXYPair(JsonNode::asDouble));
                 reader.read("relativeTo", builder::relativeTo, JsonNode::asText, decorationRelativeToMap::get);
-                reader.read("pivotOffset", builder::pivotOffset, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("pivotOffset", builder::pivotOffset, nodeToXYPair(JsonNode::asDouble));
                 reader.read("rotation", builder::rotation, JsonNode::asDouble);
-                reader.read("scale", builder::scale, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("scale", builder::scale, nodeToXYPair(JsonNode::asDouble));
                 reader.read("color", builder::color, JsonNode::asText);
                 reader.read("opacity", builder::opacity, JsonNode::asDouble);
                 reader.read("depth", builder::depth, JsonNode::asLong);
-                reader.read("parallax", builder::parallax, nodeToXYListFunc(JsonNode::asDouble));
+                reader.read("parallax", builder::parallax, nodeToXYPair(JsonNode::asDouble));
                 reader.read("tag", builder::tag, JsonNode::asText);
 
                 decoration = builder.build();
@@ -124,7 +121,7 @@ public class DecorationFactory {
                 AddDecoration e = (AddDecoration) decoration;
                 writeVar(sb, "decorationImage", e.getDecorationImage());
                 writeVar(sb, "position", e.getPosition());
-                writeVar(sb, "relativeTo", e.getRelativeTo(), DecorationRelativeTo::getJsonName);
+                writeVar(sb, "relativeTo", e.getRelativeTo());
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());
@@ -134,17 +131,17 @@ public class DecorationFactory {
                 writeVar(sb, "depth", e.getDepth());
                 writeVar(sb, "parallax", e.getParallax());
                 writeVar(sb, "tag", e.getTag());
-                writeVar(sb, "imageSmoothing", e.getImageSmoothing(), Toggle::getJsonName);
-                writeVar(sb, "failHitbox", e.getFailHitbox(), Toggle::getJsonName);
+                writeVar(sb, "imageSmoothing", e.getImageSmoothing());
+                writeVar(sb, "failHitbox", e.getFailHitbox());
                 writeVar(sb, "components", e.getComponents());
                 break;
             }
             case ADD_TEXT: {
                 AddText e = (AddText) decoration;
                 writeVar(sb, "decText", e.getDecText());
-                writeVar(sb, "font", e.getFont(), Font::getJsonName);
+                writeVar(sb, "font", e.getFont());
                 writeVar(sb, "position", e.getPosition());
-                writeVar(sb, "relativeTo", e.getRelativeTo(), DecorationRelativeTo::getJsonName);
+                writeVar(sb, "relativeTo", e.getRelativeTo());
                 writeVar(sb, "pivotOffset", e.getPivotOffset());
                 writeVar(sb, "rotation", e.getRotation());
                 writeVar(sb, "scale", e.getScale());

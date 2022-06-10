@@ -220,11 +220,11 @@ public class TileMeta {
                 PositionTrack positionTrack = (PositionTrack) actions.get(0);
 
                 if (positionTrack.getEditorOnly() == Toggle.DISABLED) {
-                    this.realX += positionTrack.getPositionOffset().get(0);
-                    this.realY += positionTrack.getPositionOffset().get(1);
+                    this.realX += positionTrack.getPositionOffset().getValue0();
+                    this.realY += positionTrack.getPositionOffset().getValue1();
                 }
-                this.editorX += positionTrack.getPositionOffset().get(0);
-                this.editorY += positionTrack.getPositionOffset().get(1);
+                this.editorX += positionTrack.getPositionOffset().getValue0();
+                this.editorY += positionTrack.getPositionOffset().getValue1();
             }
 
             AngleHelper.Result result = AngleHelper.calculateAngleData(staticAngle, currAngle, nextAngle, calculatePlanetAngle(this.planets), reversed);

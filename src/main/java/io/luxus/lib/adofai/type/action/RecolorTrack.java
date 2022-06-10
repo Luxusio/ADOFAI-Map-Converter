@@ -4,6 +4,7 @@ import io.luxus.lib.adofai.type.*;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
 import java.util.Objects;
 
@@ -11,10 +12,8 @@ import java.util.Objects;
 @ToString
 public class RecolorTrack extends Action {
 
-	private final Long startTileNum;
-	private final TilePosition startTilePosition;
-	private final Long endTileNum;
-	private final TilePosition endTilePosition;
+	private final Pair<Long, TilePosition> startTile;
+	private final Pair<Long, TilePosition> endTile;
 	private final TrackColorType trackColorType;
 	private final String trackColor;
 	private final String secondaryTrackColor;
@@ -25,14 +24,12 @@ public class RecolorTrack extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private RecolorTrack(Boolean active, Long startTileNum, TilePosition startTilePosition, Long endTileNum, TilePosition endTilePosition,
+	private RecolorTrack(Boolean active, Pair<Long, TilePosition> startTile, Pair<Long, TilePosition> endTile,
 						TrackColorType trackColorType, String trackColor, String secondaryTrackColor, Double trackColorAnimDuration,
 						TrackColorPulse trackColorPulse, Long trackPulseLength, TrackStyle trackStyle, Double angleOffset, String eventTag) {
 		super(EventType.RECOLOR_TRACK, active);
-		this.startTileNum = startTileNum;
-		this.startTilePosition = startTilePosition;
-		this.endTileNum = endTileNum;
-		this.endTilePosition = endTilePosition;
+		this.startTile = startTile;
+		this.endTile = endTile;
 		this.trackColorType = trackColorType;
 		this.trackColor = trackColor;
 		this.secondaryTrackColor = secondaryTrackColor;
@@ -48,10 +45,8 @@ public class RecolorTrack extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private Long startTileNum = 0L;
-		private TilePosition startTilePosition = TilePosition.THIS_TILE;
-		private Long endTileNum = 0L;
-		private TilePosition endTilePosition = TilePosition.THIS_TILE;
+		private Pair<Long, TilePosition> startTile = Pair.with(0L, TilePosition.THIS_TILE);
+		private Pair<Long, TilePosition> endTile = Pair.with(0L, TilePosition.THIS_TILE);
 		private TrackColorType trackColorType = TrackColorType.SINGLE;
 		private String trackColor = "debb7b";
 		private String secondaryTrackColor = "ffffff";
@@ -70,10 +65,8 @@ public class RecolorTrack extends Action {
 		 */
 		public Builder from(RecolorTrack src) {
 			return self()
-					.startTileNum(src.startTileNum)
-					.startTilePosition(src.startTilePosition)
-					.endTileNum(src.endTileNum)
-					.endTilePosition(src.endTilePosition)
+					.startTile(src.startTile)
+					.endTile(src.endTile)
 					.trackColorType(src.trackColorType)
 					.trackColor(src.trackColor)
 					.secondaryTrackColor(src.secondaryTrackColor)
@@ -92,7 +85,7 @@ public class RecolorTrack extends Action {
 		 */
 		@Override
 		public RecolorTrack build() {
-			return new RecolorTrack(active, startTileNum, startTilePosition, endTileNum, endTilePosition, trackColorType, trackColor,
+			return new RecolorTrack(active, startTile, endTile, trackColorType, trackColor,
 					secondaryTrackColor, trackColorAnimDuration, trackColorPulse, trackPulseLength, trackStyle,
 					angleOffset, eventTag);
 		}
@@ -117,55 +110,16 @@ public class RecolorTrack extends Action {
 			return EventType.RECOLOR_TRACK;
 		}
 
-		/**
-		 * setter of startTileNum
-		 *
-		 * @param startTileNum startTileNum of RecolorTrack Event
-		 * @return self
-		 * @throws NullPointerException when startTileNum is null
-		 */
-		public Builder startTileNum(Long startTileNum) {
-			Objects.requireNonNull(startTileNum);
-			this.startTileNum = startTileNum;
+
+		public Builder startTile(Pair<Long, TilePosition> startTile) {
+			Objects.requireNonNull(startTile);
+			this.startTile = startTile;
 			return self();
 		}
 
-		/**
-		 * setter of startTilePosition
-		 *
-		 * @param startTilePosition startTilePosition of RecolorTrack Event
-		 * @return self
-		 * @throws NullPointerException when startTilePosition is null
-		 */
-		public Builder startTilePosition(TilePosition startTilePosition) {
-			Objects.requireNonNull(startTilePosition);
-			this.startTilePosition = startTilePosition;
-			return self();
-		}
-
-		/**
-		 * setter of endTileNum
-		 *
-		 * @param endTileNum endTileNum of RecolorTrack Event
-		 * @return self
-		 * @throws NullPointerException when endTileNum is null
-		 */
-		public Builder endTileNum(Long endTileNum) {
-			Objects.requireNonNull(endTileNum);
-			this.endTileNum = endTileNum;
-			return self();
-		}
-
-		/**
-		 * setter of endTilePosition
-		 *
-		 * @param endTilePosition endTilePosition of RecolorTrack Event
-		 * @return self
-		 * @throws NullPointerException when endTilePosition is null
-		 */
-		public Builder endTilePosition(TilePosition endTilePosition) {
-			Objects.requireNonNull(endTilePosition);
-			this.endTilePosition = endTilePosition;
+		public Builder endTile(Pair<Long, TilePosition> endTile) {
+			Objects.requireNonNull(endTile);
+			this.endTile = endTile;
 			return self();
 		}
 

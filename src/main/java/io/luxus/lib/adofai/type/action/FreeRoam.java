@@ -4,12 +4,9 @@ import io.luxus.lib.adofai.type.Ease;
 import io.luxus.lib.adofai.type.EventType;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-
-import static io.luxus.lib.adofai.util.ListUtil.toUnmodifiableXYList;
 
 
 @Getter
@@ -17,14 +14,14 @@ import static io.luxus.lib.adofai.util.ListUtil.toUnmodifiableXYList;
 public class FreeRoam extends Action {
 
 	private final Double duration;
-	private final List<Double> size;
-	private final List<Double> positionOffset;
+	private final Pair<Double, Double> size;
+	private final Pair<Double, Double> positionOffset;
 	private final Long outTime;
 	private final Ease outEase;
 	private final Long countdownTicks;
 	private final Long angleCorrectionDir;
 
-	private FreeRoam(Boolean active, Double duration, List<Double> size, List<Double> positionOffset, Long outTime, Ease outEase, Long countdownTicks, Long angleCorrectionDir) {
+	private FreeRoam(Boolean active, Double duration, Pair<Double, Double> size, Pair<Double, Double> positionOffset, Long outTime, Ease outEase, Long countdownTicks, Long angleCorrectionDir) {
 		super(EventType.FREE_ROAM, active);
 		this.duration = duration;
 		this.size = size;
@@ -40,8 +37,8 @@ public class FreeRoam extends Action {
 	public static final class Builder extends Action.Builder<Builder> {
 
 		private Double duration = 16.0;
-		private List<Double> size = Arrays.asList(4.0, 4.0);
-		private List<Double> positionOffset = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> size = Pair.with(4.0, 4.0);
+		private Pair<Double, Double> positionOffset = Pair.with(0.0, 0.0);
 		private Long outTime = 4L;
 		private Ease outEase = Ease.IN_OUT_SINE;
 		private Long countdownTicks = 4L;
@@ -101,21 +98,15 @@ public class FreeRoam extends Action {
 			return this;
 		}
 
-		public Builder size(List<Double> size) {
+		public Builder size(Pair<Double, Double> size) {
 			Objects.requireNonNull(size);
-			if (size.size() != 2) {
-				throw new IllegalArgumentException("size of size should be 2");
-			}
-			this.size = toUnmodifiableXYList(size);
+			this.size = size;
 			return this;
 		}
 
-		public Builder positionOffset(List<Double> positionOffset) {
+		public Builder positionOffset(Pair<Double, Double> positionOffset) {
 			Objects.requireNonNull(positionOffset);
-			if (positionOffset.size() != 2) {
-				throw new IllegalArgumentException("size of positionOffset should be 2");
-			}
-			this.positionOffset = toUnmodifiableXYList(positionOffset);
+			this.positionOffset = positionOffset;
 			return this;
 		}
 

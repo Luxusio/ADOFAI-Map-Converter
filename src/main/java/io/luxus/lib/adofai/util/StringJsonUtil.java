@@ -1,8 +1,10 @@
 package io.luxus.lib.adofai.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.luxus.lib.adofai.type.JsonParsable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.function.Function;
@@ -95,23 +97,69 @@ public final class StringJsonUtil {
         return sb.toString();
     }
 
-    public static <R> Function<JsonNode, List<R>> nodeToXYListFunc(Function<? super JsonNode, ? extends R> mapper) {
+//    public static <R> Function<JsonNode, List<R>> nodeToXYListFunc(Function<? super JsonNode, ? extends R> mapper) {
+//        return node -> {
+//            List<R> result = nodeToList(node, mapper);
+//            if (result.size() == 0) {
+//                R value = mapper.apply(node);
+//                if (value == null) return null;
+//                result.add(value);
+//                result.add(value);
+//            }
+//            else if (result.size() == 1) {
+//                result.add(result.get(0));
+//            }
+//            else if (result.size() > 2) {
+//                throw new IllegalStateException("property is more than 2");
+//            }
+//            return result;
+//        };
+//    }
+
+    public static <R> Function<JsonNode, Pair<R, R>> nodeToXYPair(Function<? super JsonNode, ? extends R> mapper) {
         return node -> {
             List<R> result = nodeToList(node, mapper);
             if (result.size() == 0) {
                 R value = mapper.apply(node);
                 if (value == null) return null;
-                result.add(value);
-                result.add(value);
+                return Pair.with(value, value);
             }
             else if (result.size() == 1) {
-                result.add(result.get(0));
+                R value = result.get(0);
+                return Pair.with(value, value);
             }
             else if (result.size() > 2) {
                 throw new IllegalStateException("property is more than 2");
             }
-            return result;
+            return Pair.with(result.get(0), result.get(1));
         };
+    }
+
+    public static <T1, T2> Function<JsonNode, Pair<T1, T2>> nodeToPair(Function<? super JsonNode, ? extends T1> mapper1, Function<? super JsonNode, ? extends T2> mapper2) {
+        return node -> {
+            List<JsonNode> list = new ArrayList<>();
+
+            Iterator<JsonNode> it = node.elements();
+            while (it.hasNext()) {
+                list.add(it.next());
+            }
+
+            if (list.size() != 2) {
+                throw new IllegalStateException("property is not 2 (size=" + list.size() + ")");
+            }
+
+            return Pair.with(
+                    mapper1.apply(list.get(0)),
+                    mapper2.apply(list.get(1))
+            );
+        };
+    }
+
+    public static <T1, T2> Function<JsonNode, T2> chain(Function<JsonNode, T1> mapper1, Function<T1, T2> mapper2) {
+        return node -> Optional.ofNullable(node)
+                .map(mapper1)
+                .map(mapper2)
+                .orElse(null);
     }
 
     public static <R> List<R> nodeToList(JsonNode node, Function<? super JsonNode, ? extends R> mapper) {
@@ -128,20 +176,16 @@ public final class StringJsonUtil {
         writeVar(sb, value);
     }
 
-    public static <T> void writeVar(StringBuilder sb, String name, T value, Function<T, ?> mapper) {
-        Optional<?> o = Optional.ofNullable(value)
-                .map(mapper);
-        if (!o.isPresent()) return;
-
-        sb.append(", \"").append(name).append("\": ");
-        writeVar(sb, o.get());
-    }
-
     public static void writeVar(StringBuilder sb, String name, Object value) {
         if (value == null) return;
 
         sb.append(", \"").append(name).append("\": ");
         writeVar(sb, value);
+    }
+
+    public static void writeVar(StringBuilder sb, String name, JsonParsable value) {
+        if (value == null) return;
+        writeVar(sb, name, value.getJsonName());
     }
 
     public static void endWriteObj(StringBuilder sb) {
@@ -161,8 +205,8 @@ public final class StringJsonUtil {
         else if (value instanceof Number) {
             sb.append(toCompactString((Number) value));
         }
-        else if (value instanceof List<?>) {
-            writeIt(sb, ((List<?>) value).iterator());
+        else if (value instanceof Pair<?, ?>) {
+            writeIt(sb, ((Pair<?, ?>) value).iterator());
         }
         else if (value instanceof JsonNode) {
             JsonNode jsonNode = (JsonNode) value;
@@ -188,7 +232,12 @@ public final class StringJsonUtil {
                 case NULL:
                     break;
             }
-
+        }
+        else if (value instanceof JsonParsable) {
+            writeVar(sb, ((JsonParsable) value).getJsonName());
+        }
+        else {
+            throw new IllegalArgumentException("unsupported type (class=" + value.getClass() + ", value=" + value + ")");
         }
     }
 

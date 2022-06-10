@@ -8,6 +8,7 @@ import io.luxus.lib.adofai.type.action.MoveTrack;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.TilePosition;
 import lombok.RequiredArgsConstructor;
+import org.javatuples.Pair;
 
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -59,7 +60,8 @@ public class TransparentMapConverter implements MapConverter<TransparentMapConve
 
     private MoveTrack getTransparentMoveTrack(double opacity) {
         return new MoveTrack.Builder()
-                .startTilePosition(TilePosition.START).endTilePosition(TilePosition.END)
+                .startTile(Pair.with(0L, TilePosition.START))
+                .endTile(Pair.with(0L, TilePosition.END))
                 .duration(0.0)
                 .opacity(opacity)
                 .build();

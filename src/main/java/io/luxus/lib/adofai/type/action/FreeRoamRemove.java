@@ -3,22 +3,19 @@ package io.luxus.lib.adofai.type.action;
 import io.luxus.lib.adofai.type.EventType;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-
-import static io.luxus.lib.adofai.util.ListUtil.toUnmodifiableXYList;
 
 
 @Getter
 @ToString
 public class FreeRoamRemove extends Action {
 
-	private final List<Double> size;
-	private final List<Double> position;
+	private final Pair<Double, Double> size;
+	private final Pair<Double, Double> position;
 
-	private FreeRoamRemove(Boolean active, List<Double> size, List<Double> position) {
+	private FreeRoamRemove(Boolean active, Pair<Double, Double> size, Pair<Double, Double> position) {
 		super(EventType.FREE_ROAM_REMOVE, active);
 		this.size = size;
 		this.position = position;
@@ -28,8 +25,8 @@ public class FreeRoamRemove extends Action {
 	@ToString
 	public static final class Builder extends Action.Builder<Builder> {
 
-		private List<Double> size = Arrays.asList(0.0, 0.0);
-		private List<Double> position = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> size = Pair.with(0.0, 0.0);
+		private Pair<Double, Double> position = Pair.with(0.0, 0.0);
 
 
 		/**
@@ -73,24 +70,17 @@ public class FreeRoamRemove extends Action {
 			return EventType.FREE_ROAM_REMOVE;
 		}
 
-		public Builder size(List<Double> size) {
+		public Builder size(Pair<Double, Double> size) {
 			Objects.requireNonNull(size);
-			if (size.size() != 2) {
-				throw new IllegalArgumentException("size of size should be 2");
-			}
-			this.size = toUnmodifiableXYList(size);
+			this.size = size;
 			return self();
 		}
 
-		public Builder position(List<Double> position) {
+		public Builder position(Pair<Double, Double> position) {
 			Objects.requireNonNull(position);
-			if (position.size() != 2) {
-				throw new IllegalArgumentException("size of position should be 2");
-			}
-			this.position = toUnmodifiableXYList(position);
+			this.position = position;
 			return self();
 		}
-
 
 	}
 

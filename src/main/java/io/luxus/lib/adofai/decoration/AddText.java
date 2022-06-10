@@ -2,13 +2,11 @@ package io.luxus.lib.adofai.decoration;
 
 import io.luxus.lib.adofai.type.DecorationRelativeTo;
 import io.luxus.lib.adofai.type.Font;
-import io.luxus.lib.adofai.util.ListUtil;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -17,19 +15,19 @@ public class AddText extends Decoration {
 
 	private final String decText;
 	private final Font font;
-	private final List<Double> position;
+	private final Pair<Double, Double> position;
 	private final DecorationRelativeTo relativeTo;
-	private final List<Double> pivotOffset;
+	private final Pair<Double, Double> pivotOffset;
 	private final Double rotation;
-	private final List<Double> scale;
+	private final Pair<Double, Double> scale;
 	private final String color;
 	private final Double opacity;
 	private final Long depth;
-	private final List<Double> parallax;
+	private final Pair<Double, Double> parallax;
 	private final String tag;
 
-	private AddText(Boolean active, Long floor, String decText, Font font, List<Double> position, DecorationRelativeTo relativeTo, List<Double> pivotOffset,
-                    Double rotation, List<Double> scale, String color, Double opacity, Long depth, List<Double> parallax, String tag) {
+	private AddText(Boolean active, Long floor, String decText, Font font, Pair<Double, Double> position, DecorationRelativeTo relativeTo, Pair<Double, Double> pivotOffset,
+                    Double rotation, Pair<Double, Double> scale, String color, Double opacity, Long depth, Pair<Double, Double> parallax, String tag) {
 		super(DecorationType.ADD_TEXT, active, floor);
 		this.decText = decText;
 		this.font = font;
@@ -51,15 +49,15 @@ public class AddText extends Decoration {
 
 		private String decText = "text";
 		private Font font = Font.DEFAULT;
-		private List<Double> position = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> position = Pair.with(0.0, 0.0);
 		private DecorationRelativeTo relativeTo = DecorationRelativeTo.GLOBAL;
-		private List<Double> pivotOffset = Arrays.asList(0.0, 0.0);
+		private Pair<Double, Double> pivotOffset = Pair.with(0.0, 0.0);
 		private Double rotation = 0.0;
-		private List<Double> scale = Arrays.asList(100.0, 100.0);
+		private Pair<Double, Double> scale = Pair.with(100.0, 100.0);
 		private String color = "ffffff";
 		private Double opacity = 100.0;
 		private Long depth = -1L;
-		private List<Double> parallax = Arrays.asList(-1.0, -1.0);
+		private Pair<Double, Double> parallax = Pair.with(-1.0, -1.0);
 		private String tag = "";
 
 		public Builder from(AddText src) {
@@ -107,12 +105,9 @@ public class AddText extends Decoration {
 			return self();
 		}
 
-		public Builder position(List<Double> position) {
+		public Builder position(Pair<Double, Double> position) {
 			Objects.requireNonNull(position);
-			if (position.size() != 2) {
-				throw new IllegalArgumentException("size of position must be 2");
-			}
-			this.position = ListUtil.createNewUnmodifiableList(position);
+			this.position = position;
 			return self();
 		}
 
@@ -122,12 +117,9 @@ public class AddText extends Decoration {
 			return self();
 		}
 
-		public Builder pivotOffset(List<Double> pivotOffset) {
+		public Builder pivotOffset(Pair<Double, Double> pivotOffset) {
 			Objects.requireNonNull(pivotOffset);
-			if (pivotOffset.size() != 2) {
-				throw new IllegalArgumentException("size of pivotOffset must be 2");
-			}
-			this.pivotOffset = ListUtil.createNewUnmodifiableList(pivotOffset);
+			this.pivotOffset = pivotOffset;
 			return self();
 		}
 
@@ -137,12 +129,9 @@ public class AddText extends Decoration {
 			return self();
 		}
 
-		public Builder scale(List<Double> scale) {
+		public Builder scale(Pair<Double, Double> scale) {
 			Objects.requireNonNull(scale);
-			if (scale.size() != 2) {
-				throw new IllegalArgumentException("size of scale must be 2");
-			}
-			this.scale = ListUtil.createNewUnmodifiableList(scale);
+			this.scale = scale;
 			return self();
 		}
 
@@ -167,11 +156,8 @@ public class AddText extends Decoration {
 			return self();
 		}
 
-		public Builder parallax(List<Double> parallax) {
+		public Builder parallax(Pair<Double, Double> parallax) {
 			Objects.requireNonNull(parallax);
-			if (parallax.size() != 2) {
-				throw new IllegalArgumentException("size of scale must be 2");
-			}
 			this.parallax = parallax;
 			return self();
 		}

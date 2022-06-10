@@ -4,9 +4,8 @@ import io.luxus.lib.adofai.type.DecorationRelativeTo;
 import io.luxus.lib.adofai.type.Toggle;
 import lombok.Getter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -14,22 +13,25 @@ import java.util.Objects;
 public class AddDecoration extends Decoration {
 
     private final String decorationImage;
-    private final List<Double> position;
+    private final Pair<Double, Double> position;
     private final DecorationRelativeTo relativeTo;
-    private final List<Double> pivotOffset;
+    private final Pair<Double, Double> pivotOffset;
     private final Double rotation;
-    private final List<Double> scale;
-    private final List<Long> tile;
+    private final Pair<Double, Double> scale;
+    private final Pair<Long, Long> tile;
     private final String color;
     private final Double opacity;
     private final Long depth;
-    private final List<Double> parallax;
+    private final Pair<Double, Double> parallax;
     private final String tag;
     private final Toggle imageSmoothing;
     private final Toggle failHitbox;
     private final String components;
 
-    private AddDecoration(Boolean visible, Long floor, String decorationImage, List<Double> position, DecorationRelativeTo relativeTo, List<Double> pivotOffset, Double rotation, List<Double> scale, List<Long> tile, String color, Double opacity, Long depth, List<Double> parallax, String tag, Toggle imageSmoothing, Toggle failHitbox, String components) {
+    private AddDecoration(Boolean visible, Long floor, String decorationImage, Pair<Double, Double> position, DecorationRelativeTo relativeTo,
+                          Pair<Double, Double> pivotOffset, Double rotation, Pair<Double, Double> scale, Pair<Long, Long> tile, String color,
+                          Double opacity, Long depth, Pair<Double, Double> parallax, String tag, Toggle imageSmoothing,
+                          Toggle failHitbox, String components) {
         super(DecorationType.ADD_DECORATION, visible, floor);
         this.decorationImage = decorationImage;
         this.position = position;
@@ -54,16 +56,16 @@ public class AddDecoration extends Decoration {
     public static final class Builder extends Decoration.Builder<Builder> {
 
         private String decorationImage = "";
-        private List<Double> position = Arrays.asList(0.0, 0.0);
+        private Pair<Double, Double> position = Pair.with(0.0, 0.0);
         private DecorationRelativeTo relativeTo = DecorationRelativeTo.GLOBAL;
-        private List<Double> pivotOffset = Arrays.asList(0.0, 0.0);
+        private Pair<Double, Double> pivotOffset = Pair.with(0.0, 0.0);
         private Double rotation = 0.0;
-        private List<Double> scale = Arrays.asList(100.0, 100.0);
-        private List<Long> tile = Arrays.asList(1L, 1L);
+        private Pair<Double, Double> scale = Pair.with(100.0, 100.0);
+        private Pair<Long, Long> tile = Pair.with(1L, 1L);
         private String color = "ffffff";
         private Double opacity = 100.0;
         private Long depth = 0L;
-        private List<Double> parallax = Arrays.asList(0.0, 0.0);
+        private Pair<Double, Double> parallax = Pair.with(0.0, 0.0);
         private String tag = "";
         private Toggle imageSmoothing = Toggle.ENABLED;
         private Toggle failHitbox = Toggle.DISABLED;
@@ -113,11 +115,8 @@ public class AddDecoration extends Decoration {
             return this;
         }
 
-        public Builder position(List<Double> position) {
+        public Builder position(Pair<Double, Double> position) {
             Objects.requireNonNull(position);
-            if (parallax.size() != 2) {
-                throw new IllegalArgumentException("size of position should be 2");
-            }
             this.position = position;
             return this;
         }
@@ -128,11 +127,8 @@ public class AddDecoration extends Decoration {
             return this;
         }
 
-        public Builder pivotOffset(List<Double> pivotOffset) {
+        public Builder pivotOffset(Pair<Double, Double> pivotOffset) {
             Objects.requireNonNull(pivotOffset);
-            if (parallax.size() != 2) {
-                throw new IllegalArgumentException("size of pivotOffset should be 2");
-            }
             this.pivotOffset = pivotOffset;
             return this;
         }
@@ -143,20 +139,14 @@ public class AddDecoration extends Decoration {
             return this;
         }
 
-        public Builder scale(List<Double> scale) {
+        public Builder scale(Pair<Double, Double> scale) {
             Objects.requireNonNull(scale);
-            if (parallax.size() != 2) {
-                throw new IllegalArgumentException("size of scale should be 2");
-            }
             this.scale = scale;
             return this;
         }
 
-        public Builder tile(List<Long> tile) {
+        public Builder tile(Pair<Long, Long> tile) {
             Objects.requireNonNull(tile);
-            if (parallax.size() != 2) {
-                throw new IllegalArgumentException("size of tile should be 2");
-            }
             this.tile = tile;
             return this;
         }
@@ -179,11 +169,8 @@ public class AddDecoration extends Decoration {
             return this;
         }
 
-        public Builder parallax(List<Double> parallax) {
+        public Builder parallax(Pair<Double, Double> parallax) {
             Objects.requireNonNull(parallax);
-            if (parallax.size() != 2) {
-                throw new IllegalArgumentException("size of parallax should be 2");
-            }
             this.parallax = parallax;
             return this;
         }

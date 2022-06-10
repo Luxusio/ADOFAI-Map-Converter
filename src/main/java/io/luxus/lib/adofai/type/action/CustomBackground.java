@@ -1,14 +1,14 @@
 package io.luxus.lib.adofai.type.action;
 
-import io.luxus.lib.adofai.type.*;
-import io.luxus.lib.adofai.util.ListUtil;
+import io.luxus.lib.adofai.type.BGDisplayModeType;
+import io.luxus.lib.adofai.type.EventType;
+import io.luxus.lib.adofai.type.Toggle;
 import io.luxus.lib.adofai.util.StringJsonUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Getter @Setter
@@ -18,7 +18,7 @@ public class CustomBackground extends Action {
 	private final String color;
 	private final String bgImage;
 	private final String imageColor;
-	private final List<Double> parallax;
+	private final Pair<Double, Double> parallax;
 	private final BGDisplayModeType bgDisplayMode;
 	private final Toggle lockRot;
 	private final Toggle loopBG;
@@ -26,7 +26,7 @@ public class CustomBackground extends Action {
 	private final Double angleOffset;
 	private final String eventTag;
 
-	private CustomBackground(Boolean active, String color, String bgImage, String imageColor, List<Double> parallax, BGDisplayModeType bgDisplayMode, Toggle lockRot, Toggle loopBG, Long unscaledSize, Double angleOffset, String eventTag) {
+	private CustomBackground(Boolean active, String color, String bgImage, String imageColor, Pair<Double, Double> parallax, BGDisplayModeType bgDisplayMode, Toggle lockRot, Toggle loopBG, Long unscaledSize, Double angleOffset, String eventTag) {
 		super(EventType.CUSTOM_BACKGROUND, active);
 		this.color = color;
 		this.bgImage = bgImage;
@@ -47,7 +47,7 @@ public class CustomBackground extends Action {
 		private String color = "000000";
 		private String bgImage = "";
 		private String imageColor = "ffffff";
-		private List<Double> parallax = Arrays.asList(100.0, 100.0);
+		private Pair<Double, Double> parallax = Pair.with(100.0, 100.0);
 		private BGDisplayModeType bgDisplayMode = BGDisplayModeType.FIT_TO_SCREEN;
 		private Toggle lockRot = Toggle.DISABLED;
 		private Toggle loopBG = Toggle.DISABLED;
@@ -161,12 +161,9 @@ public class CustomBackground extends Action {
 		 * @throws NullPointerException when parallax is null
 		 * @throws IllegalArgumentException when size of parallax is not 2
 		 */
-		public Builder parallax(List<Double> parallax) {
+		public Builder parallax(Pair<Double, Double> parallax) {
 			Objects.requireNonNull(parallax);
-			if (parallax.size() != 2) {
-				throw new IllegalArgumentException("size of parallax must be 2");
-			}
-			this.parallax = ListUtil.createNewUnmodifiableList(parallax);
+			this.parallax = parallax;
 			return self();
 		}
 
