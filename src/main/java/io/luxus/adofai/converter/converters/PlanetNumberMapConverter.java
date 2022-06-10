@@ -3,12 +3,14 @@ package io.luxus.adofai.converter.converters;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
 import io.luxus.lib.adofai.CustomLevel;
+import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.action.MultiPlanet;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class PlanetNumberMapConverter implements MapConverter<PlanetNumberMapConverter.Parameters> {
 
@@ -18,7 +20,11 @@ public class PlanetNumberMapConverter implements MapConverter<PlanetNumberMapCon
         long planetNumber = scanner.nextLong();
         scanner.nextLine();
 
-        return new Parameters(planetNumber);
+        System.out.print("원본 맵 형태 유지 여부(true, false) : ");
+        boolean keepOriginalShape = scanner.nextBoolean();
+        scanner.nextLine();
+
+        return new Parameters(planetNumber, keepOriginalShape);
     }
 
     @Override
@@ -44,26 +50,47 @@ public class PlanetNumberMapConverter implements MapConverter<PlanetNumberMapCon
 
         AtomicBoolean haveToAddEvent = new AtomicBoolean(true);
 
-        return MapConverterBase.convertBasedOnTravelAngle(
-                customLevel,
-                false,
-                tile -> tile.getTileMeta().getTravelAngle(),
-                tileBuilder -> {
-                    tileBuilder.removeActions(EventType.MULTI_PLANET);
-                    if (haveToAddEvent.get()) {
-                        if (parameters.planetNumber > 2) {
-                            tileBuilder.addAction(new MultiPlanet.Builder().planets(parameters.planetNumber).build());
+        if (parameters.keepShape) {
+            return MapConverterBase.convert(
+                    customLevel,
+                    false,
+                    applyEach -> applyEach.getOneTimingTiles().stream()
+                            .map(tile -> new Tile.Builder().from(tile))
+                            .peek(newTileBuilder -> {
+                                if (haveToAddEvent.get()) {
+                                    if (parameters.planetNumber > 2) {
+                                        newTileBuilder.addAction(new MultiPlanet.Builder().planets(parameters.planetNumber).build());
+                                    }
+                                    haveToAddEvent.set(false);
+                                }
+                            })
+                            .collect(Collectors.toList())
+            );
+        }
+        else {
+            return MapConverterBase.convertBasedOnTravelAngle(
+                    customLevel,
+                    false,
+                    tile -> tile.getTileMeta().getTravelAngle(),
+                    tileBuilder -> {
+                        tileBuilder.removeActions(EventType.MULTI_PLANET);
+                        if (haveToAddEvent.get()) {
+                            if (parameters.planetNumber > 2) {
+                                tileBuilder.addAction(new MultiPlanet.Builder().planets(parameters.planetNumber).build());
+                            }
+                            haveToAddEvent.set(false);
                         }
-                        haveToAddEvent.set(false);
+                    },
+                    customLevelBuilder -> {
                     }
-                },
-                customLevelBuilder -> {}
-        );
+            );
+        }
     }
 
     @RequiredArgsConstructor
     public static class Parameters {
         private final long planetNumber;
+        private final boolean keepShape;
     }
 
 }
