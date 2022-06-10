@@ -42,14 +42,20 @@ public class AngleHelper {
         return new Result(currStaticAngle, currTravelAngle);
     }
 
-    public static double getNextStaticAngle(double staticAngle, double relativeAngle, double planetAngle, boolean reversed) {
-        if (reversed) {
-            staticAngle = staticAngle + relativeAngle - planetAngle;
-        } else {
-            staticAngle = staticAngle - relativeAngle + planetAngle;
+    public static double getNextStaticAngle(double staticAngle, double travelAngle, double planetAngle, boolean reversed) {
+        if (travelAngle == 0) {
+            if (reversed) {
+                return generalizeAngle(staticAngle + planetAngle);
+            } else {
+                return generalizeAngle(staticAngle - planetAngle);
+            }
         }
 
-        return generalizeAngle(staticAngle);
+        if (reversed) {
+            return generalizeAngle(staticAngle + (travelAngle - planetAngle));
+        } else {
+            return generalizeAngle(staticAngle - (travelAngle - planetAngle));
+        }
     }
 
 }
