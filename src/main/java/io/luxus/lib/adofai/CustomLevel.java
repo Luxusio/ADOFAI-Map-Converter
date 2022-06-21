@@ -121,7 +121,8 @@ public class CustomLevel {
         public Builder from(CustomLevel customLevel) {
             return self()
                     .levelSetting(customLevel.levelSetting)
-                    .tiles(customLevel.tiles);
+                    .tiles(customLevel.tiles)
+                    .decorations(customLevel.decorations);
         }
 
     }

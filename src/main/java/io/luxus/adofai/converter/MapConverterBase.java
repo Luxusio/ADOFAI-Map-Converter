@@ -117,7 +117,8 @@ public class MapConverterBase {
 
         final CustomLevel.Builder newCustomLevelBuilder = new CustomLevel.Builder()
                 .levelSetting(customLevel.getLevelSetting())
-                .tileBuilders(newTileBuilders);
+                .tileBuilders(newTileBuilders)
+                .decorations(customLevel.getDecorations());
 
         customLevelConsumer.accept(newCustomLevelBuilder);
         return arrangeCustomLevelSync(customLevel, newCustomLevelBuilder.build(), newTileAmounts);
