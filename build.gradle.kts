@@ -5,20 +5,8 @@ plugins {
     kotlin("plugin.spring") version "1.6.21"
 }
 
-group "io.luxus"
-version "1.5.1"
-//mainClassName = "io.luxus.adofai.Program"
-
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = "io.luxus.adofai.Program"
-        attributes["Implementation-Title"] = rootProject.name
-        attributes["Implementation-Version"] = rootProject.version
-    }
-//    from {
-//        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) }
-//    }
-}
+group = "io.luxus"
+version = "1.5.2"
 
 repositories {
     mavenCentral()
@@ -39,12 +27,32 @@ dependencies {
     testImplementation("io.mockk:mockk:1.12.5")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
+tasks {
+    javadoc {
+        options.encoding = "UTF-8"
     }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+    compileTestJava {
+        options.encoding = "UTF-8"
+    }
+    withType<Jar> {
+        manifest {
+            attributes["Main-Class"] = "io.luxus.adofai.Program"
+            attributes["Implementation-Title"] = rootProject.name
+            attributes["Implementation-Version"] = rootProject.version
+        }
+        from(configurations.runtimeClasspath.get()
+            .map { if (it.isDirectory) it else zipTree(it) })
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+    withType<Test> {
+        useJUnitPlatform()
+    }
 }

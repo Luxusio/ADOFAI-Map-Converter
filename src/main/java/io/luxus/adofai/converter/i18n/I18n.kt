@@ -83,7 +83,7 @@ class I18n {
             PROGRAM_OPTION_12 to "12. 동타 변환",
             PROGRAM_OPTION_13 to "13. 행성 수 변환",
             PROGRAM_OPTION_14 to "14. 종료",
-            INPUT to "입력 :",
+            INPUT to "입력 : ",
             PROGRAM_EXIT to "프로그램을 종료합니다.",
             PROGRAM_CONVERT_MESSAGE_1 to "*all 시 backup.adofai 를 제외한 모든 하위 폴더의 파일을 변환합니다*",
             PROGRAM_CONVERT_MESSAGE_2 to "경로(.adofai 포함) : ",

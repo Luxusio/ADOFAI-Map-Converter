@@ -1,9 +1,5 @@
 package io.luxus.adofai.converter.i18n
 
-import io.luxus.lib.adofai.type.EventType
-import java.util.*
-import java.util.stream.Collectors
-
 enum class I18nCode {
     // Program Text
     PROGRAM_PRESS_ENTER_TO_CONTINUE,

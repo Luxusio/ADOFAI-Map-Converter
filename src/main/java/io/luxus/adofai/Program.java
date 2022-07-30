@@ -62,7 +62,7 @@ public class Program {
         scanner.nextLine();
 
         if (mode == 0) {
-            i18n.println(PROGRAM_INPUT_LANGUAGE, i18n.getSupportedLanguage());
+            i18n.print(PROGRAM_INPUT_LANGUAGE, i18n.getSupportedLanguage());
 
             String languageTag = scanner.nextLine();
             if (i18n.isSupportedLanguage(languageTag)) {
