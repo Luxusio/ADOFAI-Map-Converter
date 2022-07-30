@@ -1,6 +1,7 @@
 package io.luxus.adofai.converter;
 
 import io.luxus.adofai.converter.converters.TwirlConverter;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
@@ -19,8 +20,8 @@ public class TwirlConverterTest {
         String path = "./src/test/resources/test/sb.adofai";
 
         // when
-        CustomLevel resultAllTwirl = new TwirlConverter().convert(CustomLevelParser.readPath(path), new TwirlConverter.Parameters(1.0));
-        CustomLevel resultNoTwirl = new TwirlConverter().convert(CustomLevelParser.readPath(path), new TwirlConverter.Parameters(0.0));
+        CustomLevel resultAllTwirl = new TwirlConverter(new I18n()).convert(CustomLevelParser.readPath(path), new TwirlConverter.Parameters(1.0));
+        CustomLevel resultNoTwirl = new TwirlConverter(new I18n()).convert(CustomLevelParser.readPath(path), new TwirlConverter.Parameters(0.0));
 
         // then
         CustomLevel original = CustomLevelParser.readPath(path);

@@ -1,6 +1,7 @@
 package io.luxus.adofai.converter;
 
 import io.luxus.adofai.converter.converters.ShapedMapConverter;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.EventType;
@@ -20,7 +21,7 @@ public class MapShapedMapConverterTest {
         String shapePath = "./src/test/resources/test/bmb.adofai";
 
         // when
-        CustomLevel result  = new ShapedMapConverter().convert(CustomLevelParser.readPath(path), new ShapedMapConverter.Parameters("bmb", CustomLevelParser.readPath(shapePath), null));
+        CustomLevel result  = new ShapedMapConverter(new I18n()).convert(CustomLevelParser.readPath(path), new ShapedMapConverter.Parameters("bmb", CustomLevelParser.readPath(shapePath), null));
 
 
         // then

@@ -2,12 +2,8 @@ package io.luxus.adofai.converter;
 
 import io.luxus.adofai.converter.converters.AllMidspinMapConverter;
 import io.luxus.adofai.converter.converters.NoSpeedChangeMapConverter;
-import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.parser.CustomLevelParser;
+import io.luxus.adofai.converter.i18n.I18n;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class ConverterTest {
 
@@ -15,7 +11,7 @@ public class ConverterTest {
     void testLinearConvert() throws Exception {
         // given
         String path = "./src/test/resources/test/First_Town_Of_This_Journey.adofai";
-        MapConverterDispatcher dispatcher = new MapConverterDispatcher();
+        MapConverterDispatcher dispatcher = new MapConverterDispatcher(new I18n());
 
         // when
 

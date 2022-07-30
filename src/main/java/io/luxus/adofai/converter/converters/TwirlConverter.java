@@ -2,23 +2,24 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18nCode;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
-import io.luxus.lib.adofai.type.action.Action;
-import io.luxus.lib.adofai.type.action.Twirl;
 import io.luxus.lib.adofai.type.EventType;
-import io.luxus.lib.adofai.parser.CustomLevelParser;
+import io.luxus.lib.adofai.type.action.Twirl;
 import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Scanner;
 
+@RequiredArgsConstructor
 public class TwirlConverter implements MapConverter<TwirlConverter.Parameters> {
+
+	private final I18n i18n;
 
 	@Override
 	public Parameters prepareParameters(Scanner scanner) {
-		System.out.print("회전 넣을 비율(0.0~1.0):");
+		i18n.print(I18nCode.TWIRL_CONVERTER_ROTATION_RATE);
 		double twirlRate = scanner.nextDouble();
 		scanner.nextLine();
 
@@ -28,7 +29,7 @@ public class TwirlConverter implements MapConverter<TwirlConverter.Parameters> {
 	@Override
 	public boolean impossible(CustomLevel customLevel, Parameters parameters) {
 		if (parameters.twirlRate < 0 || parameters.twirlRate > 1.0) {
-			System.err.println("회전 비율은 0 이상 1.0 이하여야 합니다.");
+			i18n.print(I18nCode.TWIRL_CONVERTER_ROTATION_RATE_ERROR);
 			return true;
 		}
 

@@ -4,10 +4,12 @@ import io.luxus.adofai.converter.converters.*;
 import io.luxus.adofai.converter.converters.effect.NonEffectMapConverter;
 import io.luxus.adofai.converter.converters.effect.OnlyBpmSetMapConverter;
 import io.luxus.adofai.converter.converters.effect.TransparentMapConverter;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Scanner;
@@ -19,7 +21,7 @@ public class MapConverterDispatcher {
 
     private final Map<Class<? extends MapConverter<?>>, MapConverter<?>> converterMap;
 
-    public MapConverterDispatcher() {
+    public MapConverterDispatcher(I18n i18n) {
         this.converterMap = Collections.unmodifiableMap(Stream.of(
                 OuterMapConverter.class,
                 LinearMapConverter.class,
@@ -38,8 +40,10 @@ public class MapConverterDispatcher {
                 Function.identity(),
                 clazz -> {
                     try {
-                        return clazz.newInstance();
-                    } catch (InstantiationException | IllegalAccessException e) {
+                        return clazz.getConstructor(I18n.class)
+                                .newInstance(i18n);
+                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                             InvocationTargetException e) {
                         throw new RuntimeException(e);
                     }
                 })));

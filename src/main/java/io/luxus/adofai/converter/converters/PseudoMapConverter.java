@@ -2,11 +2,12 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
-import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.helper.AngleHelper;
+import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.TileAngle;
 import lombok.RequiredArgsConstructor;
 
@@ -14,19 +15,24 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.*;
+
+@RequiredArgsConstructor
 public class PseudoMapConverter implements MapConverter<PseudoMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
-        System.out.print("동타 수 : ");
+        i18n.print(PSEUDO_MAP_CONVERTER_PSEUDO_AMOUNT);
         int pseudo = scanner.nextInt();
         scanner.nextLine();
 
-        System.out.print("동타 최대 각도 : ");
+        i18n.print(PSEUDO_MAP_CONVERTER_PSEUDO_MAX_ANGLE);
         double pseudoAngle = scanner.nextDouble();
         scanner.nextLine();
 
-        System.out.print("colorTrack을 제거하시겠습니까? (y/n) (ColorTrack이 많을 시 게임이 멈출 수 있습니다.) : ");
+        i18n.print(PSEUDO_MAP_CONVERTER_REMOVE_COLOR_TRACK_QUESTION);
         boolean removeColorTrack = scanner.nextLine().equalsIgnoreCase("y");
 
         return new Parameters(pseudo, pseudoAngle, removeColorTrack);
@@ -35,11 +41,11 @@ public class PseudoMapConverter implements MapConverter<PseudoMapConverter.Param
     @Override
     public boolean impossible(CustomLevel customLevel, Parameters parameters) {
         if (parameters.pseudo < 1) {
-            System.err.println("Pseudo 값이 너무 낮습니다! 1 이상으로 해주세요!");
+            i18n.printlnErr(PSEUDO_MAP_CONVERTER_PSEUDO_AMOUNT_ERROR);
             return true;
         }
         if (parameters.pseudoAngle <= 0) {
-            System.err.println("동타 최대 각도는 0도보다 커야합니다.");
+            i18n.printlnErr(PSEUDO_MAP_CONVERTER_PSEUDO_MAX_ANGLE_ERROR);
             return true;
         }
 
@@ -56,10 +62,6 @@ public class PseudoMapConverter implements MapConverter<PseudoMapConverter.Param
         if (impossible(customLevel, parameters)) {
             return null;
         }
-
-//        int pseudo = (int) args[0];
-//        double pseudoAngle = (double) args[1];
-//        boolean removeColorTrackEvents = (boolean) args[2];
 
         return MapConverterBase.convert(customLevel, false,
                 applyEach -> {

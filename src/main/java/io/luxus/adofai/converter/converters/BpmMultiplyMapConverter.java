@@ -2,6 +2,7 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
@@ -9,12 +10,18 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Scanner;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.BPM_MULTIPLY_MAP_CONVERTER_MULTIPLY_VALUE;
+import static io.luxus.adofai.converter.i18n.I18nCode.BPM_MULTIPLY_MAP_CONVERTER_MULTIPLY_VALUE_ERROR;
+
+@RequiredArgsConstructor
 public class BpmMultiplyMapConverter implements MapConverter<BpmMultiplyMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
 
-        System.out.print("배수:");
+        i18n.print(BPM_MULTIPLY_MAP_CONVERTER_MULTIPLY_VALUE);
         double multiplier = scanner.nextDouble();
         scanner.nextLine();
 
@@ -32,7 +39,7 @@ public class BpmMultiplyMapConverter implements MapConverter<BpmMultiplyMapConve
         }
 
         if (parameters.multiplier > maxPossibleMultiplier) {
-            System.out.println("배수가 너무 높습니다. " + maxPossibleMultiplier + "배 이하로 해주세요");
+            i18n.printlnErr(BPM_MULTIPLY_MAP_CONVERTER_MULTIPLY_VALUE_ERROR, "" + maxPossibleMultiplier);
             return true;
         }
 
