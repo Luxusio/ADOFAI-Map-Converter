@@ -2,6 +2,8 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18nCode;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.EventType;
@@ -12,15 +14,20 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.*;
+
+@RequiredArgsConstructor
 public class PlanetNumberMapConverter implements MapConverter<PlanetNumberMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
-        System.out.print("행성 수 : ");
+        i18n.print(PLANET_NUMBER_MAP_CONVERTER_PLANET_NUMBER);
         long planetNumber = scanner.nextLong();
         scanner.nextLine();
 
-        System.out.print("원본 맵 형태 유지 여부(true, false) : ");
+        i18n.print(I18nCode.PLANET_NUMBER_MAP_CONVERTER_KEEP_ORIGINAL_SHAPE);
         boolean keepOriginalShape = scanner.nextBoolean();
         scanner.nextLine();
 
@@ -30,7 +37,7 @@ public class PlanetNumberMapConverter implements MapConverter<PlanetNumberMapCon
     @Override
     public boolean impossible(CustomLevel customLevel, Parameters parameters) {
         if (parameters.planetNumber < 2) {
-            System.err.println("행성 수 값이 너무 낮습니다! 2와 같거나 큰 값으로 해주세요!");
+            i18n.printlnErr(PLANET_NUMBER_MAP_CONVERTER_PLANET_NUMBER_ERROR);
             return true;
         }
 

@@ -2,6 +2,7 @@ package io.luxus.adofai.converter.converters.effect;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.EventType;
@@ -10,14 +11,20 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.*;
+
+@RequiredArgsConstructor
 public class NonEffectMapConverter implements MapConverter<NonEffectMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
-        System.out.println("목록 : " + Arrays.stream(EventType.values())
+        i18n.println(NON_EFFECT_MAP_CONVERTER_LIST, Arrays.stream(EventType.values())
                 .filter(eventType -> eventType != EventType.UNKNOWN)
-                .collect(Collectors.toList()));
-        System.out.print("제거하고 싶은 effect를 콤마(,)를 통해 구분해서 입력해주세요 : ");
+                .map(Object::toString)
+                .collect(Collectors.joining(", ")));
+        i18n.print(NON_EFFECT_MAP_CONVERTER_LIST_INPUT_MESSAGE);
         String eventTypes = scanner.nextLine();
 
         Set<EventType> eventTypeSet = Arrays.stream(eventTypes.split(","))
@@ -26,7 +33,7 @@ public class NonEffectMapConverter implements MapConverter<NonEffectMapConverter
                     try {
                         return EventType.valueOf(eventTypeName);
                     } catch (IllegalArgumentException exception) {
-                        System.err.println("알 수 없는 event type 입니다!(" + eventTypeName + ")");
+                        i18n.printlnErr(NON_EFFECT_MAP_CONVERTER_ERROR_UNKNOWN_EVENT_TYPE, eventTypeName);
                         return null;
                     }
                 })
@@ -39,7 +46,7 @@ public class NonEffectMapConverter implements MapConverter<NonEffectMapConverter
     @Override
     public boolean impossible(CustomLevel customLevel, Parameters parameters) {
         if (parameters.eventTypes.isEmpty()) {
-            System.err.println("제거할 effect가 없습니다.");
+            i18n.println(NON_EFFECT_MAP_CONVERTER_LIST_ERROR_EMPTY);
             return true;
         }
 

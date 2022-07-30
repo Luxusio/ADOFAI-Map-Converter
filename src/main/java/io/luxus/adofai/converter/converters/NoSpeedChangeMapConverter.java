@@ -2,6 +2,7 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.type.action.Pause;
@@ -9,11 +10,16 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Scanner;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.*;
+
+@RequiredArgsConstructor
 public class NoSpeedChangeMapConverter implements MapConverter<NoSpeedChangeMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
-        System.out.print("목표 BPM:");
+        i18n.print(NO_SPEED_CHANGE_MAP_CONVERTER_DEST_BPM);
         double destBpm = scanner.nextDouble();
         scanner.nextLine();
 
@@ -24,7 +30,7 @@ public class NoSpeedChangeMapConverter implements MapConverter<NoSpeedChangeMapC
     public boolean impossible(CustomLevel customLevel, Parameters parameters) {
 
         if (parameters.destinationBpm <= 0) {
-            System.err.println("destBpm은 0보다 커야합니다.");
+            i18n.printlnErr(NO_SPEED_CHANGE_MAP_CONVERTER_DEST_BPM_ERROR);
             return true;
         }
 

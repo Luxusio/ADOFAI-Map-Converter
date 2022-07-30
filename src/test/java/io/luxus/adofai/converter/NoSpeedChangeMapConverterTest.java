@@ -3,6 +3,7 @@ package io.luxus.adofai.converter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.luxus.adofai.converter.converters.NoSpeedChangeMapConverter;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.type.EventType;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
@@ -27,7 +28,7 @@ class NoSpeedChangeMapConverterTest {
         double targetBpm = 55;
 
         // when
-        CustomLevel result = new NoSpeedChangeMapConverter().convert(CustomLevelParser.readPath(path), new NoSpeedChangeMapConverter.Parameters(targetBpm));
+        CustomLevel result = new NoSpeedChangeMapConverter(new I18n()).convert(CustomLevelParser.readPath(path), new NoSpeedChangeMapConverter.Parameters(targetBpm));
         CustomLevelParser.write(result, path.substring(0, path.length() - 7) + " " + targetBpm + "bpm.adofai");
 
         // then

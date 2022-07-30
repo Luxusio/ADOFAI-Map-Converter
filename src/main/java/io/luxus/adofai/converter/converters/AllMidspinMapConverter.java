@@ -2,6 +2,7 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.TileMeta;
@@ -14,15 +15,20 @@ import java.util.Scanner;
 import java.util.function.Function;
 
 import static io.luxus.adofai.converter.MapConverterBase.getSameTimingTiles;
+import static io.luxus.adofai.converter.i18n.I18nCode.ALL_MIDSPIN_MAP_CONVERTER_MIDSPIN_AMOUNT;
+import static io.luxus.adofai.converter.i18n.I18nCode.ALL_MIDSPIN_MAP_CONVERTER_MIDSPIN_AMOUNT_ERROR;
 import static io.luxus.lib.adofai.type.TileAngle.MIDSPIN;
 import static io.luxus.lib.adofai.type.TileAngle.createNormal;
 
+@RequiredArgsConstructor
 public class AllMidspinMapConverter implements MapConverter<AllMidspinMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
 
-        System.out.print("미드스핀 개수:");
+        i18n.print(ALL_MIDSPIN_MAP_CONVERTER_MIDSPIN_AMOUNT);
         int midspinAmount = scanner.nextInt();
         scanner.nextLine();
 
@@ -33,7 +39,7 @@ public class AllMidspinMapConverter implements MapConverter<AllMidspinMapConvert
     public boolean impossible(CustomLevel customLevel, Parameters parameters) {
 
         if (parameters.midspinAmount < 0) {
-            System.err.println("midspinAmount 가 너무 작습니다! 0 이상의 값을 입력해주세요!");
+            i18n.printlnErr(ALL_MIDSPIN_MAP_CONVERTER_MIDSPIN_AMOUNT_ERROR);
             return true;
         }
 

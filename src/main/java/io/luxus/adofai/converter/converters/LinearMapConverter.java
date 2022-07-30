@@ -1,5 +1,6 @@
 package io.luxus.adofai.converter.converters;
 
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.type.TileAngle;
 
@@ -10,6 +11,10 @@ import static java.util.Collections.singletonList;
 public class LinearMapConverter extends ShapedMapConverter {
 
     public static final ShapedMapConverter.Parameters PARAMETERS = new Parameters("", null, singletonList(TileAngle.ZERO));
+
+    public LinearMapConverter(I18n i18n) {
+        super(i18n);
+    }
 
     @Override
     public ShapedMapConverter.Parameters prepareParameters(Scanner scanner) {

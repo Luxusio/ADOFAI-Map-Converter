@@ -2,6 +2,7 @@ package io.luxus.adofai.converter.converters.effect;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.action.MoveTrack;
@@ -13,12 +14,18 @@ import org.javatuples.Pair;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.TRANSPARENT_MAP_CONVERTER_TRANSPARENCY_VALUE;
+import static io.luxus.adofai.converter.i18n.I18nCode.TRANSPARENT_MAP_CONVERTER_TRANSPARENCY_VALUE_ERROR;
 
+@RequiredArgsConstructor
 public class TransparentMapConverter implements MapConverter<TransparentMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
-        System.out.print("투명도(0~100):");
+
+        i18n.print(TRANSPARENT_MAP_CONVERTER_TRANSPARENCY_VALUE);
         double opacity = scanner.nextDouble();
         scanner.nextLine();
 
@@ -28,7 +35,7 @@ public class TransparentMapConverter implements MapConverter<TransparentMapConve
     @Override
     public boolean impossible(CustomLevel customLevel, Parameters parameters) {
         if (parameters.opacity < 0 || parameters.opacity > 100) {
-            System.err.println("투명도는 0이상 100이하여야합니다. (opacity=" + parameters.opacity + ")");
+            i18n.printlnErr(TRANSPARENT_MAP_CONVERTER_TRANSPARENCY_VALUE_ERROR);
             return true;
         }
 

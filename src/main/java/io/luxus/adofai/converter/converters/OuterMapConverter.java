@@ -2,6 +2,7 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.type.action.Twirl;
@@ -12,7 +13,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class OuterMapConverter implements MapConverter<OuterMapConverter.Parameters> {
+
+	private final I18n i18n;
 
 	@Override
 	public Parameters prepareParameters(Scanner scanner) {

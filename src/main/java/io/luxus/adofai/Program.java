@@ -6,6 +6,7 @@ import io.luxus.adofai.converter.converters.*;
 import io.luxus.adofai.converter.converters.effect.NonEffectMapConverter;
 import io.luxus.adofai.converter.converters.effect.OnlyBpmSetMapConverter;
 import io.luxus.adofai.converter.converters.effect.TransparentMapConverter;
+import io.luxus.adofai.converter.i18n.I18n;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,47 +14,67 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.*;
+
 public class Program {
 
     public static void main(String[] args) {
+        I18n i18n = new I18n();
+
         try (Scanner scanner = new Scanner(System.in)) {
-            Program.program(scanner);
+            Program.program(scanner, i18n);
         } catch (Throwable t) {
             t.printStackTrace();
         }
 
         try {
-            System.out.println("계속하시려면 엔터키를 눌러주세요.");
+            System.out.println(i18n.getText(PROGRAM_PRESS_ENTER_TO_CONTINUE));
             int read = System.in.read();
         } catch (IOException ignored) { }
     }
 
-    private static void program(Scanner scanner) {
-        System.out.println("A Dance of Fire and Ice 맵 변환기");
-        System.out.println("ver 1.5.1");
-        System.out.println("개발자 : Luxus io");
-        System.out.println("YouTube : https://www.youtube.com/c/Luxusio");
-        System.out.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
-        System.out.println();
+    private static void program(Scanner scanner, I18n i18n) {
+        i18n.println("ADOFAI Map Converter");
+        i18n.println("Version : 1.5.2");
+        i18n.println("Developer : Luxus io");
+        i18n.println("YouTube : https://www.youtube.com/c/Luxusio");
+        i18n.println("Github : https://github.com/Luxusio/ADOFAI-Map-Converter");
+        i18n.println();
 
-        System.out.println("1. 외각 변환");
-        System.out.println("2. 선형 변환");
-        System.out.println("3. 패턴 변환");
-        System.out.println("4. 모든타일 회전 넣고 빼기 비율");
-        System.out.println("5. 이펙트 제거");
-        System.out.println("6. 투명도 변환");
-        System.out.println("7. Bpm 승수->Bpm 변환");
-        System.out.println("8. 무변속 맵 변환");
-        System.out.println("9. 맵 전체 bpm *배수 변환");
-        System.out.println("10. 모든 타일 무작위 bpm 변환");
-        System.out.println("11. 미드스핀 변환");
-        System.out.println("12. 동타 변환");
-        System.out.println("13. 행성 수 변환");
-        System.out.println("14. 종료");
-        System.out.print("입력 : ");
+        i18n.println("0. Set language");
+        i18n.println(PROGRAM_OPTION_1);
+        i18n.println(PROGRAM_OPTION_2);
+        i18n.println(PROGRAM_OPTION_3);
+        i18n.println(PROGRAM_OPTION_4);
+        i18n.println(PROGRAM_OPTION_5);
+        i18n.println(PROGRAM_OPTION_6);
+        i18n.println(PROGRAM_OPTION_7);
+        i18n.println(PROGRAM_OPTION_8);
+        i18n.println(PROGRAM_OPTION_9);
+        i18n.println(PROGRAM_OPTION_10);
+        i18n.println(PROGRAM_OPTION_11);
+        i18n.println(PROGRAM_OPTION_12);
+        i18n.println(PROGRAM_OPTION_13);
+        i18n.println(PROGRAM_OPTION_14);
+        i18n.print(INPUT);
 
         int mode = scanner.nextInt();
         scanner.nextLine();
+
+        if (mode == 0) {
+            i18n.println(PROGRAM_INPUT_LANGUAGE, i18n.getSupportedLanguage());
+
+            String languageTag = scanner.nextLine();
+            if (i18n.isSupportedLanguage(languageTag)) {
+                i18n.setLanguage(languageTag);
+            } else {
+                i18n.printlnErr(PROGRAM_INPUT_LANGUAGE_ERROR);
+            }
+
+
+            program(scanner, i18n);
+            return;
+        }
 
         Class<? extends MapConverter<?>> converterType =
                 mode == 1 ?  OuterMapConverter.class :
@@ -72,26 +93,27 @@ public class Program {
                         null;
 
         if (converterType == null) {
-            System.out.println("프로그램을 종료합니다.");
+            i18n.println(PROGRAM_EXIT);
             return;
         }
 
-        convert(converterType, scanner);
+        convert(converterType, scanner, i18n);
 
-        System.out.println("complete");
+        i18n.println("complete");
     }
 
-    private static <CT extends MapConverter<T>, T> void convert(Class<?> converterType, Scanner scanner) {
+    private static <CT extends MapConverter<T>, T> void convert(Class<?> converterType, Scanner scanner, I18n i18n) {
 
         @SuppressWarnings("unchecked")
         Class<CT> type = (Class<CT>) converterType;
 
-        MapConverterDispatcher dispatcher = new MapConverterDispatcher();
+        MapConverterDispatcher dispatcher = new MapConverterDispatcher(new I18n());
         T parameters = dispatcher.prepareParameters(type, scanner);
 
-        System.out.println();
-        System.out.println("*all 시 backup.adofai 를 제외한 모든 하위 폴더의 파일을 변환합니다*");
-        System.out.print("경로(.adofai 포함) : ");
+
+        i18n.println();
+        i18n.println(PROGRAM_CONVERT_MESSAGE_1);
+        i18n.print(PROGRAM_CONVERT_MESSAGE_2);
         String input = scanner.nextLine();
 
         List<String> pathList = new ArrayList<>();
@@ -101,11 +123,11 @@ public class Program {
             pathList.add(input);
         }
 
-        System.out.println("load");
+        i18n.println("load");
         for (String path : pathList) {
             File file = new File(path);
             if (!file.exists()) {
-                System.out.println("E> 파일이 존재하지 않습니다(" + path + ")");
+                i18n.printlnErr(ERROR_FILE_NOT_EXIST, path);
                 continue;
             }
             if (file.getName().equals("backup.adofai")) {

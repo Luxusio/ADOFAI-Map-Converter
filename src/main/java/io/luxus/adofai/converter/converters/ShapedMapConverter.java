@@ -3,6 +3,7 @@ package io.luxus.adofai.converter.converters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.Tile;
 import io.luxus.lib.adofai.parser.CustomLevelParser;
@@ -19,13 +20,18 @@ import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.*;
 
+
+@RequiredArgsConstructor
 public class ShapedMapConverter implements MapConverter<ShapedMapConverter.Parameters> {
+
+	private final I18n i18n;
 
 	@Override
 	public Parameters prepareParameters(Scanner scanner) {
-		System.out.println("*.adofai 파일 내의 pathData 혹은 angleData 형식으로 입력하여야 합니다*");
-		System.out.print("패턴(혹은 .adofai 파일) : ");
+		i18n.println(SHAPED_MAP_CONVERTER_INPUT_FILE_OR_PATTERN_1);
+		i18n.print(SHAPED_MAP_CONVERTER_INPUT_FILE_OR_PATTERN_2);
 		String sourceStr = scanner.nextLine().trim();
 
 		CustomLevel patternLevel;
@@ -33,14 +39,14 @@ public class ShapedMapConverter implements MapConverter<ShapedMapConverter.Param
 		if (sourceStr.endsWith(".adofai")) {
 			File file = new File(sourceStr);
 			if (!file.exists()) {
-				System.err.println("파일이 존재하지 않습니다");
+				i18n.printlnErr(ERROR_FILE_NOT_EXIST, sourceStr);
 				return new Parameters(sourceStr, null, null);
 			}
 
 			try {
 				patternLevel = CustomLevelParser.read(file);
 			} catch (Throwable t) {
-				System.err.println("파일 불러오기에 실패했습니다");
+				i18n.printlnErr(ERROR_CANNOT_LOAD_FILE);
 				t.printStackTrace();
 				return new Parameters(sourceStr, null, null);
 			}
@@ -59,7 +65,7 @@ public class ShapedMapConverter implements MapConverter<ShapedMapConverter.Param
 				try {
 					angleData = FlowFactory.readAngleData(new ObjectMapper().readTree(sourceStr));
 				} catch (Throwable throwable) {
-					System.err.println("패턴 읽어오기에 실패했습니다.");
+					i18n.printlnErr(ERROR_CANNOT_LOAD_PATTERN);
 					throwable.printStackTrace();
 					return new Parameters(sourceStr, null, null);
 				}
@@ -74,17 +80,17 @@ public class ShapedMapConverter implements MapConverter<ShapedMapConverter.Param
 
 		if (parameters.shapeLevel != null) {
 			if (parameters.shapeLevel.getTiles().size() <= 1) {
-				System.err.println("패턴의 타일 수가 너무 적습니다.");
+				i18n.printlnErr(SHAPED_MAP_CONVERTER_ERROR_PATTERN_TILE_TOO_SHORT);
 				return true;
 			}
 		}
 		else {
 			if (parameters.shapeAngles == null) {
-				System.err.println("shapeAngles가 null입니다.");
+				i18n.printlnErr(SHAPED_MAP_CONVERTER_ERROR_SHAPE_ANGLES_NULL);
 				return true;
 			}
 			if (parameters.shapeAngles.isEmpty()) {
-				System.err.println("패턴의 각도 수가 너무 적습니다.");
+				i18n.printlnErr(SHAPED_MAP_CONVERTER_ERROR_PATTERN_ANGLE_TOO_SHORT);
 				return true;
 			}
 		}

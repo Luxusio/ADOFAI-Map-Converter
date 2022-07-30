@@ -2,18 +2,24 @@ package io.luxus.adofai.converter.converters;
 
 import io.luxus.adofai.converter.MapConverter;
 import io.luxus.adofai.converter.MapConverterBase;
+import io.luxus.adofai.converter.i18n.I18n;
 import io.luxus.lib.adofai.CustomLevel;
 import io.luxus.lib.adofai.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Scanner;
 
+import static io.luxus.adofai.converter.i18n.I18nCode.CHAOS_BPM_MAP_CONVERTER_VIBRATE_RATE;
+
+@RequiredArgsConstructor
 public class ChaosBpmMapConverter implements MapConverter<ChaosBpmMapConverter.Parameters> {
+
+    private final I18n i18n;
 
     @Override
     public Parameters prepareParameters(Scanner scanner) {
 
-        System.out.print("진동할 각도 비율:");
+        i18n.print(CHAOS_BPM_MAP_CONVERTER_VIBRATE_RATE);
         double rate = scanner.nextDouble();
         scanner.nextLine();
 
